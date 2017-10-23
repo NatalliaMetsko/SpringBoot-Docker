@@ -1,0 +1,9 @@
+Order:
+
+- OrderItem, as component of the order, based on the offer, order can have many orderItems
+- total price of the order
+- total count of the order items
+- link to the customer (may be email or something else)
+- order date
+- sign of the payment
+- additional fileds to describe order (id, name, description, some dates. etc.)
