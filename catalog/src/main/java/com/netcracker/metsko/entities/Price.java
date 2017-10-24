@@ -1,10 +1,16 @@
 package com.netcracker.metsko.entities;
 
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+
 public class Price {
 
     public Double price;
 
     public String currency;
+
+    @ManyToOne
+    public Offer offer;
 
     public Price(Double price, String currency) {
         this.price = price;

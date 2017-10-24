@@ -1,7 +1,13 @@
 package com.netcracker.metsko.entities;
 
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+
 public class Category {
     public String category;
+
+    @OneToMany
+    public Offer offer;
 
     public String getCategory() {
         return category;
