@@ -55,6 +55,14 @@ public class Order {
         this.description = description;
     }
 
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
     public Date getDataOfOrder() {
         return dataOfOrder;
     }
@@ -100,6 +108,18 @@ public class Order {
     }
 
     public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete, String customerEmail, Double totalPrice, int offerAmount, boolean signPayment, Date paymentDate) {
+        this.name = name;
+        this.description = description;
+        this.dataOfOrder = dataOfOrder;
+        this.dataOfComplete = dataOfComplete;
+        this.customerEmail = customerEmail;
+        this.totalPrice = totalPrice;
+        this.offerAmount = offerAmount;
+        this.signPayment = signPayment;
         this.paymentDate = paymentDate;
     }
 
