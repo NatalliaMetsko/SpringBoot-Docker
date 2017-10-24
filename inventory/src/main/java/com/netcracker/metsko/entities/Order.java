@@ -1,7 +1,10 @@
 package com.netcracker.metsko.entities;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Order {
 
@@ -20,8 +23,15 @@ public class Order {
     @OneToMany
     public String customerEmail;
 
-//    @ManyToMany
-//    Offer orderItem;
+    @ManyToMany
+    public Offer orderItem;
+
+    public Map<Long, Offer> orderList = new LinkedHashMap<Long, Offer>();
+
+    void addItem(Offer offer)
+    {
+        orderList.put(id, offer);
+    }
 
     public Double totalPrice;
 
@@ -48,7 +58,7 @@ public class Order {
     }
 
     public String getDescription() {
-        return description;
+        return " Order#"+ id+" \n"+toString();
     }
 
     public void setDescription(String description) {
@@ -83,16 +93,18 @@ public class Order {
         return totalPrice;
     }
 
-    public void setTotalPrice(Double totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setTotalPrice(Map<Long, Offer> orderList) {
+
+        this.totalPrice =  orderList.values().stream().mapToDouble(Offer::getPrice).sum();
+
     }
 
     public int getOfferAmount() {
         return offerAmount;
     }
 
-    public void setOfferAmount(int offerAmount) {
-        this.offerAmount = offerAmount;
+    public void setOfferAmount(Map<Long, Offer> orderList) {
+        this.offerAmount = orderList.size();
     }
 
     public boolean isSignPayment() {
@@ -111,14 +123,12 @@ public class Order {
         this.paymentDate = paymentDate;
     }
 
-    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete, String customerEmail, Double totalPrice, int offerAmount, boolean signPayment, Date paymentDate) {
+    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete, String customerEmail, boolean signPayment, Date paymentDate) {
         this.name = name;
         this.description = description;
         this.dataOfOrder = dataOfOrder;
         this.dataOfComplete = dataOfComplete;
         this.customerEmail = customerEmail;
-        this.totalPrice = totalPrice;
-        this.offerAmount = offerAmount;
         this.signPayment = signPayment;
         this.paymentDate = paymentDate;
     }
@@ -144,5 +154,18 @@ public class Order {
         return result;
     }
 
-    /*toString()*/
+    @Override
+    public String toString() {
+        return "Order{" +
+                "name='" + name + '\'' +
+                ", dataOfOrder=" + dataOfOrder +
+                ", dataOfComplete=" + dataOfComplete +
+                ", customerEmail='" + customerEmail + '\'' +
+                ", orderList=" + orderList.values().toString() +
+                ", totalPrice=" + totalPrice +
+                ", offerAmount=" + offerAmount +
+                ", signPayment=" + signPayment +
+                ", paymentDate=" + paymentDate +
+                '}';
+    }
 }

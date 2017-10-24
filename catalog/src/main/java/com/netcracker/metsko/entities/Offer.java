@@ -3,6 +3,8 @@ package com.netcracker.metsko.entities;
 
 import javax.persistence.*;
 
+
+
 public class Offer {
 
     @Id
@@ -14,6 +16,9 @@ public class Offer {
     public String description;
 
     public boolean availability;
+
+    @ManyToMany
+    Order order;
 
     @OneToMany
     public Price price;
@@ -56,8 +61,8 @@ public class Offer {
         this.availability = availability;
     }
 
-    public Price getPrice() {
-        return price;
+    public double getPrice() {
+        return price.price;
     }
 
     public void setPrice(Price price) {
@@ -119,4 +124,6 @@ public class Offer {
                 ", category=" + category +
                 '}';
     }
+
+
 }
