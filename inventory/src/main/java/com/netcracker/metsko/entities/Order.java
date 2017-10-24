@@ -17,6 +17,9 @@ public class Order {
 
     public Date dataOfComplete;
 
+    @OneToMany
+    public String customerEmail;
+
 //    @ManyToMany
 //    Offer orderItem;
 
