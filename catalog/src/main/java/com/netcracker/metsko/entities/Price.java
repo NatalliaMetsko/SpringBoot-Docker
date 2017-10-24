@@ -4,8 +4,11 @@ public class Price {
 
     public Double price;
 
-    public Price(Double price) {
+    public String currency;
+
+    public Price(Double price, String currency) {
         this.price = price;
+        this.currency=currency;
     }
 
     public Double getPrice() {
@@ -17,6 +20,14 @@ public class Price {
         this.price = price;
     }
 
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -24,19 +35,19 @@ public class Price {
 
         Price price1 = (Price) o;
 
-        return getPrice().equals(price1.getPrice());
+        if (!getPrice().equals(price1.getPrice())) return false;
+        return getCurrency().equals(price1.getCurrency());
     }
 
     @Override
     public int hashCode() {
-        return getPrice().hashCode();
+        int result = getPrice().hashCode();
+        result = 31 * result + getCurrency().hashCode();
+        return result;
     }
 
     @Override
     public String toString() {
-        return "Price= " + price;
+        return "Price= " + price + currency;
     }
-
-    /*реализация цены в валюте*/
-
 }

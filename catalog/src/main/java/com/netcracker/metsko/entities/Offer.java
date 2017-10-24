@@ -15,14 +15,14 @@ public class Offer {
 
     public boolean availability;
 
-    @OneToOne
-    Price price;
+    @OneToMany
+    public Price price;
 
     @ManyToMany
-    Tag tag;
+    public Tag tag;
 
     @ManyToOne
-    Category category;
+    public Category category;
 
     public long getId() {
         return id;
