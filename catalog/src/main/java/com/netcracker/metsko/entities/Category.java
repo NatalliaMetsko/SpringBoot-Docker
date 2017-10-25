@@ -1,19 +1,16 @@
 package com.netcracker.metsko.entities;
 
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 public class Category {
-    public String category;
+    private String category;
 
-    @OneToMany
     public Offer offer;
 
-    public String getCategory() {
+    private String getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    private void setCategory(String category) {
         this.category = category;
     }
 
@@ -21,6 +18,12 @@ public class Category {
 
         this.category = category;
     }
+
+    public Category() {
+
+        this.category = "default";
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -39,6 +42,8 @@ public class Category {
 
     @Override
     public String toString() {
-        return "Category: " +category + " ";
+        return "Category{" +
+                "category='" + category + '\'' +
+                '}';
     }
 }

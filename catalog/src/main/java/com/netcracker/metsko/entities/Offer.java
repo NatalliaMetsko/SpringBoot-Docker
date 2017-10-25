@@ -5,26 +5,21 @@ import javax.persistence.*;
 
 public class Offer {
 
-    @Id
-    @GeneratedValue
     private  long id;
 
-    public String name;
+    private String name;
 
-    public String description;
+    private String description;
 
-    public boolean availability;
+    private boolean availability;
 
-    @OneToMany
-    public Price price;
+    private Price price;
 
-    @ManyToMany
-    public Tag tag;
+    private Tag tag;
 
-    @ManyToOne
-    public Category category;
+    private Category category;
 
-    public long getId() {
+    private long getId() {
         return id;
     }
 
@@ -32,7 +27,7 @@ public class Offer {
         this.id = id;
     }
 
-    public String getName() {
+    private String getName() {
         return name;
     }
 
@@ -40,7 +35,7 @@ public class Offer {
         this.name = name;
     }
 
-    public String getDescription() {
+    private String getDescription() {
         return description;
     }
 
@@ -111,7 +106,8 @@ public class Offer {
     @Override
     public String toString() {
         return "Offer{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", availability=" + availability +
                 ", price=" + price +

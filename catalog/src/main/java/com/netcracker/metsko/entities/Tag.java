@@ -3,16 +3,13 @@ package com.netcracker.metsko.entities;
 import javax.persistence.ManyToMany;
 
 public class Tag {
-    public String tag;
-
-    @ManyToMany
-    public Offer offer;
+    private String tag;
 
     public Tag(String tag) {
         this.tag = tag;
     }
 
-    public String getTag() {
+    private String getTag() {
         return tag;
     }
 
@@ -37,6 +34,8 @@ public class Tag {
 
     @Override
     public String toString() {
-        return "Tag: " + tag + " ";
+        return "Tag{" +
+                "tag='" + tag + '\'' +
+                '}';
     }
 }

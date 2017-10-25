@@ -1,23 +1,18 @@
 package com.netcracker.metsko.entities;
 
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 
 public class Price {
 
-    public Double price;
+    private Double price;
 
-    public String currency;
-
-    @ManyToOne
-    public Offer offer;
+    private String currency;
 
     public Price(Double price, String currency) {
         this.price = price;
         this.currency=currency;
     }
 
-    public Double getPrice() {
+    private Double getPrice() {
 
         return price;
     }
@@ -54,6 +49,9 @@ public class Price {
 
     @Override
     public String toString() {
-        return "Price= " + price + currency;
+        return "Price{" +
+                "price=" + price +
+                ", currency='" + currency + '\'' +
+                '}';
     }
 }
