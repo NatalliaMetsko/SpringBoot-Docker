@@ -10,13 +10,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>catalog</artifactId>
-    <dependencies>
-        <dependency>
-            <groupId>com.netcracker.metsko</groupId>
-            <artifactId>inventory</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
 
 
 </project>

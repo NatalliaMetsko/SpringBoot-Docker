@@ -6,4 +6,4 @@ Order:
 - link to the customer (may be email or something else)
 - order date
 - sign of the payment
-- additional fileds to describe order (id, name, description, some dates. etc.)
+- additional fields to describe order (id, name, description, some dates. etc.)

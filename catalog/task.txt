@@ -1,6 +1,0 @@
-Offer:
-
-- Price - object, that stores number value of the price, offer can have only one price
-- Category - object, that stores name of the category which treats offer, one category can have many offers
-- Tag - object, that stores sign, like a tag, on which additional search of an offer is possible, offer can have many tags, tag can be linked to many offers.
-- additional fields to describe offer (id, name, description, some dates, availability, etc.).

@@ -1,47 +1,40 @@
 package com.netcracker.metsko.entities;
 
-import javax.persistence.*;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Order {
 
-    @Id
-    @GeneratedValue
+
     private long id;
 
-    public String name;
+    private String name;
 
-    public String description;
+    private String description;
 
-    public Date dataOfOrder;
+    private Date dataOfOrder;
 
-    public Date dataOfComplete;
+    private Date dataOfComplete;
 
-    @OneToMany
-    public String customerEmail;
+    private String customerEmail;
 
-    @ManyToMany
-    public Offer orderItem;
+    public OrderItem orderItem;
 
-    public Map<Long, Offer> orderList = new LinkedHashMap<Long, Offer>();
+    private Map<Long, OrderItem> orderList = new LinkedHashMap<Long, OrderItem>();
 
-    void addItem(Offer offer)
+    public void addItem(OrderItem orderItem)
     {
-        orderList.put(id, offer);
+        orderList.put(id, orderItem);
     }
 
-    public Double totalPrice;
+    private Double totalPrice;
 
-    public int offerAmount;
+    private int itemAmount;
 
-    public boolean signPayment;
+    private boolean signPayment;
 
-    public Date paymentDate;
+    private Date paymentDate;
 
-    public long getId() {
+    private long getId() {
         return id;
     }
 
@@ -49,7 +42,7 @@ public class Order {
         this.id = id;
     }
 
-    public String getName() {
+    private String getName() {
         return name;
     }
 
@@ -57,15 +50,15 @@ public class Order {
         this.name = name;
     }
 
-    public String getDescription() {
-        return " Order#"+ id+" \n"+toString();
+    private String getDescription() {
+        return description;
     }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public String getCustomerEmail() {
+    private String getCustomerEmail() {
         return customerEmail;
     }
 
@@ -73,7 +66,7 @@ public class Order {
         this.customerEmail = customerEmail;
     }
 
-    public Date getDataOfOrder() {
+    private Date getDataOfOrder() {
         return dataOfOrder;
     }
 
@@ -81,7 +74,7 @@ public class Order {
         this.dataOfOrder = dataOfOrder;
     }
 
-    public Date getDataOfComplete() {
+    private Date getDataOfComplete() {
         return dataOfComplete;
     }
 
@@ -89,22 +82,22 @@ public class Order {
         this.dataOfComplete = dataOfComplete;
     }
 
-    public Double getTotalPrice() {
+    private Double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Map<Long, Offer> orderList) {
+    public void setTotalPrice(Map<Long, OrderItem> orderList) {
 
-        this.totalPrice =  orderList.values().stream().mapToDouble(Offer::getPrice).sum();
+        this.totalPrice =  orderList.values().stream().mapToDouble(OrderItem::getPrice).sum();
 
     }
 
-    public int getOfferAmount() {
-        return offerAmount;
+    public int getItemAmount() {
+        return itemAmount;
     }
 
-    public void setOfferAmount(Map<Long, Offer> orderList) {
-        this.offerAmount = orderList.size();
+    public void setItemAmount(Map<Long, OrderItem> orderList) {
+        this.itemAmount = orderList.size();
     }
 
     public boolean isSignPayment() {
@@ -133,6 +126,7 @@ public class Order {
         this.paymentDate = paymentDate;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -157,13 +151,16 @@ public class Order {
     @Override
     public String toString() {
         return "Order{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
                 ", dataOfOrder=" + dataOfOrder +
                 ", dataOfComplete=" + dataOfComplete +
                 ", customerEmail='" + customerEmail + '\'' +
-                ", orderList=" + orderList.values().toString() +
+                ", orderItem=" + orderItem +
+                ", orderList=" + orderList +
                 ", totalPrice=" + totalPrice +
-                ", offerAmount=" + offerAmount +
+                ", itemAmount=" + itemAmount +
                 ", signPayment=" + signPayment +
                 ", paymentDate=" + paymentDate +
                 '}';
