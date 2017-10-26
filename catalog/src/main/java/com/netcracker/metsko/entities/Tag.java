@@ -1,12 +1,13 @@
 package com.netcracker.metsko.entities;
 
-import javax.persistence.ManyToMany;
-
 public class Tag {
     private String tag;
 
     public Tag(String tag) {
         this.tag = tag;
+    }
+
+    public Tag() {
     }
 
     private String getTag() {

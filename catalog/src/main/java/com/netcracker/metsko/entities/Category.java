@@ -21,7 +21,6 @@ public class Category {
 
     public Category() {
 
-        this.category = "default";
     }
 
 

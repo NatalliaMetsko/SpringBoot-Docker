@@ -1,8 +1,6 @@
 package com.netcracker.metsko.entities;
 
 
-import javax.persistence.*;
-
 public class Offer {
 
     private  long id;
@@ -82,6 +80,9 @@ public class Offer {
         this.price = price;
         this.tag = tag;
         this.category = category;
+    }
+
+    public Offer() {
     }
 
     @Override

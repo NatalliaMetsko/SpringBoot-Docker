@@ -7,6 +7,9 @@ public class Price {
 
     private String currency;
 
+    public Price() {
+    }
+
     public Price(Double price, String currency) {
         this.price = price;
         this.currency=currency;
