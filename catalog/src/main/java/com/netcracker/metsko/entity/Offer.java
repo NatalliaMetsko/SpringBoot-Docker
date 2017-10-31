@@ -1,5 +1,7 @@
-package com.netcracker.metsko.entities;
+package com.netcracker.metsko.entity;
 
+
+import java.util.Objects;
 
 public class Offer {
 
@@ -17,7 +19,7 @@ public class Offer {
 
     private Category category;
 
-    private long getId() {
+    public long getId() {
         return id;
     }
 
@@ -25,7 +27,7 @@ public class Offer {
         this.id = id;
     }
 
-    private String getName() {
+    public String getName() {
         return name;
     }
 
@@ -33,7 +35,7 @@ public class Offer {
         this.name = name;
     }
 
-    private String getDescription() {
+    public String getDescription() {
         return description;
     }
 
@@ -89,31 +91,32 @@ public class Offer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Offer)) return false;
-
         Offer offer = (Offer) o;
-
-        if (getId() != offer.getId()) return false;
-        if (!getName().equals(offer.getName())) return false;
-        return getDescription() != null ? getDescription().equals(offer.getDescription()) : offer.getDescription() == null;
+        return getId() == offer.getId() &&
+                isAvailability() == offer.isAvailability() &&
+                Objects.equals(getName(), offer.getName()) &&
+                Objects.equals(getDescription(), offer.getDescription()) &&
+                Objects.equals(getPrice(), offer.getPrice()) &&
+                Objects.equals(getTag(), offer.getTag()) &&
+                Objects.equals(getCategory(), offer.getCategory());
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (getId() ^ (getId() >>> 32));
-        result = 31 * result + getName().hashCode();
-        return result;
+        return Objects.hash(getId(), getName(), getDescription(), isAvailability(), getPrice(), getTag(), getCategory());
     }
 
     @Override
     public String toString() {
-        return "Offer{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", availability=" + availability +
-                ", price=" + price +
-                ", tag=" + tag +
-                ", category=" + category +
-                '}';
+        final StringBuilder sb = new StringBuilder("Offer{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append(", availability=").append(availability);
+        sb.append(", price=").append(price);
+        sb.append(", tag=").append(tag);
+        sb.append(", category=").append(category);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -1,16 +1,16 @@
-package com.netcracker.metsko.entities;
+package com.netcracker.metsko.entity;
 
+
+import java.util.Objects;
 
 public class Category {
     private String category;
 
-    public Offer offer;
-
-    private String getCategory() {
+    public String getCategory() {
         return category;
     }
 
-    private void setCategory(String category) {
+    public void setCategory(String category) {
         this.category = category;
     }
 
@@ -23,26 +23,24 @@ public class Category {
 
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Category)) return false;
-
         Category category1 = (Category) o;
-
-        return getCategory().equals(category1.getCategory());
+        return Objects.equals(getCategory(), category1.getCategory());
     }
 
     @Override
     public int hashCode() {
-        return getCategory().hashCode();
+        return Objects.hash(getCategory());
     }
 
     @Override
     public String toString() {
-        return "Category{" +
-                "category='" + category + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("Category{");
+        sb.append("category='").append(category).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

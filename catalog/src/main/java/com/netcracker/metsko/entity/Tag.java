@@ -1,4 +1,6 @@
-package com.netcracker.metsko.entities;
+package com.netcracker.metsko.entity;
+
+import java.util.Objects;
 
 public class Tag {
     private String tag;
@@ -10,7 +12,7 @@ public class Tag {
     public Tag() {
     }
 
-    private String getTag() {
+    public String getTag() {
         return tag;
     }
 
@@ -22,21 +24,20 @@ public class Tag {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Tag)) return false;
-
         Tag tag1 = (Tag) o;
-
-        return getTag().equals(tag1.getTag());
+        return Objects.equals(getTag(), tag1.getTag());
     }
 
     @Override
     public int hashCode() {
-        return getTag().hashCode();
+        return Objects.hash(getTag());
     }
 
     @Override
     public String toString() {
-        return "Tag{" +
-                "tag='" + tag + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("Tag{");
+        sb.append("tag='").append(tag).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

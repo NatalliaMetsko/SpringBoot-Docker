@@ -1,26 +1,28 @@
-package com.netcracker.metsko.entities;
+package com.netcracker.metsko.entity;
 
+
+import java.util.Objects;
 
 public class Price {
 
-    private Double price;
+    private double price;
 
     private String currency;
 
     public Price() {
     }
 
-    public Price(Double price, String currency) {
+    public Price(double price, String currency) {
         this.price = price;
         this.currency=currency;
     }
 
-    private Double getPrice() {
+    public Double getPrice() {
 
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -36,25 +38,23 @@ public class Price {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Price)) return false;
-
         Price price1 = (Price) o;
-
-        if (!getPrice().equals(price1.getPrice())) return false;
-        return getCurrency().equals(price1.getCurrency());
+        return Double.compare(price1.getPrice(), getPrice()) == 0 &&
+                Objects.equals(getCurrency(), price1.getCurrency());
     }
 
     @Override
     public int hashCode() {
-        int result = getPrice().hashCode();
-        result = 31 * result + getCurrency().hashCode();
-        return result;
+        return Objects.hash(getPrice(), getCurrency());
     }
+
 
     @Override
     public String toString() {
-        return "Price{" +
-                "price=" + price +
-                ", currency='" + currency + '\'' +
-                '}';
+        final StringBuilder sb = new StringBuilder("Price{");
+        sb.append("price=").append(price);
+        sb.append(", currency='").append(currency).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
