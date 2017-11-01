@@ -1,11 +1,11 @@
 package com.netcracker.metsko.entity;
 
 
-import java.util.Objects;
+import java.util.*;
 
 public class Offer {
 
-    private  long id;
+    private long id;
 
     private String name;
 
@@ -15,9 +15,23 @@ public class Offer {
 
     private Price price;
 
-    private Tag tag;
+    private ArrayList<Tag> tag;
 
     private Category category;
+
+    public Offer() {
+    }
+
+    public Offer(long id, String name, String description,
+                 boolean availability, Price price, ArrayList<Tag> tag, Category category) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.availability = availability;
+        this.price = price;
+        this.tag = tag;
+        this.category = category;
+    }
 
     public long getId() {
         return id;
@@ -59,14 +73,6 @@ public class Offer {
         this.price = price;
     }
 
-    public Tag getTag() {
-        return tag;
-    }
-
-    public void setTag(Tag tag) {
-        this.tag = tag;
-    }
-
     public Category getCategory() {
         return category;
     }
@@ -75,16 +81,12 @@ public class Offer {
         this.category = category;
     }
 
-    public Offer(String name, String description, boolean availability, Price price, Tag tag, Category category) {
-        this.name = name;
-        this.description = description;
-        this.availability = availability;
-        this.price = price;
-        this.tag = tag;
-        this.category = category;
+    public ArrayList<Tag> getTag() {
+        return tag;
     }
 
-    public Offer() {
+    public void setTag(ArrayList<Tag> tag) {
+        this.tag = tag;
     }
 
     @Override

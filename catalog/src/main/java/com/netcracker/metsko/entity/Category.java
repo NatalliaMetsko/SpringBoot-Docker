@@ -4,14 +4,13 @@ package com.netcracker.metsko.entity;
 import java.util.Objects;
 
 public class Category {
+
+    private long id;
+
     private String category;
 
-    public String getCategory() {
-        return category;
-    }
+    public Category() {
 
-    public void setCategory(String category) {
-        this.category = category;
     }
 
     public Category(String category) {
@@ -19,8 +18,20 @@ public class Category {
         this.category = category;
     }
 
-    public Category() {
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     @Override
