@@ -18,9 +18,9 @@ public class Order {
 
     private String customerEmail;
 
-    private Map<Long, OrderItem> orderList;
+    private LinkedList<OrderItem> orderList;
 
-    private Double totalPrice;
+    private double totalPrice;
 
     private int itemAmount;
 
@@ -31,9 +31,10 @@ public class Order {
     public Order() {
     }
 
-    public Order(long id, String name, String description, Date dataOfOrder,
-                 Date dataOfComplete, String customerEmail, Map<Long, OrderItem> orderList,
-                 Double totalPrice, int itemAmount, boolean signPayment, Date paymentDate) {
+    public Order(long id, String name, String description, Date dataOfOrder, Date dataOfComplete,
+                 String customerEmail, LinkedList<OrderItem> orderList, double totalPrice,
+                 int itemAmount, boolean signPayment, Date paymentDate) {
+
         this.id = id;
         this.name = name;
         this.description = description;
@@ -71,14 +72,6 @@ public class Order {
         this.description = description;
     }
 
-    public String getCustomerEmail() {
-        return customerEmail;
-    }
-
-    public void setCustomerEmail(String customerEmail) {
-        this.customerEmail = customerEmail;
-    }
-
     public Date getDataOfOrder() {
         return dataOfOrder;
     }
@@ -95,26 +88,35 @@ public class Order {
         this.dataOfComplete = dataOfComplete;
     }
 
-    public Double getTotalPrice() {
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public LinkedList<OrderItem> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(LinkedList<OrderItem> orderList) {
+        this.orderList = orderList;
+    }
+
+    public double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(Map<Long, OrderItem> orderList) {
-
-        this.totalPrice =  orderList.values().stream().mapToDouble(OrderItem::getPrice).sum();
-
-    }
-
-    public void addItem(OrderItem orderItem)
-    {
-        orderList.put(id, orderItem);
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = orderList.stream().mapToDouble(OrderItem::getPrice).sum();
     }
 
     public int getItemAmount() {
         return itemAmount;
     }
 
-    public void setItemAmount(Map<Long, OrderItem> orderList) {
+    public void setItemAmount(int itemAmount) {
         this.itemAmount = orderList.size();
     }
 
@@ -134,13 +136,10 @@ public class Order {
         this.paymentDate = paymentDate;
     }
 
-    public Map<Long, OrderItem> getOrderList() {
-        return orderList;
+    public void addItem(OrderItem orderItem){
+        orderList.add(orderItem);
     }
 
-    public void setOrderList(Map<Long, OrderItem> orderList) {
-        this.orderList = orderList;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -148,6 +147,7 @@ public class Order {
         if (!(o instanceof Order)) return false;
         Order order = (Order) o;
         return getId() == order.getId() &&
+                Double.compare(order.getTotalPrice(), getTotalPrice()) == 0 &&
                 getItemAmount() == order.getItemAmount() &&
                 isSignPayment() == order.isSignPayment() &&
                 Objects.equals(getName(), order.getName()) &&
@@ -156,7 +156,6 @@ public class Order {
                 Objects.equals(getDataOfComplete(), order.getDataOfComplete()) &&
                 Objects.equals(getCustomerEmail(), order.getCustomerEmail()) &&
                 Objects.equals(getOrderList(), order.getOrderList()) &&
-                Objects.equals(getTotalPrice(), order.getTotalPrice()) &&
                 Objects.equals(getPaymentDate(), order.getPaymentDate());
     }
 
