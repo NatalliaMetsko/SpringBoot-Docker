@@ -15,15 +15,15 @@ public class Offer {
 
     private Price price;
 
-    private ArrayList<Tag> tag;
+    private List<Tag> tag;
 
     private Category category;
 
     public Offer() {
     }
 
-    public Offer(long id, String name, String description,
-                 boolean availability, Price price, ArrayList<Tag> tag, Category category) {
+    public Offer(long id, String name, String description, boolean availability,
+                 Price price, List<Tag> tag, Category category) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -81,11 +81,11 @@ public class Offer {
         this.category = category;
     }
 
-    public ArrayList<Tag> getTag() {
+    public List<Tag> getTag() {
         return tag;
     }
 
-    public void setTag(ArrayList<Tag> tag) {
+    public void setTag(List<Tag> tag) {
         this.tag = tag;
     }
 

@@ -18,7 +18,7 @@ public class Order {
 
     private String customerEmail;
 
-    private LinkedList<OrderItem> orderList;
+    private List<OrderItem> orderList;
 
     private double totalPrice;
 
@@ -32,7 +32,7 @@ public class Order {
     }
 
     public Order(long id, String name, String description, Date dataOfOrder, Date dataOfComplete,
-                 String customerEmail, LinkedList<OrderItem> orderList, double totalPrice,
+                 String customerEmail, List<OrderItem> orderList, double totalPrice,
                  int itemAmount, boolean signPayment, Date paymentDate) {
 
         this.id = id;
@@ -96,11 +96,11 @@ public class Order {
         this.customerEmail = customerEmail;
     }
 
-    public LinkedList<OrderItem> getOrderList() {
+    public List<OrderItem> getOrderList() {
         return orderList;
     }
 
-    public void setOrderList(LinkedList<OrderItem> orderList) {
+    public void setOrderList(List<OrderItem> orderList) {
         this.orderList = orderList;
     }
 
