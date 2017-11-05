@@ -22,6 +22,11 @@
             </plugin>
         </plugins>
     </build>
-
-
+    <dependencies>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>r</version>
+        </dependency>
+    </dependencies>
 </project>
