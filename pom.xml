@@ -14,4 +14,19 @@
     </modules>
     <packaging>pom</packaging>
 
+
+        <dependencies>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>5.2.11.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.1.2</version>
+            </dependency>
+        </dependencies>
+
+
 </project>

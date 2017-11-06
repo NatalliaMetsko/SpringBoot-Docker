@@ -6,9 +6,12 @@
 
     <persistence-unit name="CatalogPU" >
 
-        <jta-data-source>natalliametsko</jta-data-source>
+
         <class>com.netcracker.metsko.entity.Offer</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <class>com.netcracker.metsko.entity.Category</class>
+        <class>com.netcracker.metsko.entity.Price</class>
+        <class>com.netcracker.metsko.entity.Tag</class>
+
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" /> <!-- DB Driver -->
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/natallia.metsko" /> <!-- BD Mane -->
