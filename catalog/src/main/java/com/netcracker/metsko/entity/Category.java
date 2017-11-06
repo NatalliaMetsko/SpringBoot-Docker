@@ -1,18 +1,22 @@
 package com.netcracker.metsko.entity;
 
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
 public class Category {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column
     private String category;
 
     public Category() {
 
     }
-
     public Category(String category) {
 
         this.category = category;
