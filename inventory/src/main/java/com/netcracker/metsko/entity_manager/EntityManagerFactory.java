@@ -10,7 +10,7 @@ public class EntityManagerFactory {
 
     private static javax.persistence.EntityManagerFactory getEntityManagerFactory()
     {
-        return Persistence.createEntityManagerFactory("CatalogPU");
+        return Persistence.createEntityManagerFactory("InventoryPU");
     }
     
     private static class EntityManagerHolder
