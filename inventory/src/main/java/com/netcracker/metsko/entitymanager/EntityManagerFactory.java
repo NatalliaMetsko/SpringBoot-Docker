@@ -1,4 +1,4 @@
-package com.netcracker.metsko.entity_manager;
+package com.netcracker.metsko.entitymanager;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;

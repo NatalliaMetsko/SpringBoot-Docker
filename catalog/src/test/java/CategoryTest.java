@@ -1,16 +1,15 @@
 import com.netcracker.metsko.entity.Category;
 import org.junit.*;
 import javax.persistence.*;
+import com.netcracker.metsko.entitymanager.EntityManagerFactory;
 
 import static org.junit.Assert.assertEquals;
 
-public class CategoryTEST {
+public class CategoryTest {
 
 
     private static final String TEST_CATEGORY= "AUTO";
     private static final String FIND_ID_CATEGORY = "SELECT c FROM  Category c WHERE  c.category= 'AUTO'";
-
-    private static EntityManagerFactory emf= Persistence.createEntityManagerFactory("CatalogPU");
 
     private EntityManager em;
     private EntityTransaction tx;
@@ -18,7 +17,7 @@ public class CategoryTEST {
     @Before
     public void initEntityManager() throws Exception
     {
-        em = emf.createEntityManager();
+        em = EntityManagerFactory.getInstance();
         tx = em.getTransaction();
     }
 
