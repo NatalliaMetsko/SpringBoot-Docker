@@ -8,18 +8,19 @@ import javax.persistence.Persistence;
 
 public class DatabaseManager {
 
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("CatalogPU");
+
     public DatabaseManager() {
     }
 
     private static EntityManager getEntityManager()
     {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("CatalogPU");
         return emf.createEntityManager();
     }
 
     private static class EntityManagerHolder
     {
-        private static final EntityManager INSTANCE = DatabaseManager.getEntityManager();
+        private final static EntityManager INSTANCE = DatabaseManager.getEntityManager();
     }
 
     public static EntityManager getInstance()
