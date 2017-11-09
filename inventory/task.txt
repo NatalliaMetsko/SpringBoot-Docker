@@ -5,3 +5,5 @@ Create DAO interfaces for entities:
         - [catalog] tag
         - [catalog] price
         - [inventory] order
+попробуй создать класс например DatabaseManager,
+который будет возвращать  EntityManager созданный из EntityManagerFactory, которая в свою очередь создаствя из persistance-unit

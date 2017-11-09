@@ -1,7 +1,8 @@
 import com.netcracker.metsko.entity.Category;
+import com.netcracker.metsko.databasemanager.DatabaseManager;
 import org.junit.*;
 import javax.persistence.*;
-import com.netcracker.metsko.entitymanager.EntityManagerFactory;
+
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,10 +16,10 @@ public class CategoryTest {
     private EntityTransaction tx;
 
     @Before
-    public void initEntityManager() throws Exception
-    {
-        em = EntityManagerFactory.getInstance();
-        tx = em.getTransaction();
+    public void initEntityManager() throws Exception {
+
+            em = DatabaseManager.getInstance();
+            tx = em.getTransaction();
     }
 
     @After
