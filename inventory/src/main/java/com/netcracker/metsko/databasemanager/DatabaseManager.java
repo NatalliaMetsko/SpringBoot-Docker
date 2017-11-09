@@ -13,15 +13,10 @@ public class DatabaseManager {
     public DatabaseManager() {
     }
 
-    private static EntityManager getEntityManager()
-    {
-
-        return emf.createEntityManager();
-    }
 
     private static class EntityManagerHolder
     {
-        private final static EntityManager INSTANCE = DatabaseManager.getEntityManager();
+        private final static EntityManager INSTANCE = emf.createEntityManager();
     }
 
     public static EntityManager getInstance()
