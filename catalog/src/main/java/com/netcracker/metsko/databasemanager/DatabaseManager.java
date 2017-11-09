@@ -20,7 +20,7 @@ public class DatabaseManager {
 
     private static class EntityManagerHolder
     {
-        private final static EntityManager INSTANCE = DatabaseManager.getEntityManager();
+        private final static EntityManager INSTANCE = getEntityManager();
     }
 
     public static EntityManager getInstance()
