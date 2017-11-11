@@ -1,13 +1,15 @@
 package com.netcracker.metsko.dao;
 
-public interface GenericDao<T, Long> {
+import java.sql.SQLException;
 
-    void create(T newObject);
+public interface GenericDao<T, ID> {
 
-    Object read(Long id);
+    void create(T newObject) throws SQLException;
 
-    Object update(T objectToUpdate);
+    Object read(ID id) throws SQLException;
 
-    void delete(T objectToDelete);
+    Object update(T objectToUpdate)throws SQLException;
+
+    void delete(T objectToDelete)throws SQLException;
 
 }
