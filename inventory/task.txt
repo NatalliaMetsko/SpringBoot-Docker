@@ -1,9 +1,9 @@
-Order:
-
-- OrderItem, as component of the order, based on the offer, order can have many orderItems
-- total price of the order
-- total count of the order items
-- link to the customer (may be email or something else)
-- order date
-- sign of the payment
-- additional fields to describe order (id, name, description, some dates. etc.)
+Create GenericDao with parametrized methods
+Create DAO interfaces for entities:
+        - [catalog] offer
+        - [catalog] category
+        - [catalog] tag
+        - [catalog] price
+        - [inventory] order
+попробуй создать класс например DatabaseManager,
+который будет возвращать  EntityManager созданный из EntityManagerFactory, которая в свою очередь создаствя из persistance-unit
