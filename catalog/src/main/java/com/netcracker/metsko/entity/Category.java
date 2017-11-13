@@ -17,7 +17,6 @@ public class Category {
     public Category() {
 
     }
-
     public Category(String category) {
 
         this.category = category;

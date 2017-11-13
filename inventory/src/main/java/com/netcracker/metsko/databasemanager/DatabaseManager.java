@@ -13,7 +13,6 @@ public class DatabaseManager {
     public DatabaseManager() {
     }
 
-
     private static class EntityManagerHolder
     {
         private final static EntityManager INSTANCE = emf.createEntityManager();
