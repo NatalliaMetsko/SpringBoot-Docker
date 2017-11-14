@@ -12,7 +12,7 @@ public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDa
 
     @Override
     public List<Order> findAll() throws SQLException {
-        return entityManager.createQuery("SELECT * FROM _order").getResultList();
+        return entityManager.createQuery(" FROM order o ").getResultList();
     }
 
     @Override

@@ -17,8 +17,6 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
 
     private Class<T> tClass;
 
-
-
     public GenericDaoImpl() {
         ParameterizedType genericSuperclass = (ParameterizedType) getClass()
                 .getGenericSuperclass();
@@ -30,10 +28,7 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
             tx.begin();
             entityManager.persist(newObject);
             tx.commit();
-
         }
-
-
 
     @Override
     public T update(final T objectToUpdate) throws SQLException {
@@ -41,7 +36,6 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
             T t=entityManager.merge(objectToUpdate);
             tx.commit();
             return t;
-
     }
 
     @Override

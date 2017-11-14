@@ -8,6 +8,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class PriceDaoImpl extends GenericDaoImpl<Price, Long> implements PriceDao {
+
+    public List<Price> findAll() throws SQLException{
+        return entityManager.createQuery(" FROM Price p").getResultList();
+    }
+
     @Override
     public List<Price> findByOffer(Offer offer) throws SQLException {
         return null;

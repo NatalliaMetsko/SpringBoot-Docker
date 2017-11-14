@@ -1,7 +1,7 @@
 package com.netcracker.metsko.entity;
 
+import javax.persistence.Table;
 import java.util.*;
-
 
 public class Order {
 
