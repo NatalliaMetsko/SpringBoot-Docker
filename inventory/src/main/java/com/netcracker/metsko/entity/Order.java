@@ -2,6 +2,7 @@ package com.netcracker.metsko.entity;
 
 import javax.persistence.*;
 import java.util.*;
+import java.time.LocalDate;
 
 @Entity
 public class Order {
@@ -17,10 +18,10 @@ public class Order {
     private String description;
 
     @Column
-    private Date dataOfOrder;
+    private LocalDate dataOfOrder;
 
     @Column
-    private Date dataOfComplete;
+    private LocalDate dataOfComplete;
 
     @Column
     private String customerEmail;
@@ -43,7 +44,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete,
+    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfComplete,
                  String customerEmail, List<OrderItem> orderItemList, double totalPrice,
                  int itemAmount, boolean signPayment, Date paymentDate) {
         this.name = name;
@@ -82,19 +83,19 @@ public class Order {
         this.description = description;
     }
 
-    public Date getDataOfOrder() {
+    public LocalDate getDataOfOrder() {
         return dataOfOrder;
     }
 
-    public void setDataOfOrder(Date dataOfOrder) {
+    public void setDataOfOrder(LocalDate dataOfOrder) {
         this.dataOfOrder = dataOfOrder;
     }
 
-    public Date getDataOfComplete() {
+    public LocalDate getDataOfComplete() {
         return dataOfComplete;
     }
 
-    public void setDataOfComplete(Date dataOfComplete) {
+    public void setDataOfComplete(LocalDate dataOfComplete) {
         this.dataOfComplete = dataOfComplete;
     }
 
