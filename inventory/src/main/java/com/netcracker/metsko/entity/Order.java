@@ -1,47 +1,57 @@
 package com.netcracker.metsko.entity;
 
+import javax.persistence.*;
 import java.util.*;
 
-
+@Entity
 public class Order {
 
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column
     private String name;
 
+    @Column
     private String description;
 
+    @Column
     private Date dataOfOrder;
 
+    @Column
     private Date dataOfComplete;
 
+    @Column
     private String customerEmail;
 
-    private List<OrderItem> orderList;
+    @OneToMany
+    private List<OrderItem> orderItemList;
 
+    @Column
     private double totalPrice;
 
+    @Column
     private int itemAmount;
 
+    @Column
     private boolean signPayment;
 
+    @Column
     private Date paymentDate;
 
     public Order() {
     }
 
-    public Order(long id, String name, String description, Date dataOfOrder, Date dataOfComplete,
-                 String customerEmail, List<OrderItem> orderList, double totalPrice,
+    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete,
+                 String customerEmail, List<OrderItem> orderItemList, double totalPrice,
                  int itemAmount, boolean signPayment, Date paymentDate) {
-
-        this.id = id;
         this.name = name;
         this.description = description;
         this.dataOfOrder = dataOfOrder;
         this.dataOfComplete = dataOfComplete;
         this.customerEmail = customerEmail;
-        this.orderList = orderList;
+        this.orderItemList = orderItemList;
         this.totalPrice = totalPrice;
         this.itemAmount = itemAmount;
         this.signPayment = signPayment;
@@ -96,12 +106,12 @@ public class Order {
         this.customerEmail = customerEmail;
     }
 
-    public List<OrderItem> getOrderList() {
-        return orderList;
+    public List<OrderItem> getOrderItemList() {
+        return orderItemList;
     }
 
-    public void setOrderList(List<OrderItem> orderList) {
-        this.orderList = orderList;
+    public void setOrderItemList(List<OrderItem> orderItemList) {
+        this.orderItemList = orderItemList;
     }
 
     public double getTotalPrice() {
@@ -109,7 +119,7 @@ public class Order {
     }
 
     public void setTotalPrice(double totalPrice) {
-        this.totalPrice = orderList.stream().mapToDouble(OrderItem::getPrice).sum();
+        this.totalPrice = totalPrice;
     }
 
     public int getItemAmount() {
@@ -117,7 +127,7 @@ public class Order {
     }
 
     public void setItemAmount(int itemAmount) {
-        this.itemAmount = orderList.size();
+        this.itemAmount = itemAmount;
     }
 
     public boolean isSignPayment() {
@@ -136,16 +146,20 @@ public class Order {
         this.paymentDate = paymentDate;
     }
 
-    public void addItem(OrderItem orderItem){
-        orderList.add(orderItem);
+    public void addOrderItem(OrderItem orderItem){
+        this.orderItemList.add(orderItem);
+        orderItem.setOrder(this);
     }
 
+    public void removeOrderItem(OrderItem orderItem){
+        this.orderItemList.remove(orderItem);
+    }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Order)) return false;
-        Order order = (Order) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Order)) return false;
+        Order order = (Order) object;
         return getId() == order.getId() &&
                 Double.compare(order.getTotalPrice(), getTotalPrice()) == 0 &&
                 getItemAmount() == order.getItemAmount() &&
@@ -155,13 +169,13 @@ public class Order {
                 Objects.equals(getDataOfOrder(), order.getDataOfOrder()) &&
                 Objects.equals(getDataOfComplete(), order.getDataOfComplete()) &&
                 Objects.equals(getCustomerEmail(), order.getCustomerEmail()) &&
-                Objects.equals(getOrderList(), order.getOrderList()) &&
+                Objects.equals(getOrderItemList(), order.getOrderItemList()) &&
                 Objects.equals(getPaymentDate(), order.getPaymentDate());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfComplete(), getCustomerEmail(), getOrderList(), getTotalPrice(), getItemAmount(), isSignPayment(), getPaymentDate());
+        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfComplete(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), isSignPayment(), getPaymentDate());
     }
 
     @Override
@@ -173,7 +187,7 @@ public class Order {
         sb.append(", dataOfOrder=").append(dataOfOrder);
         sb.append(", dataOfComplete=").append(dataOfComplete);
         sb.append(", customerEmail='").append(customerEmail).append('\'');
-        sb.append(", orderList=").append(orderList);
+        sb.append(", orderItemList=").append(orderItemList);
         sb.append(", totalPrice=").append(totalPrice);
         sb.append(", itemAmount=").append(itemAmount);
         sb.append(", signPayment=").append(signPayment);
