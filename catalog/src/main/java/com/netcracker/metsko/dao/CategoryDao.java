@@ -11,6 +11,4 @@ public interface CategoryDao extends GenericDao<Category, Long> {
 
     List<Category> findAll()throws SQLException;
 
-    List<Offer> findOfferByCategory(String categoryName)throws SQLException;
-
 }

@@ -11,11 +11,7 @@ import java.util.List;
 
 public interface OfferDao extends GenericDao<Offer, Long>{
 
-    Category findCategory(Long id) throws SQLException;
-
-    List<Price> findPrice(Long id) throws SQLException;
-
-    List<Tag> findTag(Long id) throws SQLException;
+    List<Offer> findAll() throws SQLException;
 
     List<Offer> findByName(String name) throws SQLException;
 }

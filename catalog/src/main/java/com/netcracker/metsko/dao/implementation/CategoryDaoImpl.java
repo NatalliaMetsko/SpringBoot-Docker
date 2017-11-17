@@ -15,8 +15,4 @@ public class CategoryDaoImpl extends GenericDaoImpl<Category, Long> implements C
         return entityManager.createQuery(" FROM Category c").getResultList();
     }
 
-    @Override
-    public List<Offer> findOfferByCategory(String categoryName) throws SQLException {
-        return null;
-    }
 }

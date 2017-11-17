@@ -8,5 +8,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface PriceDao extends GenericDao<Price, Long> {
-    List<Price> findByOffer(Offer offer) throws SQLException;
+
+    List<Price> findAll() throws SQLException;
 }

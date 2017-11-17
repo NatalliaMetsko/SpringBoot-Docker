@@ -15,23 +15,9 @@ public class OfferDaoImpl extends GenericDaoImpl<Offer, Long> implements OfferDa
         return entityManager.createQuery(" FROM Offer o").getResultList();
     }
 
-    @Override
-    public Category findCategory(Long id) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public List<Price> findPrice(Long id) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public List<Tag> findTag(Long id) throws SQLException {
-        return null;
-    }
 
     @Override
     public List<Offer> findByName(String name) throws SQLException {
-        return null;
+        return entityManager.createQuery("from Offer o where o.name="+name).getResultList();
     }
 }

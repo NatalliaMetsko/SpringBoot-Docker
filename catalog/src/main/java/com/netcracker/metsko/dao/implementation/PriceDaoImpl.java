@@ -13,8 +13,4 @@ public class PriceDaoImpl extends GenericDaoImpl<Price, Long> implements PriceDa
         return entityManager.createQuery(" FROM Price p").getResultList();
     }
 
-    @Override
-    public List<Price> findByOffer(Offer offer) throws SQLException {
-        return null;
-    }
 }
