@@ -2,6 +2,7 @@ package com.netcracker.metsko.entity;
 
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,12 +15,16 @@ public class Category {
     @Column
     private String category;
 
+    @OneToMany
+    private List<Offer> offerList;
+
     public Category() {
 
     }
-    public Category(String category) {
 
+    public Category(String category, List<Offer> offerList) {
         this.category = category;
+        this.offerList = offerList;
     }
 
     public long getId() {
@@ -38,23 +43,46 @@ public class Category {
         this.category = category;
     }
 
+    public List<Offer> getOfferList() {
+        return offerList;
+    }
+
+    public void setOfferList(List<Offer> offerList) {
+        this.offerList = offerList;
+    }
+
+    public void addOffer(Offer offer)
+    {
+        this.offerList.add(offer);
+        offer.setCategory(this);
+    }
+
+    public void removeOffer(Offer offer)
+    {
+        this.offerList.remove(offer);
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Category)) return false;
-        Category category1 = (Category) o;
-        return Objects.equals(getCategory(), category1.getCategory());
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Category)) return false;
+        Category category1 = (Category) object;
+        return id == category1.id &&
+                Objects.equals(category, category1.category) &&
+                Objects.equals(offerList, category1.offerList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getCategory());
+        return Objects.hash(id, category, offerList);
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Category{");
-        sb.append("category='").append(category).append('\'');
+        sb.append("id=").append(id);
+        sb.append(", category='").append(category).append('\'');
+        sb.append(", offerList=").append(offerList);
         sb.append('}');
         return sb.toString();
     }
