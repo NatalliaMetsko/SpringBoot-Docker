@@ -1,35 +1,44 @@
 package com.netcracker.metsko.entity;
 
 
+import javax.persistence.*;
 import java.util.*;
 
+@Entity
 public class Offer {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column
     private String name;
 
+    @Column
     private String description;
 
+    @Column
     private boolean availability;
 
-    private Price price;
+    @OneToMany
+    private List<Price> priceList;
 
-    private List<Tag> tag;
+    @ManyToMany
+    private List<Tag> tagList;
 
+    @ManyToOne
     private Category category;
 
     public Offer() {
     }
 
-    public Offer(long id, String name, String description, boolean availability,
-                 Price price, List<Tag> tag, Category category) {
-        this.id = id;
+    public Offer(String name, String description, boolean availability,
+                 List<Price> priceList, List<Tag> tagList, Category category) {
         this.name = name;
         this.description = description;
         this.availability = availability;
-        this.price = price;
-        this.tag = tag;
+        this.priceList = priceList;
+        this.tagList = tagList;
         this.category = category;
     }
 
@@ -65,12 +74,20 @@ public class Offer {
         this.availability = availability;
     }
 
-    public Price getPrice() {
-        return price;
+    public List<Price> getPriceList() {
+        return priceList;
     }
 
-    public void setPrice(Price price) {
-        this.price = price;
+    public void setPriceList(List<Price> priceList) {
+        this.priceList = priceList;
+    }
+
+    public List<Tag> getTagList() {
+        return tagList;
+    }
+
+    public void setTagList(List<Tag> tagList) {
+        this.tagList = tagList;
     }
 
     public Category getCategory() {
@@ -81,31 +98,46 @@ public class Offer {
         this.category = category;
     }
 
-    public List<Tag> getTag() {
-        return tag;
+    public void addPrice(Price price)
+    {
+        this.priceList.add(price);
+        price.setOffer(this);
     }
 
-    public void setTag(List<Tag> tag) {
-        this.tag = tag;
+    public void removePrice(Price price)
+    {
+        this.priceList.remove(price);
+    }
+
+    public void addTag(Tag tag)
+    {
+        this.tagList.add(tag);
+        tag.getOfferList().add(this);
+    }
+
+    public void removeTag(Tag tag)
+    {
+        this.tagList.remove(tag);
+        tag.getOfferList().remove(this);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Offer)) return false;
-        Offer offer = (Offer) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Offer)) return false;
+        Offer offer = (Offer) object;
         return getId() == offer.getId() &&
                 isAvailability() == offer.isAvailability() &&
                 Objects.equals(getName(), offer.getName()) &&
                 Objects.equals(getDescription(), offer.getDescription()) &&
-                Objects.equals(getPrice(), offer.getPrice()) &&
-                Objects.equals(getTag(), offer.getTag()) &&
+                Objects.equals(getPriceList(), offer.getPriceList()) &&
+                Objects.equals(getTagList(), offer.getTagList()) &&
                 Objects.equals(getCategory(), offer.getCategory());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), isAvailability(), getPrice(), getTag(), getCategory());
+        return Objects.hash(getId(), getName(), getDescription(), isAvailability(), getPriceList(), getTagList(), getCategory());
     }
 
     @Override
@@ -115,8 +147,8 @@ public class Offer {
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", availability=").append(availability);
-        sb.append(", price=").append(price);
-        sb.append(", tag=").append(tag);
+        sb.append(", priceList=").append(priceList);
+        sb.append(", tagList=").append(tagList);
         sb.append(", category=").append(category);
         sb.append('}');
         return sb.toString();
