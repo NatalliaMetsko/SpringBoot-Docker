@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.util.*;
 import java.time.LocalDate;
 
-@Entity
+@Entity(name = "Inv_order")
 public class Order {
 
     @Id

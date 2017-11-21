@@ -8,7 +8,7 @@ import javax.persistence.Persistence;
 
 public class DatabaseManager {
 
-    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("CatalogPU");
+    private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("InventoryPU");
 
     public DatabaseManager() {
     }
