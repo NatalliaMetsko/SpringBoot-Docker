@@ -21,8 +21,8 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Transactional
-    public Category createCategory(Category category) {
-        return categoryDao.create(category);
+    public void createCategory(Category category) {
+        categoryDao.create(category);
     }
 
     @Transactional
