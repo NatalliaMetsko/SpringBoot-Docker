@@ -1,24 +1,43 @@
 package com.netcracker.metsko.entity;
 
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
 public class Price {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @Column
     private double price;
 
+    @Column
     private String currency;
+
+    @OneToOne
+    private Offer offer;
 
     public Price() {
     }
 
-    public Price(double price, String currency) {
+    public Price(double price, String currency, Offer offer) {
         this.price = price;
-        this.currency=currency;
+        this.currency = currency;
+        this.offer = offer;
     }
 
-    public Double getPrice() {
+    public long getId() {
+        return id;
+    }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public double getPrice() {
         return price;
     }
 
@@ -34,26 +53,37 @@ public class Price {
         this.currency = currency;
     }
 
+    public Offer getOffer() {
+        return offer;
+    }
+
+    public void setOffer(Offer offer) {
+        this.offer = offer;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Price)) return false;
-        Price price1 = (Price) o;
-        return Double.compare(price1.getPrice(), getPrice()) == 0 &&
-                Objects.equals(getCurrency(), price1.getCurrency());
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Price)) return false;
+        Price price1 = (Price) object;
+        return getId() == price1.getId() &&
+                Double.compare(price1.getPrice(), getPrice()) == 0 &&
+                Objects.equals(getCurrency(), price1.getCurrency()) &&
+                Objects.equals(getOffer(), price1.getOffer());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getPrice(), getCurrency());
+        return Objects.hash(getId(), getPrice(), getCurrency(), getOffer());
     }
-
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Price{");
-        sb.append("price=").append(price);
+        sb.append("id=").append(id);
+        sb.append(", price=").append(price);
         sb.append(", currency='").append(currency).append('\'');
+        sb.append(", offer=").append(offer);
         sb.append('}');
         return sb.toString();
     }

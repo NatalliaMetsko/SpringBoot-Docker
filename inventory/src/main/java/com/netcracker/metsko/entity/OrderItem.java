@@ -1,33 +1,45 @@
 package com.netcracker.metsko.entity;
 
+import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
+@Entity
 public class OrderItem {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private  long id;
 
+    @Column
     private String name;
 
+    @Column
     private String description;
 
+    @Column
     private Date dateOfAddition;
 
+    @Column
     private String category;
 
+    @Column
     private double price;
+
+    @ManyToOne
+    private Order order;
 
     public OrderItem() {
     }
 
-    public OrderItem(long id, String name, String description,
-                     Date dateOfAddition, String category, double price) {
-        this.id = id;
+    public OrderItem(String name, String description, Date dateOfAddition,
+                     String category, double price, Order order) {
         this.name = name;
         this.description = description;
         this.dateOfAddition = dateOfAddition;
         this.category = category;
         this.price = price;
+        this.order = order;
     }
 
     public long getId() {
@@ -78,22 +90,31 @@ public class OrderItem {
         this.price = price;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OrderItem)) return false;
-        OrderItem orderItem = (OrderItem) o;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof OrderItem)) return false;
+        OrderItem orderItem = (OrderItem) object;
         return getId() == orderItem.getId() &&
                 Double.compare(orderItem.getPrice(), getPrice()) == 0 &&
                 Objects.equals(getName(), orderItem.getName()) &&
                 Objects.equals(getDescription(), orderItem.getDescription()) &&
                 Objects.equals(getDateOfAddition(), orderItem.getDateOfAddition()) &&
-                Objects.equals(getCategory(), orderItem.getCategory());
+                Objects.equals(getCategory(), orderItem.getCategory()) &&
+                Objects.equals(getOrder(), orderItem.getOrder());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDateOfAddition(), getCategory(), getPrice());
+        return Objects.hash(getId(), getName(), getDescription(), getDateOfAddition(), getCategory(), getPrice(), getOrder());
     }
 
     @Override
@@ -105,9 +126,8 @@ public class OrderItem {
         sb.append(", dateOfAddition=").append(dateOfAddition);
         sb.append(", category='").append(category).append('\'');
         sb.append(", price=").append(price);
+        sb.append(", order=").append(order);
         sb.append('}');
         return sb.toString();
     }
-
-
 }
