@@ -14,7 +14,7 @@ public interface OfferService {
 
     Offer updateOffer(Offer offer) throws SQLException;
 
-    void deleteOffer(Offer offer) throws SQLException;
+    void deleteOffer(Long id) throws SQLException;
 
     void setAvailability(Long id, boolean availability) throws SQLException;
 

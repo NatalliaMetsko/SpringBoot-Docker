@@ -31,8 +31,8 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Transactional
-    public void deleteOffer(Offer offer)throws SQLException {
-            offerDao.delete(offer);
+    public void deleteOffer(Long offerId)throws SQLException {
+            offerDao.delete(offerId);
     }
 
 
