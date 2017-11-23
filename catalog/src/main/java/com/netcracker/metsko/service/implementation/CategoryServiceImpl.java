@@ -44,8 +44,8 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Transactional
-    public void deleteCategory(Category category) throws SQLException {
-            categoryDao.delete(category);
+    public void deleteCategory(Long categoryId) throws SQLException {
+            categoryDao.delete(categoryId);
     }
 
     @Transactional

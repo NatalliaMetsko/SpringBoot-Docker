@@ -57,8 +57,8 @@ public class TagTest {
     @Test
     public void delete()throws SQLException {
 
-        Tag tag = tagDao.read(TEST_ID_TO_DELETE);
-        tagDao.delete(tag);
+
+        tagDao.delete(TEST_ID_TO_DELETE);
         List<Tag> result = tagDao.findAll();
 
         assertEquals(1, result.size());

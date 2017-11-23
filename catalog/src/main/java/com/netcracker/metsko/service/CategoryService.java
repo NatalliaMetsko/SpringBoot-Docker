@@ -18,7 +18,7 @@ public interface CategoryService {
 
     Category updateCategory(Category category) throws SQLException;
 
-    void deleteCategory(Category category) throws SQLException;
+    void deleteCategory(Long categoryId) throws SQLException;
 
     List<Offer> findCategoryOffers(Category category) throws SQLException;
 

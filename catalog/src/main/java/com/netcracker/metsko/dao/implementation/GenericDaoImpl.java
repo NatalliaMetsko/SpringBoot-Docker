@@ -82,12 +82,11 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
     }
 
     @Override
-    public void delete(T objectToDelete) throws SQLException {
+    public void delete(Long id) throws SQLException {
         try {
-            if(entityManager.contains(objectToDelete)) {
-
+            if(this.entityManager.find(tClass, id)!=null) {
                 tx.begin();
-                entityManager.remove(objectToDelete);
+                entityManager.remove(this);
                 tx.commit();
             }
             else {

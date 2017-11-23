@@ -66,8 +66,8 @@ public class OfferTest {
     @Test
     public void delete()throws SQLException{
 
-        Offer offer = offerDao.read(TEST_ID_TO_DELETE);
-        offerDao.delete(offer);
+
+        offerDao.delete(TEST_ID_TO_DELETE);
         List<Offer> result = offerDao.findAll();
 
         assertEquals(1, result.size());

@@ -64,8 +64,8 @@ public class PriceTest {
     @Test
     public void delete()throws SQLException {
 
-        Price price = priceDao.read(TEST_ID_TO_DELETE);
-        priceDao.delete(price);
+
+        priceDao.delete(TEST_ID_TO_DELETE);
 
         assertEquals(1, priceDao.findAll().size());
     }

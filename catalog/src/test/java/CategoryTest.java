@@ -54,8 +54,8 @@ public class CategoryTest {
     @Test
     public void delete() throws SQLException{
 
-        Category category = categoryDao.read(TEST_ID_TO_DELETE);
-        categoryDao.delete(category);
+
+        categoryDao.delete(TEST_ID_TO_DELETE);
 
         assertEquals(1, categoryDao.findAll().size());
     }

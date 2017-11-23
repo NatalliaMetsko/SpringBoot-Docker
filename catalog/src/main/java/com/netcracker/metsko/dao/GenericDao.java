@@ -10,6 +10,6 @@ public interface GenericDao<T, Long> {
 
     Object update(T objectToUpdate)throws SQLException;
 
-    void delete(T objectToDelete)throws SQLException;
+    void delete(Long id)throws SQLException;
 
 }
