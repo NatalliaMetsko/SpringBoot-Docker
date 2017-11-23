@@ -7,9 +7,8 @@ import com.sun.xml.internal.bind.v2.model.core.ID;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface TagDao extends GenericDao<Tag, ID> {
+public interface TagDao extends GenericDao<Tag, Long> {
 
-    List findAll() throws SQLException;
+    List<Tag> findAll() throws SQLException;
 
-    List<Offer> findOfferByTag(Tag tag)throws SQLException;
 }

@@ -17,7 +17,7 @@ public class Price {
     @Column
     private String currency;
 
-    @ManyToOne
+    @OneToOne
     private Offer offer;
 
     public Price() {
@@ -60,7 +60,6 @@ public class Price {
     public void setOffer(Offer offer) {
         this.offer = offer;
     }
-
 
     @Override
     public boolean equals(Object object) {
