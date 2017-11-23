@@ -20,8 +20,8 @@ public class Offer {
     @Column
     private boolean availability;
 
-    @OneToMany
-    private List<Price> priceList;
+    @OneToOne
+    private Price price;
 
     @ManyToMany
     private List<Tag> tagList;
@@ -33,11 +33,11 @@ public class Offer {
     }
 
     public Offer(String name, String description, boolean availability,
-                 List<Price> priceList, List<Tag> tagList, Category category) {
+                 Price price, List<Tag> tagList, Category category) {
         this.name = name;
         this.description = description;
         this.availability = availability;
-        this.priceList = priceList;
+        this.price = price;
         this.tagList = tagList;
         this.category = category;
     }
@@ -74,12 +74,12 @@ public class Offer {
         this.availability = availability;
     }
 
-    public List<Price> getPriceList() {
-        return priceList;
+    public Price getPrice() {
+        return price;
     }
 
-    public void setPriceList(List<Price> priceList) {
-        this.priceList = priceList;
+    public void setPrice(Price price) {
+        this.price = price;
     }
 
     public List<Tag> getTagList() {
@@ -96,17 +96,6 @@ public class Offer {
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public void addPrice(Price price)
-    {
-        this.priceList.add(price);
-        price.setOffer(this);
-    }
-
-    public void removePrice(Price price)
-    {
-        this.priceList.remove(price);
     }
 
     public void addTag(Tag tag)
@@ -130,14 +119,14 @@ public class Offer {
                 isAvailability() == offer.isAvailability() &&
                 Objects.equals(getName(), offer.getName()) &&
                 Objects.equals(getDescription(), offer.getDescription()) &&
-                Objects.equals(getPriceList(), offer.getPriceList()) &&
+                Objects.equals(getPrice(), offer.getPrice()) &&
                 Objects.equals(getTagList(), offer.getTagList()) &&
                 Objects.equals(getCategory(), offer.getCategory());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), isAvailability(), getPriceList(), getTagList(), getCategory());
+        return Objects.hash(getId(), getName(), getDescription(), isAvailability(), getPrice(), getTagList(), getCategory());
     }
 
     @Override
@@ -147,7 +136,7 @@ public class Offer {
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", availability=").append(availability);
-        sb.append(", priceList=").append(priceList);
+        sb.append(", priceList=").append(price);
         sb.append(", tagList=").append(tagList);
         sb.append(", category=").append(category);
         sb.append('}');
