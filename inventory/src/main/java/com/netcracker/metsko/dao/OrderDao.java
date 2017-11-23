@@ -11,5 +11,5 @@ public interface OrderDao extends GenericDao<Order, Long> {
 
     List<Order> findAll() throws SQLException;
 
-
+    List<Order> findCustomerOrders(String email) throws SQLException;
 }

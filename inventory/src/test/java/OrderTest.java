@@ -1,3 +1,4 @@
+import com.netcracker.metsko.dao.implementation.OrderDaoImpl;
 import com.netcracker.metsko.entity.Order;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -63,7 +64,8 @@ public class OrderTest {
     @Test
     public void delete()throws SQLException {
 
-        orderDao.delete(TEST_ID_TO_DELETE);
+        Order order = orderDao.read(TEST_ID_TO_DELETE);
+        orderDao.delete(order);
 
         assertEquals(1, orderDao.findAll().size());
     }
