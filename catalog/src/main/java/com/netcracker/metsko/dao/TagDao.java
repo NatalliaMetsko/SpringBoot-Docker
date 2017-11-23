@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface TagDao extends GenericDao<Tag, Long> {
 
-    List findAll() throws SQLException;
+    List<Tag> findAll() throws SQLException;
 
-    Tag findTagByName(String tagName) throws SQLException;
+    Tag findByName(String tagName) throws SQLException;
 
 
 }
