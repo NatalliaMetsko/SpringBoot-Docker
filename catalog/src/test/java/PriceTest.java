@@ -1,3 +1,4 @@
+import com.netcracker.metsko.dao.implementation.PriceDaoImpl;
 import com.netcracker.metsko.entity.Price;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -56,14 +57,15 @@ public class PriceTest {
 
         priceDao.update(priceToUpdate);
 
-        assertEquals(TEST_PRICE_TO_UPDATE, tagDao.read(TEST_ID_TO_UPDATE).getPrice());
-        assertEquals(TEST_CURRENCY_TO_UPDATE, tagDao.read(TEST_ID_TO_UPDATE).getCurrency());
+        assertEquals(TEST_PRICE_TO_UPDATE, priceDao.read(TEST_ID_TO_UPDATE).getPrice());
+        assertEquals(TEST_CURRENCY_TO_UPDATE, priceDao.read(TEST_ID_TO_UPDATE).getCurrency());
 
     }
     @Test
     public void delete()throws SQLException {
 
-        priceDao.delete(TEST_ID_TO_DELETE);
+        Price price = priceDao.read(TEST_ID_TO_DELETE);
+        priceDao.delete(price);
 
         assertEquals(1, priceDao.findAll().size());
     }

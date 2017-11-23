@@ -1,4 +1,5 @@
 import com.netcracker.metsko.dao.CategoryDao;
+import com.netcracker.metsko.dao.implementation.CategoryDaoImpl;
 import com.netcracker.metsko.entity.Category;
 import com.netcracker.metsko.databasemanager.DatabaseManager;
 import org.junit.*;
@@ -53,7 +54,8 @@ public class CategoryTest {
     @Test
     public void delete() throws SQLException{
 
-        categoryDao.delete(TEST_ID_TO_DELETE);
+        Category category = categoryDao.read(TEST_ID_TO_DELETE);
+        categoryDao.delete(category);
 
         assertEquals(1, categoryDao.findAll().size());
     }

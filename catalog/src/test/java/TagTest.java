@@ -1,3 +1,4 @@
+import com.netcracker.metsko.dao.implementation.TagDaoImpl;
 import com.netcracker.metsko.entity.Tag;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -56,7 +57,8 @@ public class TagTest {
     @Test
     public void delete()throws SQLException {
 
-        tagDao.delete(TEST_ID_TO_DELETE);
+        Tag tag = tagDao.read(TEST_ID_TO_DELETE);
+        tagDao.delete(tag);
         List<Tag> result = tagDao.findAll();
 
         assertEquals(1, result.size());
