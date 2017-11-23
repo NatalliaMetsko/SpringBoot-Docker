@@ -27,7 +27,7 @@ public class Swagger2Config {
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Netcracker Project Swagger UI")
-                .description("Inventory Module")
+                .description("Manager Module")
                 .contact("Natallia Metsko")
                 .build();
     }
