@@ -7,6 +7,7 @@ import com.sun.xml.internal.bind.v2.model.core.ID;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface PriceDao extends GenericDao<Price, ID> {
-    List<Price> findByOffer(Offer offer) throws SQLException;
+public interface PriceDao extends GenericDao<Price, Long> {
+
+    List<Price> findAll() throws SQLException;
 }
