@@ -5,36 +5,38 @@ import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Price;
 import com.netcracker.metsko.entity.Tag;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface OfferService {
 
-    void createOffer(Offer offer);
+    void createOffer(Offer offer) throws SQLException;
 
-    Offer updateOffer(Offer offer);
+    Offer updateOffer(Offer offer) throws SQLException;
 
-    void deleteOffer(Offer offer);
+    void deleteOffer(Offer offer) throws SQLException;
 
-    void setAvailability(Long id);
+    void setAvailability(Long id, boolean availability) throws SQLException;
 
-    Offer findById(Long id);
+    Offer findById(Long id) throws SQLException;
 
-    List<Offer> findAll();
+    List<Offer> findAll() throws SQLException;
 
-    List<Offer> findByTags(List<Tag> tagList);//в параметры мы должны отправлять List<Tag>???
+    List<Offer> findByTags(List<Tag> tagList) throws SQLException;//в параметры мы должны отправлять List<Tag>???
 
-    List<Offer> findAvailableOffers();
+    List<Offer> findAvailableOffers() throws SQLException;
 
-    void addPrice(Price price);
+    void addPrice(Long offerId, Price price) throws SQLException;
 
-    Price changePrice(Price price);
+    void changePrice(Long offerId, Price price) throws SQLException;
 
-    List<Offer> getPriceFromTo(Price priceFrom, Price priceTo);
+    List<Offer> getPriceFromTo(Price priceFrom, Price priceTo) throws SQLException;
 
-    void addTag(Tag tag);
+    void addTag(Long offerId, Tag tag) throws SQLException;
 
-    void addCategory(Category category);
+    void removeTag(Long offerId, Tag tag) throws SQLException;
 
-    void removeCategory(Category category);
+    void addCategory(Long offerId, Category category) throws SQLException;
 
+    void removeCategory(Long offerId) throws SQLException;
 }
