@@ -26,7 +26,7 @@ public class CategoryController {
     public CategoryController() {
     }
 
-    @PostMapping( value = "/")
+    @PostMapping
     public ResponseEntity<Category> createCategory(@RequestBody Category newCategory) throws NotCreatedException, SQLException {
         categoryService.createCategory(newCategory);
         return  new ResponseEntity<Category>(newCategory, HttpStatus.CREATED);
@@ -45,13 +45,13 @@ public class CategoryController {
         return new ResponseEntity<Category>(category, HttpStatus.FOUND);
     }
 
-    @GetMapping(value = "/")
+    @GetMapping
     public ResponseEntity<List<Category>> findAll() throws NotFoundException, SQLException {
         List<Category> categoryList= categoryService.findAll();
         return new ResponseEntity<List<Category>>(categoryList, HttpStatus.FOUND);
     }
 
-    @PutMapping( value = "/")//тоже по id?
+    @PutMapping
     public ResponseEntity<Category> updateCategory(@RequestBody Category category) throws NotUpdatedException, SQLException {
         Category updatedCategory = categoryService.updateCategory(category);
         return new ResponseEntity<Category>(updatedCategory, HttpStatus.OK);

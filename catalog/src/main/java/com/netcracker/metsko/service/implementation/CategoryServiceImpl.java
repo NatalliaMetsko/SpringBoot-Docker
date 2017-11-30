@@ -2,6 +2,7 @@ package com.netcracker.metsko.service.implementation;
 
 import com.netcracker.metsko.dao.CategoryDao;
 import com.netcracker.metsko.entity.Category;
+import com.netcracker.metsko.entity.ExceptionMessage;
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
@@ -21,6 +22,8 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryDao categoryDao;
 
+
+
     @Transactional
     public void createCategory(Category category) throws NotCreatedException {
             try
@@ -29,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService{
             }
             catch (Exception e)
             {
-                throw new NotCreatedException("Category is not created\n");
+                throw new NotCreatedException("Category"+ ExceptionMessage.NOT_CREATED);
             }
     }
 
@@ -39,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService{
 
         if (category== null) {
 
-            throw new NotFoundException("There is no such category\n");
+            throw new NotFoundException("This category"+ExceptionMessage.NOT_FOUND);
 
         }
         else{
@@ -53,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService{
             return categoryDao.findByName(name);
         }
         else{
-            throw new NotFoundException("There is no category with such name :"+name+"\n");
+            throw new NotFoundException("Category"+ExceptionMessage.NOT_FOUND);
         }
     }
 
@@ -65,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService{
             return  categoryList;
         }
         else{
-            throw new NotFoundException("There is no categories\n");
+            throw new NotFoundException("Category "+ExceptionMessage.NOT_FOUND);
         }
     }
 
@@ -78,7 +81,7 @@ public class CategoryServiceImpl implements CategoryService{
         }
         else
         {
-            throw  new NotUpdatedException("This category is not updated\n");
+            throw  new NotUpdatedException("This category"+ExceptionMessage.NOT_UPDATED);
         }
     }
 
@@ -89,7 +92,7 @@ public class CategoryServiceImpl implements CategoryService{
             }
             catch (Exception e)
             {
-                throw new NotDeletedException("The category is not deleted\n");
+                throw new NotDeletedException("The category "+ExceptionMessage.NOT_DELETED);
             }
     }
 
@@ -102,7 +105,7 @@ public class CategoryServiceImpl implements CategoryService{
         }
         else
         {
-            throw new NotFoundException("There is no offers in the category\n");
+            throw new NotFoundException("Offers "+ExceptionMessage.NOT_FOUND);
         }
     }
 }
