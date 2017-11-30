@@ -21,6 +21,6 @@ public interface TagService {
 
     Tag updateTag(Tag tag) throws SQLException;
 
-    void deleteTag(Tag tag) throws SQLException;
+    void deleteTag(Long id) throws SQLException;
 
 }

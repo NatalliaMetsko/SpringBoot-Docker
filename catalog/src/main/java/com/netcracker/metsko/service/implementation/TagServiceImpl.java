@@ -19,38 +19,85 @@ public class TagServiceImpl implements TagService{
     private TagDao tagDao;
 
     @Transactional
-    public void createTag(Tag tag)throws SQLException {
-        tagDao.create(tag);
+    public void createTag(Tag tag)throws NotCreatedException, SQLException {
+        try{
+            tagDao.create(tag);
+        }catch (Exception e)
+        {
+            throw new NotCreatedException("The tag");
+        }
     }
 
     @Transactional
-    public Tag findTagById(Long id) throws SQLException {
-        return (Tag) tagDao.read(id);
+    public Tag findTagById(Long id) throws NotFoundException, SQLException {
+        Tag tag = (Tag) tagDao.read(id);
+        if(tag!=null)
+        {
+            return  tag;
+        }
+        else {
+            throw new NotFoundException("This tag");
+        }
     }
 
     @Transactional
-    public Tag findTagByName(String tagName) throws SQLException {
-        return tagDao.findByName(tagName);
+    public Tag findTagByName(String tagName) throws NotFoundException,SQLException {
+        Tag tag = tagDao.findByName(tagName);
+        if(tag!=null)
+        {
+            return tag;
+        }
+        else{
+            throw new NotFoundException("The tag");
+        }
+
     }
 
     @Override
-    public List<Tag> findAll() throws SQLException {
-        return tagDao.findAll();
+    public List<Tag> findAll() throws NotFoundException, SQLException {
+        List<Tag> tagList=tagDao.findAll();
+        if(tagList!=null)
+        {
+            return tagList;
+        }
+        else{
+            throw new NotFoundException("Tags");
+        }
     }
 
     @Transactional
-    public List<Offer> findOffers(Long tagId) throws SQLException {
+    public List<Offer> findOffers(Long tagId) throws NotFoundException, SQLException {
         Tag tag = (Tag) tagDao.read(tagId);
-        return tag.getOfferList();
+        if(tag!=null){
+            return tag.getOfferList();
+        }
+        else{
+            throw new NotFoundException("The offers");
+        }
+
     }
 
     @Transactional
-    public Tag updateTag(Tag tag) throws SQLException {
-        return (Tag) tagDao.update(tag);
+    public Tag updateTag(Tag tag) throws NotUpdatedException, SQLException {
+        Tag updatedTag = (Tag) tagDao.update(tag);
+        if(updatedTag!=null)
+        {
+            return updatedTag;
+        }
+        else
+        {
+            throw new NotUpdatedException("The tag");
+        }
     }
 
     @Transactional
-    public void deleteTag(Tag tag) throws SQLException {
-        tagDao.delete(tag);
+    public void deleteTag(Long tagId) throws NotDeletedException, SQLException {
+        try{
+            tagDao.delete(tagId);
+        }
+        catch (Exception e)
+        {
+            throw new NotDeletedException("the tag");
+        }
     }
 }
