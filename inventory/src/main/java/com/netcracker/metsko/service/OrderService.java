@@ -2,25 +2,29 @@ package com.netcracker.metsko.service;
 
 import com.netcracker.metsko.entity.Order;
 import com.netcracker.metsko.entity.OrderItem;
+import com.netcracker.metsko.exceptions.NotCreatedException;
+import com.netcracker.metsko.exceptions.NotDeletedException;
+import com.netcracker.metsko.exceptions.NotFoundException;
+import com.netcracker.metsko.exceptions.NotUpdatedException;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public interface OrderService {
 
-    void createOrder(Order order) throws SQLException;
+    void createOrder(Order order) throws SQLException, NotCreatedException;
 
-    List<Order> findAll() throws SQLException;
+    List<Order> findAll() throws SQLException, NotFoundException;
 
-    List<Order> findCustomerOrders(String email) throws SQLException;
+    List<Order> findCustomerOrders(String email) throws SQLException, NotFoundException;
 
-    Order findOrderById(Long id) throws SQLException;
+    Order findOrderById(Long id) throws SQLException, NotFoundException;
 
-    Order updateOrder(Order order) throws SQLException;
+    Order updateOrder(Order order) throws SQLException, NotUpdatedException;
 
-    void addOrderItem(Long orderId, OrderItem orderItem) throws SQLException;
+    void addOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
 
-    void removeOrderItem(Long orderId,OrderItem orderItem) throws SQLException;
+    void removeOrderItem(Long orderId,OrderItem orderItem) throws SQLException, NotUpdatedException;
 
-    void deleteOrder(Order order) throws SQLException;
+    void deleteOrder(Long id) throws SQLException, NotDeletedException;
 }
