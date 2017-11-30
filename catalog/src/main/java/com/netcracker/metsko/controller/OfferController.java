@@ -5,8 +5,10 @@ import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Price;
 import com.netcracker.metsko.entity.Tag;
 import com.netcracker.metsko.service.OfferService;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -19,94 +21,94 @@ public class OfferController {
     @Autowired
     OfferService offerService;
 
-    @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createOffer(@RequestBody Offer offer) throws SQLException {
-        offerService.createOffer(offer);
+    @PostMapping
+    public ResponseEntity<Offer> createOffer(@RequestBody Offer newOffer) throws NotCreatedException, SQLException {
+        offerService.createOffer(newOffer);
+        return  new ResponseEntity<Offer>(newOffer, HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/")
-    @ResponseStatus(HttpStatus.OK)
-    public Offer updateOffer(@RequestBody Offer offer) throws SQLException {
-        return  offerService.updateOffer(offer);
+    @PutMapping
+    public ResponseEntity<Offer> updateOffer(@RequestBody Offer offer) throws NotUpdatedException, SQLException {
+        Offer updatedOffer = offerService.updateOffer(offer);
+        return new ResponseEntity<Offer>(updatedOffer, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void deleteOffer(@PathVariable("id") Long id) throws SQLException {
+    @DeleteMapping( value = "/{id}")
+    public ResponseEntity<Long> deleteOffer(@PathVariable("id") Long id) throws NotDeletedException, SQLException {
         offerService.deleteOffer(id);
+        return  new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void setAvailability(@PathVariable("id") Long id, @RequestBody boolean availability) throws SQLException {
+    @PostMapping( value = "/{id}")
+    public ResponseEntity<Long> setAvailability(@PathVariable("id") Long id, @RequestBody boolean availability) throws NotUpdatedException, SQLException {
         offerService.setAvailability(id, availability);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value="/{id}")
-    @ResponseStatus(HttpStatus.FOUND)
-    public Offer findById(@PathVariable("id") Long id) throws SQLException {
-        return  offerService.findById(id);
+    @GetMapping( value="/{id}")
+    public ResponseEntity<Offer> findById(@PathVariable("id") Long id) throws NotFoundException,SQLException {
+        Offer foundOffer = offerService.findById(id);
+        return new ResponseEntity<Offer>(foundOffer, HttpStatus.FOUND);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/")
-    @ResponseStatus(HttpStatus.FOUND)
-    public List<Offer> findAll() throws SQLException {
-        return  offerService.findAll();
+    @GetMapping
+    public ResponseEntity<List<Offer>> findAll() throws NotFoundException, SQLException {
+         List <Offer> offerList =offerService.findAll();
+         return new ResponseEntity<List<Offer>>(offerList,HttpStatus.FOUND);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/bytag/")
-    @ResponseStatus(HttpStatus.FOUND)
-    public List<Offer> findByTags(@RequestBody List<Tag> tagList) throws SQLException {
+    @GetMapping( value = "/bytag/")
+    public List<Offer> findByTags(@RequestBody List<Tag> tagList) throws NotFoundException, SQLException {
         return offerService.findByTags(tagList);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/available/")
-    @ResponseStatus(HttpStatus.FOUND)
-    public List<Offer> findAvailableOffers() throws SQLException {
-        return offerService.findAvailableOffers();
+    @GetMapping( value = "/available/")
+    public ResponseEntity<List<Offer>> findAvailableOffers() throws NotFoundException, SQLException {
+        List<Offer> offerList = offerService.findAvailableOffers();
+        return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}")
+    @PostMapping( value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void addPrice(@PathVariable("id") Long id, @RequestBody Price price) throws SQLException {
+    public ResponseEntity<Long> addPrice(@PathVariable("id") Long id, @RequestBody Price price) throws NotUpdatedException,SQLException {
         offerService.addPrice(id, price);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void changePrice(@PathVariable("id") Long id, @RequestBody Price price) throws SQLException {
+    @PostMapping( value = "/{id}")
+    public ResponseEntity<Long> changePrice(@PathVariable("id") Long id, @RequestBody Price price) throws NotUpdatedException, SQLException {
         offerService.changePrice(id, price);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/pricefilter/")
-    @ResponseStatus(HttpStatus.FOUND)
-    public List<Offer> getPriceFromTo(@RequestBody Price priceFrom, @RequestBody Price priceTo) throws SQLException {
-        return  offerService.getPriceFromTo(priceFrom, priceTo);
+    @GetMapping( value = "/pricefilter/")
+    public ResponseEntity<List<Offer>> getPriceFromTo(@RequestBody Price priceFrom, @RequestBody Price priceTo) throws NotFoundException, SQLException {
+        List<Offer> offerList=  offerService.getPriceFromTo(priceFrom, priceTo);
+        return new ResponseEntity<List<Offer>>(offerList,HttpStatus.FOUND);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void addTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws SQLException {
+    @PostMapping( value = "/{id}")
+    public ResponseEntity<Long> addTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws NotUpdatedException,SQLException {
         offerService.addTag(id, tag);
+        return new ResponseEntity<Long>(id ,HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void removeTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws SQLException {
+    @DeleteMapping( value = "/{id}")
+    public ResponseEntity<Long> removeTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws NotUpdatedException,SQLException {
         offerService.removeTag(id, tag);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void addCategory(@PathVariable("id") Long id, @RequestBody Category category) throws SQLException {
+    @PostMapping( value = "/{id}")
+    public ResponseEntity<Long> addCategory(@PathVariable("id") Long id, @RequestBody Category category) throws NotUpdatedException,SQLException {
         offerService.addCategory(id, category);
+        return new ResponseEntity<Long>(id,HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public void removeCategory(@PathVariable("id") Long id) throws SQLException {
+    @DeleteMapping( value = "/{id}")
+    public ResponseEntity<Long> removeCategory(@PathVariable("id") Long id) throws NotDeletedException,SQLException {
         offerService.removeCategory(id);
+        return new ResponseEntity<Long>(id, HttpStatus.OK);
     }
 
 }
