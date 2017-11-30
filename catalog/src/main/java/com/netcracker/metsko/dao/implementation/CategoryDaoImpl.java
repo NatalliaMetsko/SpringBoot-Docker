@@ -23,7 +23,9 @@ public class CategoryDaoImpl extends GenericDaoImpl<Category, Long> implements C
     }
 
     @Override
-    public List<Offer> findOfferList(Category category) throws SQLException {
+    public List<Offer> findOfferList(Long categoryId) throws SQLException {
+
+        Category category = entityManager.createQuery("select c from Category c where c.id="+categoryId,Category.class).getSingleResult();
         return category.getOfferList();
     }
 
