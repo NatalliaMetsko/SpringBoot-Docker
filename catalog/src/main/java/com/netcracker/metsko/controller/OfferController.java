@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/catalog/offers")
+@RequestMapping("/api/v1/catalog/offers")
 public class OfferController {
 
     @Autowired
