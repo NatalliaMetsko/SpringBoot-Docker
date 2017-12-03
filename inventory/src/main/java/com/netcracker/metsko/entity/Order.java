@@ -11,19 +11,19 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column
+    @Column (nullable = false)
     private String description;
 
-    @Column
+    @Column (nullable = false)
     private LocalDate dataOfOrder;
 
-    @Column
+    @Column (nullable = false)
     private LocalDate dataOfComplete;
 
-    @Column
+    @Column(nullable = false)
     private String customerEmail;
 
     @OneToMany
@@ -41,12 +41,16 @@ public class Order {
     @Column
     private Date paymentDate;
 
+    @Column
+    private boolean status;
+
     public Order() {
     }
 
-    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfComplete,
-                 String customerEmail, List<OrderItem> orderItemList, double totalPrice,
-                 int itemAmount, boolean signPayment, Date paymentDate) {
+    public Order(String name, String description, LocalDate dataOfOrder,
+                 LocalDate dataOfComplete, String customerEmail, List<OrderItem> orderItemList,
+                 double totalPrice, int itemAmount, boolean signPayment,
+                 Date paymentDate, boolean status) {
         this.name = name;
         this.description = description;
         this.dataOfOrder = dataOfOrder;
@@ -57,6 +61,7 @@ public class Order {
         this.itemAmount = itemAmount;
         this.signPayment = signPayment;
         this.paymentDate = paymentDate;
+        this.status = status;
     }
 
     public long getId() {
@@ -147,6 +152,14 @@ public class Order {
         this.paymentDate = paymentDate;
     }
 
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
     public void addOrderItem(OrderItem orderItem){
         this.orderItemList.add(orderItem);
         orderItem.setOrder(this);
@@ -154,6 +167,11 @@ public class Order {
 
     public void removeOrderItem(OrderItem orderItem){
         this.orderItemList.remove(orderItem);
+    }
+
+    public void setGeneratedName()
+    {
+        this.name = customerEmail+'#'+id;
     }
 
     @Override
@@ -165,6 +183,7 @@ public class Order {
                 Double.compare(order.getTotalPrice(), getTotalPrice()) == 0 &&
                 getItemAmount() == order.getItemAmount() &&
                 isSignPayment() == order.isSignPayment() &&
+                isStatus() == order.isStatus() &&
                 Objects.equals(getName(), order.getName()) &&
                 Objects.equals(getDescription(), order.getDescription()) &&
                 Objects.equals(getDataOfOrder(), order.getDataOfOrder()) &&
@@ -176,7 +195,7 @@ public class Order {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfComplete(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), isSignPayment(), getPaymentDate());
+        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfComplete(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), isSignPayment(), getPaymentDate(), isStatus());
     }
 
     @Override
@@ -193,6 +212,7 @@ public class Order {
         sb.append(", itemAmount=").append(itemAmount);
         sb.append(", signPayment=").append(signPayment);
         sb.append(", paymentDate=").append(paymentDate);
+        sb.append(", status=").append(status);
         sb.append('}');
         return sb.toString();
     }
