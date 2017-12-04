@@ -22,8 +22,6 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryDao categoryDao;
 
-
-
     @Transactional
     public void createCategory(Category category) throws NotCreatedException {
             try

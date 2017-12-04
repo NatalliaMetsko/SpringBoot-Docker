@@ -9,6 +9,10 @@ import java.util.List;
 
 public class PriceDaoImpl extends GenericDaoImpl<Price, Long> implements PriceDao {
 
+    public PriceDaoImpl() {
+
+    }
+
     public List<Price> findAll() throws SQLException{
         return entityManager.createQuery(" FROM Price p").getResultList();
     }

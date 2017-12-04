@@ -12,6 +12,10 @@ import java.util.List;
 public class CategoryDaoImpl extends GenericDaoImpl<Category, Long> implements CategoryDao {
 
 
+    public CategoryDaoImpl() {
+
+    }
+
     @Override
     public List<Category> findAll() throws SQLException {
         return entityManager.createQuery("select c from Category c",Category.class).getResultList();
@@ -19,7 +23,7 @@ public class CategoryDaoImpl extends GenericDaoImpl<Category, Long> implements C
 
     @Override
     public Category findByName(String categoryName) throws SQLException {
-        return entityManager.createQuery("FROM Category c where c.name ='"+categoryName+"' ", Category.class).getSingleResult();
+        return entityManager.createQuery("FROM Category c where c.category ='"+categoryName+"' ", Category.class).getSingleResult();
     }
 
     @Override
