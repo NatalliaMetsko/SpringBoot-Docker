@@ -2,6 +2,7 @@ package com.netcracker.metsko.entity;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -12,6 +13,7 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @NotNull
     @Column(nullable = false, unique = true)
     private String category;
 

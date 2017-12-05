@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService{
             }
             catch (Exception e)
             {
-                throw new NotCreatedException("Category"+ ExceptionMessage.NOT_CREATED);
+                throw new NotCreatedException("Category"+ ExceptionMessage.NOT_CREATED+" "+ ExceptionMessage.NOT_NULL_ENTITY);
             }
     }
 
@@ -66,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService{
             return  categoryList;
         }
         else{
-            throw new NotFoundException("Category "+ExceptionMessage.NOT_FOUND);
+            throw new NotFoundException("Categories "+ExceptionMessage.NOT_FOUND);
         }
     }
 

@@ -1,6 +1,7 @@
 package com.netcracker.metsko.dao.implementation;
 
 import com.netcracker.metsko.dao.GenericDao;
+import com.netcracker.metsko.databasemanager.DatabaseManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -15,7 +16,6 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
 
     @PersistenceContext
     public EntityManager entityManager;
-
 
     private final Class<T> tClass;
 
@@ -58,13 +58,9 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
     @Override
     public void delete(Long id) throws SQLException {
         try {
-            T t=entityManager.find(tClass,id);
-            if(t!=null) {
+                T t = entityManager.find(tClass,id);
                 entityManager.remove(t);
-            }
-            else {
-                System.err.println("There is no such object in DB\n");
-            }
+
         } catch (Exception e) {
                     System.err.println("Transaction is being rolled back\n");
         }

@@ -1,12 +1,14 @@
 package com.netcracker.metsko.controller;
 
 import com.netcracker.metsko.entity.Category;
+import com.netcracker.metsko.entity.ExceptionMessage;
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import com.netcracker.metsko.exceptions.NotUpdatedException;
 import com.netcracker.metsko.service.CategoryService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -21,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/catalog/categories")
+@Api(value = "Controller", description = "This is category controller")
 public class    CategoryController {
 
     @Autowired
@@ -34,10 +37,17 @@ public class    CategoryController {
             value = "Create a category",
             response = Category.class,
             nickname="createCategory")
-//  @ApiResponse(code = 500, message = "Category not created")
+    @ApiResponses( value={
+            @ApiResponse(code = 500, message = "Category not created")
+    })
     public ResponseEntity<Category> createCategory(@RequestBody Category newCategory) throws NotCreatedException, SQLException {
-        categoryService.createCategory(newCategory);
-        return  new ResponseEntity<Category>(newCategory, HttpStatus.CREATED);
+        if(newCategory.getCategory().length()!=0) {
+            categoryService.createCategory(newCategory);
+            return new ResponseEntity<Category>(newCategory, HttpStatus.CREATED);
+        }
+        else {
+            throw new NotCreatedException(ExceptionMessage.NULL_FIELDS);
+        }
     }
 
     @GetMapping(value = "/{id}")
@@ -45,8 +55,7 @@ public class    CategoryController {
             value = "Find a category by id",
             response = Category.class,
             nickname="findById")
-//    @ApiResponses(value = { @ApiResponse(code = 400, message = "Invalid ID supplied"),
-//            @ApiResponse(code = 404, message = "Category not found") })
+    @ApiResponse(code = 404, message = "Category not found") //})
     public ResponseEntity<Category> findById(@PathVariable("id") Long categoryId) throws NotFoundException, SQLException {
         Category category = categoryService.findById(categoryId);
         return new ResponseEntity<Category>(category, HttpStatus.FOUND);
@@ -79,9 +88,20 @@ public class    CategoryController {
             value = "Update category",
             response = Category.class,
             nickname="updateCategory")
-    public ResponseEntity<Category> updateCategory(@RequestBody Category category) throws NotUpdatedException, SQLException {
-        Category updatedCategory = categoryService.updateCategory(category);
-        return new ResponseEntity<Category>(updatedCategory, HttpStatus.OK);
+    public ResponseEntity<Category> updateCategory(@RequestBody Category category) throws NotUpdatedException, SQLException, NotFoundException {
+
+        try {
+            if(category.getCategory().length()!=0 && categoryService.findById(category.getId())!=null) {
+                Category updatedCategory = categoryService.updateCategory(category);
+                return new ResponseEntity<Category>(updatedCategory, HttpStatus.OK);
+            }
+            else
+            {
+             throw new NotUpdatedException(ExceptionMessage.NULL_FIELDS);
+            }
+        } catch (NotFoundException e) {
+            throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
+        }
     }
 
     @DeleteMapping( value = "/{id}")
@@ -90,8 +110,13 @@ public class    CategoryController {
             response = Long.class,
             nickname="deleteCategory")
     public ResponseEntity<Long> deleteCategory(@PathVariable("id") Long categoryId) throws NotDeletedException, SQLException {
-        categoryService.deleteCategory(categoryId);
-        return  new ResponseEntity<Long>(categoryId, HttpStatus.OK);
+        try {
+            categoryService.deleteCategory(categoryId);
+            return new ResponseEntity<Long>(categoryId, HttpStatus.OK);
+        }
+        catch (Exception e){
+            throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
+        }
     }
 
     @GetMapping(value = "/{id}/offers")
