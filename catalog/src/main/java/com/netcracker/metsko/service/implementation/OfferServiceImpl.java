@@ -5,6 +5,10 @@ import com.netcracker.metsko.entity.Category;
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Price;
 import com.netcracker.metsko.entity.Tag;
+import com.netcracker.metsko.exceptions.NotCreatedException;
+import com.netcracker.metsko.exceptions.NotDeletedException;
+import com.netcracker.metsko.exceptions.NotFoundException;
+import com.netcracker.metsko.exceptions.NotUpdatedException;
 import com.netcracker.metsko.service.OfferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +32,7 @@ public class OfferServiceImpl implements OfferService {
             }
             catch (Exception e )
             {
-                throw new NotCreatedException("The offer");
+                throw new NotCreatedException("The offer"+ ExceptionMessage.NOT_CREATED+" "+ ExceptionMessage.NOT_NULL_ENTITY);
             }
     }
 
@@ -41,7 +45,7 @@ public class OfferServiceImpl implements OfferService {
         }
         else
         {
-            throw new NotUpdatedException("The offer");
+            throw new NotUpdatedException("The offer" +ExceptionMessage.NOT_UPDATED);
         }
     }
 
@@ -53,7 +57,7 @@ public class OfferServiceImpl implements OfferService {
             }
             catch (Exception e)
             {
-                throw new NotDeletedException("The offer");
+                throw new NotDeletedException("The offer"+ExceptionMessage.NOT_DELETED);
             }
     }
 
@@ -66,7 +70,7 @@ public class OfferServiceImpl implements OfferService {
         offerDao.update(offer);
         }
         else {
-            throw new NotUpdatedException("The offer");
+            throw new NotUpdatedException("The offer" +ExceptionMessage.NOT_UPDATED);
         }
     }
 
@@ -78,7 +82,7 @@ public class OfferServiceImpl implements OfferService {
             return foundOffer;
         }
         else {
-            throw new NotFoundException("The offer");
+            throw new NotFoundException("The offer"+ExceptionMessage.NOT_FOUND);
         }
     }
 
@@ -90,7 +94,7 @@ public class OfferServiceImpl implements OfferService {
             return  offerList;
         }
         else{
-            throw new NotFoundException("The offer");
+            throw new NotFoundException("The offer"+ExceptionMessage.NOT_FOUND);
         }
     }
 
@@ -102,7 +106,7 @@ public class OfferServiceImpl implements OfferService {
             return  offerList;
         }
         else{
-            throw new NotFoundException("The offers");
+            throw new NotFoundException("The offers"+ExceptionMessage.NOT_FOUND);
         }
     }
 
@@ -114,7 +118,7 @@ public class OfferServiceImpl implements OfferService {
             return  offerList;
         }
         else{
-            throw new NotFoundException("Available offers");
+            throw new NotFoundException("Available offers"+ExceptionMessage.NOT_FOUND);
         }
     }
 
@@ -128,7 +132,7 @@ public class OfferServiceImpl implements OfferService {
         }
         else
         {
-            throw new NotUpdatedException("Te offer's price");
+            throw new NotUpdatedException("Te offer's price"+ExceptionMessage.NOT_UPDATED);
         }
     }
 
@@ -138,7 +142,7 @@ public class OfferServiceImpl implements OfferService {
             offerDao.changePrice(offerId, price);
         }catch (Exception e)
         {
-            throw new NotUpdatedException("Te offer's price");
+            throw new NotUpdatedException("Te offer's price" +ExceptionMessage.NOT_UPDATED);
         }
     }
 
@@ -151,7 +155,7 @@ public class OfferServiceImpl implements OfferService {
         }
         else
         {
-            throw new NotFoundException("The offers");
+            throw new NotFoundException("The offers"+ExceptionMessage.NOT_FOUND);
         }
     }
 
@@ -164,7 +168,7 @@ public class OfferServiceImpl implements OfferService {
             offerDao.update(offer);
         }
         else{
-            throw new NotUpdatedException("The tag");
+            throw new NotUpdatedException("The tag"+ExceptionMessage.NOT_ADDED);
         }
     }
 
@@ -182,7 +186,7 @@ public class OfferServiceImpl implements OfferService {
 
         }
         else{
-            throw new NotUpdatedException("The tag");
+            throw new NotUpdatedException("The offer" +ExceptionMessage.NOT_UPDATED);
         }
     }
 
@@ -196,7 +200,7 @@ public class OfferServiceImpl implements OfferService {
         }
         else
         {
-            throw new NotUpdatedException("The category ");
+            throw new NotUpdatedException("The category "+ExceptionMessage.NOT_ADDED);
         }
     }
 
@@ -207,7 +211,7 @@ public class OfferServiceImpl implements OfferService {
             offer.setCategory(null);
         }
         else{
-            throw new NotUpdatedException("The category ");
+            throw new NotUpdatedException("The category " +ExceptionMessage.NOT_DELETED);
         }
     }
 }

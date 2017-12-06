@@ -12,6 +12,9 @@ import java.util.List;
 @Repository
 public class OfferDaoImpl extends GenericDaoImpl<Offer, Long> implements OfferDao {
 
+    public OfferDaoImpl() {
+    }
+
     public List<Offer> findAll() throws SQLException{
         return entityManager.createQuery("select o from Offer o", Offer.class).getResultList();
     }

@@ -4,10 +4,13 @@ import com.netcracker.metsko.entity.Category;
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Price;
 import com.netcracker.metsko.entity.Tag;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
 
+
+@Service
 public interface OfferService {
 
     void createOffer(Offer offer) throws SQLException;
@@ -22,7 +25,7 @@ public interface OfferService {
 
     List<Offer> findAll() throws SQLException;
 
-    List<Offer> findByTags(List<Tag> tagList) throws SQLException;//в параметры мы должны отправлять List<Tag>???
+    List<Offer> findByTags(List<Tag> tagList) throws SQLException;
 
     List<Offer> findAvailableOffers() throws SQLException;
 
