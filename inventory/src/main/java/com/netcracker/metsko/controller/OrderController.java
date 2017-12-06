@@ -68,7 +68,7 @@ public class OrderController {
 
     @GetMapping(value = "/email/{email}")
     @ApiOperation(httpMethod = "GET",
-            value = "Find an order by it's custromerEmail",
+            value = "Find an order by it's customerEmail",
             response = Order.class,
             nickname="findCustomerOrders")
     @ApiResponses(value= {
@@ -97,6 +97,15 @@ public class OrderController {
     }
 
     @PutMapping
+    @ApiOperation(httpMethod = "PUT",
+            value = "Update order",
+            response = Order.class,
+            nickname="updateOrder")
+    @ApiResponses(value= {
+            @ApiResponse(code = 200, message = "Order updated"),
+            @ApiResponse(code = 404, message = "Order not found"),
+            @ApiResponse(code = 500, message = "Order not updated")
+    })
     public ResponseEntity<Order> updateOrder(@RequestBody Order order) throws NotUpdatedException, SQLException{
         try {
             if(order.getCustomerEmail().length()!=0 && orderService.findOrderById(order.getId())!=null) {
@@ -114,10 +123,24 @@ public class OrderController {
     }
 
     @PutMapping(value = "/{id}")
+    @ApiOperation(httpMethod = "PUT",
+            value = "Add orderItem to offer",
+            response = Long.class,
+            nickname="addOrderItem")
+    @ApiResponses(value= {
+            @ApiResponse(code = 200, message = "OrderItem added"),
+            @ApiResponse(code = 404, message = "Offer not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
     public ResponseEntity<Long> addOrderItem(@PathVariable("id") Long id, @RequestBody OrderItem orderItem) throws NotUpdatedException, SQLException
     {
-        orderService.addOrderItem(id, orderItem);
-        return new ResponseEntity<Long>(id, HttpStatus.OK);
+        if(orderItem.getName().length()!=0) {
+            orderService.addOrderItem(id, orderItem);
+            return new ResponseEntity<Long>(id, HttpStatus.OK);
+        }
+        else {
+            throw new NotUpdatedException(ExceptionMessage.NOT_ADDED);
+        }
     }
 
     @PutMapping(value = "/{id}")
