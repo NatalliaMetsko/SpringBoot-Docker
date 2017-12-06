@@ -38,6 +38,7 @@ public class    CategoryController {
             response = Category.class,
             nickname="createCategory")
     @ApiResponses( value={
+            @ApiResponse(code = 201, message = "Category created"),
             @ApiResponse(code = 500, message = "Category not created")
     })
     public ResponseEntity<Category> createCategory(@RequestBody Category newCategory) throws NotCreatedException, SQLException {
@@ -55,7 +56,11 @@ public class    CategoryController {
             value = "Find a category by id",
             response = Category.class,
             nickname="findById")
-    @ApiResponse(code = 404, message = "Category not found") //})
+    @ApiResponses(value= {
+            @ApiResponse(code = 302, message = "Category found"),
+            @ApiResponse(code = 404, message = "Category not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
     public ResponseEntity<Category> findById(@PathVariable("id") Long categoryId) throws NotFoundException, SQLException {
         Category category = categoryService.findById(categoryId);
         return new ResponseEntity<Category>(category, HttpStatus.FOUND);
@@ -67,6 +72,11 @@ public class    CategoryController {
             value = "Find a category by it's name",
             response = Category.class,
             nickname="findByName")
+    @ApiResponses(value= {
+            @ApiResponse(code = 302, message = "Category found"),
+            @ApiResponse(code = 404, message = "Category not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
     public ResponseEntity<Category> findByName(@PathVariable("name") String name) throws NotFoundException, SQLException {
         Category category = categoryService.findByName(name);
         return new ResponseEntity<Category>(category, HttpStatus.FOUND);
@@ -78,6 +88,11 @@ public class    CategoryController {
             response = Category.class,
             nickname="findAll",
             responseContainer = "List")
+    @ApiResponses(value= {
+            @ApiResponse(code = 302, message = "Categories found"),
+            @ApiResponse(code = 404, message = "Categories not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
     public ResponseEntity<List<Category>> findAll() throws NotFoundException, SQLException {
         List<Category> categoryList= categoryService.findAll();
         return new ResponseEntity<List<Category>>(categoryList, HttpStatus.FOUND);
@@ -88,6 +103,11 @@ public class    CategoryController {
             value = "Update category",
             response = Category.class,
             nickname="updateCategory")
+    @ApiResponses(value= {
+            @ApiResponse(code = 200, message = "Category updated"),
+            @ApiResponse(code = 404, message = "Category not found"),
+            @ApiResponse(code = 500, message = "Category not updated")
+    })
     public ResponseEntity<Category> updateCategory(@RequestBody Category category) throws NotUpdatedException, SQLException, NotFoundException {
 
         try {
@@ -109,6 +129,11 @@ public class    CategoryController {
             value = "Delete a category by id",
             response = Long.class,
             nickname="deleteCategory")
+    @ApiResponses(value= {
+            @ApiResponse(code = 200, message = "Category deleted"),
+            @ApiResponse(code = 404, message = "Category not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
     public ResponseEntity<Long> deleteCategory(@PathVariable("id") Long categoryId) throws NotDeletedException, SQLException {
         try {
             categoryService.deleteCategory(categoryId);
@@ -125,6 +150,11 @@ public class    CategoryController {
             response = Offer.class,
             nickname="findOfferList",
             responseContainer = "List")
+    @ApiResponses(value= {
+            @ApiResponse(code = 302, message = "Offers found"),
+            @ApiResponse(code = 404, message = "Offers not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
     public ResponseEntity<List<Offer>> findOfferList(@PathVariable("id") Long id) throws NotFoundException, SQLException {
         List<Offer> offerList= categoryService.findOfferList(id);
         return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);

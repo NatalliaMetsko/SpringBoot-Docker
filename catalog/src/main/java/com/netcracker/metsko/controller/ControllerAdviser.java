@@ -17,8 +17,8 @@ public class ControllerAdviser {
     @ExceptionHandler(NotCreatedException.class)
     public ResponseEntity<ErrorMessage> handlerNotCreatedException()
     {
-        ErrorMessage errorMessage = new ErrorMessage(400, "Not created");
-        return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.BAD_REQUEST);
+        ErrorMessage errorMessage = new ErrorMessage(500, "Not created");
+        return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
     @ExceptionHandler(NotFoundException.class)
@@ -32,15 +32,15 @@ public class ControllerAdviser {
     @ExceptionHandler(NotDeletedException.class)
     public ResponseEntity<ErrorMessage> handlerNotDeletedException()
     {
-        ErrorMessage errorMessage = new ErrorMessage( 400, "Not deleted");
-        return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.BAD_REQUEST);
+        ErrorMessage errorMessage = new ErrorMessage( 500, "Not deleted");
+        return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(NotUpdatedException.class)
     public ResponseEntity<ErrorMessage> handlerNotUpdatedException()
     {
-        ErrorMessage errorMessage = new ErrorMessage(400, "Not updated");
-        return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.BAD_REQUEST);
+        ErrorMessage errorMessage = new ErrorMessage(500, "Not updated");
+        return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
