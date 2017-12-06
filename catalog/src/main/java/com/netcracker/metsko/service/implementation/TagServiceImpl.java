@@ -4,6 +4,10 @@ package com.netcracker.metsko.service.implementation;
 import com.netcracker.metsko.dao.TagDao;
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Tag;
+import com.netcracker.metsko.exceptions.NotCreatedException;
+import com.netcracker.metsko.exceptions.NotDeletedException;
+import com.netcracker.metsko.exceptions.NotFoundException;
+import com.netcracker.metsko.exceptions.NotUpdatedException;
 import com.netcracker.metsko.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +18,9 @@ import java.util.List;
 
 @Service
 public class TagServiceImpl implements TagService{
+
+    public TagServiceImpl() {
+    }
 
     @Autowired
     private TagDao tagDao;

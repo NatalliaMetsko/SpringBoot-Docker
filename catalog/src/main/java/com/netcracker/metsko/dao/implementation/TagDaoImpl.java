@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public class TagDaoImpl extends GenericDaoImpl<Tag, Long> implements TagDao {
 
+    public TagDaoImpl() {
+    }
+
     @Override
     public List<Tag> findAll() throws SQLException{
         return entityManager.createQuery(" select  t from Tag t").getResultList();

@@ -2,11 +2,13 @@ package com.netcracker.metsko.service;
 
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Tag;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.Table;
 import java.sql.SQLException;
 import java.util.List;
 
+@Service
 public interface TagService {
 
     void createTag(Tag tag) throws SQLException;
