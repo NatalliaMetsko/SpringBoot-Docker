@@ -11,7 +11,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private  long id;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String name;
 
     @Column
@@ -20,7 +20,7 @@ public class OrderItem {
     @Column
     private Date dateOfAddition;
 
-    @Column
+    @Column(nullable = false)
     private String category;
 
     @Column

@@ -11,7 +11,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String name;
 
     @Column
@@ -23,7 +23,7 @@ public class Order {
     @Column
     private LocalDate dataOfComplete;
 
-    @Column
+    @Column(nullable = false)
     private String customerEmail;
 
     @OneToMany
@@ -39,14 +39,14 @@ public class Order {
     private boolean signPayment;
 
     @Column
-    private Date paymentDate;
+    private LocalDate paymentDate;
 
     public Order() {
     }
 
     public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfComplete,
                  String customerEmail, List<OrderItem> orderItemList, double totalPrice,
-                 int itemAmount, boolean signPayment, Date paymentDate) {
+                 int itemAmount, boolean signPayment, LocalDate paymentDate) {
         this.name = name;
         this.description = description;
         this.dataOfOrder = dataOfOrder;
@@ -139,11 +139,11 @@ public class Order {
         this.signPayment = signPayment;
     }
 
-    public Date getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
+    public void setPaymentDate(LocalDate paymentDate) {
         this.paymentDate = paymentDate;
     }
 

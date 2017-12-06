@@ -24,6 +24,8 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderDao orderDao;
 
+    public OrderServiceImpl() {
+    }
 
     @Transactional
     public void createOrder(Order order) throws NotCreatedException, SQLException {
@@ -97,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
         }
         else
         {
-            throw new NotUpdatedException("Order" + ExceptionMessage.NOT_UPDATED);
+            throw new NotUpdatedException("OrderItem" + ExceptionMessage.NOT_ADDED);
         }
     }
 
@@ -110,7 +112,7 @@ public class OrderServiceImpl implements OrderService {
         }
         else
         {
-            throw new NotUpdatedException("Order" +ExceptionMessage.NOT_UPDATED);
+            throw new NotUpdatedException("OrderItem" +ExceptionMessage.NOT_DELETED);
         }
     }
 
