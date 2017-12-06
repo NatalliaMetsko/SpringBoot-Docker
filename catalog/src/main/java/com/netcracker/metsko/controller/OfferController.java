@@ -258,8 +258,8 @@ public class OfferController {
 
     }
 
-    @DeleteMapping( value = "/{id}")
-    @ApiOperation(httpMethod = "DELETE",
+    @PutMapping( value = "/{id}")
+    @ApiOperation(httpMethod = "PUT",
             value = "Remove a tag from offer",
             response = Long.class,
             nickname="removeTag")
@@ -298,8 +298,8 @@ public class OfferController {
         }
     }
 
-    @DeleteMapping( value = "/{id}")
-    @ApiOperation(httpMethod = "DELETE",
+    @PutMapping( value = "/{id}")
+    @ApiOperation(httpMethod = "PUT",
             value = "Remove a category from offer",
             response = Long.class,
             nickname="removeCategory")
