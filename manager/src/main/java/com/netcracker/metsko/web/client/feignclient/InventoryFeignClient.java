@@ -1,8 +1,10 @@
 package com.netcracker.metsko.web.client.feignclient;
 
 import com.netcracker.metsko.entity.Order;
+import com.netcracker.metsko.entity.OrderDTO;
 import com.netcracker.metsko.entity.OrderItem;
 import org.springframework.cloud.netflix.feign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,29 +16,29 @@ public interface InventoryFeignClient {
     void createOrder(@RequestBody Order order);
 
     @PutMapping(value = "/{id}")
-    Order addOrderItem(@PathVariable("id") Long id,@RequestBody OrderItem orderItem);
+    OrderDTO addOrderItem(@PathVariable("id") Long id, @RequestBody OrderItem orderItem);
 
     @GetMapping(value = "/customerEmail/{customerEmail}")
-    List<Order> findAllCustomersOrders(String customerEmail);
+    List<OrderDTO> findAllCustomersOrders(String customerEmail);
 
     @GetMapping
-    List<Order> findPaidOrders(String customerEmail, boolean trueSignPayment);
+    List<OrderDTO> findPaidOrders(String customerEmail, boolean trueSignPayment);
 
     @GetMapping
-    List<Order> findUnpaidOrders(String customerEmail, boolean falseSignPayment);
+    List<OrderDTO> findUnpaidOrders(String customerEmail, boolean falseSignPayment);
 
     @GetMapping
     Double getTotalPrice(String customerEmail);
 
     @PutMapping(value = "/customerEmail/{customerEmail}/{id}")
-    Order payForOrder(@PathVariable("customerEmail") String customerEmail,@PathVariable("id") Long id, boolean trueSignPayment);
+    OrderDTO payForOrder(@PathVariable("customerEmail") String customerEmail,@PathVariable("id") Long id, boolean trueSignPayment);
 
     @GetMapping
-    List<Order> findOrdersByStatus(boolean signPayment);
+    List<OrderDTO> findOrdersByStatus(boolean signPayment);
 
     @GetMapping(value = "/{id}")
-    Order findOrderById(@PathVariable("id") Long id);
+    OrderDTO findOrderById(@PathVariable("id") Long id);
 
     @PutMapping(value = "/{id}")
-    Order updateOrderByAddingOrRemoving(@PathVariable("id") Long id, @RequestBody OrderItem orderItem);
+    OrderDTO updateOrderByAddingOrRemoving(@PathVariable("id") Long id, @RequestBody OrderItem orderItem);
 }

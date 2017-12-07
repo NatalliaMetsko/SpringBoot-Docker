@@ -121,6 +121,7 @@ public class Order {
     }
 
     public double getTotalPrice() {
+        this.totalPrice = orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
         return totalPrice;
     }
 
@@ -129,6 +130,7 @@ public class Order {
     }
 
     public int getItemAmount() {
+        this.itemAmount = orderItemList.size();
         return itemAmount;
     }
 
