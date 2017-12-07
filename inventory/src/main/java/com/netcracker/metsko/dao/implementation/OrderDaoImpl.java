@@ -11,6 +11,10 @@ import java.util.List;
 @Repository
 public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDao {
 
+
+    public OrderDaoImpl() {
+    }
+
     @Override
     public List<Order> findAll() throws SQLException {
         return entityManager.createQuery("select io from Inv_order io").getResultList();

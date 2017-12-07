@@ -122,13 +122,13 @@ public class OrderController {
 
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/add")
     @ApiOperation(httpMethod = "PUT",
             value = "Add orderItem to offer",
             response = Long.class,
             nickname="addOrderItem")
     @ApiResponses(value= {
-            @ApiResponse(code = 200, message = "OrderItem added"),
+            @ApiResponse(code = 200, message = "OrderItemDao added"),
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
@@ -143,13 +143,13 @@ public class OrderController {
         }
     }
 
-    @PutMapping(value = "/{id}")
+    @PutMapping(value = "/{id}/remove")
     @ApiOperation(httpMethod = "PUT",
             value = "Remove an orderItem from order",
             response = Long.class,
             nickname="removeOrderItem")
     @ApiResponses(value= {
-            @ApiResponse(code = 200, message = "OrderItem removed"),
+            @ApiResponse(code = 200, message = "OrderItemDao removed"),
             @ApiResponse(code = 404, message = "Order not found"),
             @ApiResponse(code = 500, message = "Error")
     })

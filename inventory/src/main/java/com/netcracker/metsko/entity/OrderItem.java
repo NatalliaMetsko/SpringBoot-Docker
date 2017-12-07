@@ -26,20 +26,20 @@ public class OrderItem {
     @Column
     private double price;
 
-    @ManyToOne
-    private Order order;
+    @Column
+    private Long orderId;
 
     public OrderItem() {
     }
 
     public OrderItem(String name, String description, Date dateOfAddition,
-                     String category, double price, Order order) {
+                     String category, double price, Long order) {
         this.name = name;
         this.description = description;
         this.dateOfAddition = dateOfAddition;
         this.category = category;
         this.price = price;
-        this.order = order;
+        this.orderId = order;
     }
 
     public long getId() {
@@ -90,12 +90,12 @@ public class OrderItem {
         this.price = price;
     }
 
-    public Order getOrder() {
-        return order;
+    public Long getOrder() {
+        return orderId;
     }
 
-    public void setOrder(Order order) {
-        this.order = order;
+    public void setOrder(Long order) {
+        this.orderId = order;
     }
 
     @Override
@@ -119,14 +119,14 @@ public class OrderItem {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("OrderItem{");
+        final StringBuilder sb = new StringBuilder("OrderItemDao{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", dateOfAddition=").append(dateOfAddition);
         sb.append(", category='").append(category).append('\'');
         sb.append(", price=").append(price);
-        sb.append(", order=").append(order);
+        sb.append(", order=").append(orderId);
         sb.append('}');
         return sb.toString();
     }

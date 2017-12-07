@@ -1,6 +1,7 @@
 package com.netcracker.metsko.service.implementation;
 
 import com.netcracker.metsko.dao.OrderDao;
+import com.netcracker.metsko.dao.OrderItemDao;
 import com.netcracker.metsko.entity.ExceptionMessage;
 import com.netcracker.metsko.entity.Order;
 import com.netcracker.metsko.entity.OrderItem;
@@ -23,6 +24,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderDao orderDao;
+
+    @Autowired
+    private OrderItemDao orderItemDao;
 
     public OrderServiceImpl() {
     }
@@ -94,12 +98,14 @@ public class OrderServiceImpl implements OrderService {
     public void addOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException {
         Order order = (Order) orderDao.read(orderId);
         if(order!=null) {
+            orderItem.setOrder(orderId);
+            orderItemDao.create(orderItem);
             order.addOrderItem(orderItem);
             orderDao.update(order);
         }
         else
         {
-            throw new NotUpdatedException("OrderItem" + ExceptionMessage.NOT_ADDED);
+            throw new NotUpdatedException("OrderItemDao" + ExceptionMessage.NOT_ADDED);
         }
     }
 
@@ -112,7 +118,7 @@ public class OrderServiceImpl implements OrderService {
         }
         else
         {
-            throw new NotUpdatedException("OrderItem" +ExceptionMessage.NOT_DELETED);
+            throw new NotUpdatedException("OrderItemDao" +ExceptionMessage.NOT_DELETED);
         }
     }
 

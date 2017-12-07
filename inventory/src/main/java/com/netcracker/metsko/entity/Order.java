@@ -18,15 +18,15 @@ public class Order {
     private String description;
 
     @Column
-    private LocalDate dataOfOrder;
+    private Date dataOfOrder;
 
     @Column
-    private LocalDate dataOfComplete;
+    private Date dataOfComplete;
 
     @Column(nullable = false)
     private String customerEmail;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderItem> orderItemList;
 
     @Column
@@ -39,14 +39,14 @@ public class Order {
     private boolean signPayment;
 
     @Column
-    private LocalDate paymentDate;
+    private Date paymentDate;
 
     public Order() {
     }
 
-    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfComplete,
+    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete,
                  String customerEmail, List<OrderItem> orderItemList, double totalPrice,
-                 int itemAmount, boolean signPayment, LocalDate paymentDate) {
+                 int itemAmount, boolean signPayment, Date paymentDate) {
         this.name = name;
         this.description = description;
         this.dataOfOrder = dataOfOrder;
@@ -83,19 +83,19 @@ public class Order {
         this.description = description;
     }
 
-    public LocalDate getDataOfOrder() {
+    public Date getDataOfOrder() {
         return dataOfOrder;
     }
 
-    public void setDataOfOrder(LocalDate dataOfOrder) {
+    public void setDataOfOrder(Date dataOfOrder) {
         this.dataOfOrder = dataOfOrder;
     }
 
-    public LocalDate getDataOfComplete() {
+    public Date getDataOfComplete() {
         return dataOfComplete;
     }
 
-    public void setDataOfComplete(LocalDate dataOfComplete) {
+    public void setDataOfComplete(Date dataOfComplete) {
         this.dataOfComplete = dataOfComplete;
     }
 
@@ -139,17 +139,16 @@ public class Order {
         this.signPayment = signPayment;
     }
 
-    public LocalDate getPaymentDate() {
+    public Date getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDate paymentDate) {
+    public void setPaymentDate(Date paymentDate) {
         this.paymentDate = paymentDate;
     }
 
     public void addOrderItem(OrderItem orderItem){
         this.orderItemList.add(orderItem);
-        orderItem.setOrder(this);
     }
 
     public void removeOrderItem(OrderItem orderItem){
@@ -185,14 +184,14 @@ public class Order {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
-        sb.append(", dataOfOrder=").append(dataOfOrder);
-        sb.append(", dataOfComplete=").append(dataOfComplete);
+        sb.append(", dataOfOrder=").append(dataOfOrder.toString());
+        sb.append(", dataOfComplete=").append(dataOfComplete.toString());
         sb.append(", customerEmail='").append(customerEmail).append('\'');
         sb.append(", orderItemList=").append(orderItemList);
         sb.append(", totalPrice=").append(totalPrice);
         sb.append(", itemAmount=").append(itemAmount);
         sb.append(", signPayment=").append(signPayment);
-        sb.append(", paymentDate=").append(paymentDate);
+        sb.append(", paymentDate=").append(paymentDate.toString());
         sb.append('}');
         return sb.toString();
     }
