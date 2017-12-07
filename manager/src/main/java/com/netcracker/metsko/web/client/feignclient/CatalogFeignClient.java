@@ -11,7 +11,7 @@ import java.util.List;
 @FeignClient("catalog-service")
 public interface CatalogFeignClient {
 
-    @GetMapping(value = "/offers/categories/{category}/tags/{tags}/price/{price}")
+    @GetMapping(value = "/categories/{category}/tags/{tags}/price/{price}")
     List<OfferDTO> findFilteredOffers(@PathVariable("category") String category,
                                       @PathVariable("tags") List<String> tagList,
                                       @PathVariable("price") double price);

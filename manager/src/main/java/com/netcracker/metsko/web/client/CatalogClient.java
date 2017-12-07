@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class CatalogClient {
 
-    protected String serviceUrl="http://localhost:8081";
+    protected String serviceUrl="http://localhost:8081/api/v1/catalog/offers";
 
     private final RestTemplate restTemplate;
 
@@ -30,7 +30,8 @@ public class CatalogClient {
 
     public List<OfferDTO> getOffers(String category, List<String> tagList, double price)
     {
-        List<OfferDTO> dtoList = (List<OfferDTO>) restTemplate.getForEntity(serviceUrl + "/offers/categories/{category}/tags/{tags}/price/{price}", OfferDTO.class, category, tagList, price);
+        List<OfferDTO> dtoList = (List<OfferDTO>) restTemplate.getForEntity(serviceUrl + "/categories/{category}/tags/{tags}/price/{price}",
+                                                                                OfferDTO.class, category, tagList, price);
 
         return dtoList;
     }

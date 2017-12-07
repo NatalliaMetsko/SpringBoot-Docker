@@ -8,7 +8,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class InventoryClient {
 
-    protected String serviceUrl="http://localhost:8082";
+    protected String serviceUrl="http://localhost:8082api/v1/inventory/orders";
 
 
     private final RestTemplate restTemplate;
@@ -17,6 +17,7 @@ public class InventoryClient {
     public InventoryClient(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
+
 
 
 }
