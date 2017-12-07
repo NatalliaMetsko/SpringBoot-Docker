@@ -1,12 +1,11 @@
 package com.netcracker.metsko.dao.implementation;
 
 import com.netcracker.metsko.dao.GenericDao;
-import com.netcracker.metsko.databasemanager.DatabaseManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
@@ -14,8 +13,9 @@ import java.sql.SQLException;
 @EnableTransactionManagement
 public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<T, Long> {
 
-    @PersistenceContext
-    public EntityManager entityManager;
+    @Autowired
+    @Qualifier(value = "entityManager")
+    protected EntityManager entityManager;
 
     private final Class<T> tClass;
 
