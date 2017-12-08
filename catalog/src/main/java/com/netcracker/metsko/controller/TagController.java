@@ -1,5 +1,6 @@
 package com.netcracker.metsko.controller;
 
+import com.netcracker.metsko.entity.ExceptionMessage;
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Tag;
 import com.netcracker.metsko.exceptions.NotCreatedException;
@@ -7,10 +8,14 @@ import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import com.netcracker.metsko.exceptions.NotUpdatedException;
 import com.netcracker.metsko.service.TagService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;

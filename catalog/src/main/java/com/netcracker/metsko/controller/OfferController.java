@@ -1,14 +1,11 @@
 package com.netcracker.metsko.controller;
 
-import com.netcracker.metsko.entity.Category;
-import com.netcracker.metsko.entity.Offer;
-import com.netcracker.metsko.entity.Price;
-import com.netcracker.metsko.entity.Tag;
-import com.netcracker.metsko.service.OfferService;
+import com.netcracker.metsko.entity.*;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import com.netcracker.metsko.exceptions.NotUpdatedException;
+import com.netcracker.metsko.service.OfferService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -180,7 +177,7 @@ public class OfferController {
         return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);
     }
 
-    @PutMapping( value = "/{id}")
+    @PutMapping( value = "/{id}/addprice")
     @ApiOperation(httpMethod = "PUT",
             value = "Add price to offer",
             response = Long.class,
@@ -201,7 +198,7 @@ public class OfferController {
         }
     }
 
-    @PutMapping( value = "/{id}")
+    @PutMapping( value = "/{id}/change")
     @ApiOperation(httpMethod = "PUT",
             value = "Change offer's price",
             response = Category.class,
@@ -237,7 +234,7 @@ public class OfferController {
         return new ResponseEntity<List<Offer>>(offerList,HttpStatus.FOUND);
     }
 
-    @PutMapping( value = "/{id}")
+    @PutMapping( value = "/{id}/addtag")
     @ApiOperation(httpMethod = "PUT",
             value = "Add a tag to offer",
             response = Long.class,
@@ -258,7 +255,7 @@ public class OfferController {
 
     }
 
-    @PutMapping( value = "/{id}")
+    @PutMapping( value = "/{id}/removetag")
     @ApiOperation(httpMethod = "PUT",
             value = "Remove a tag from offer",
             response = Long.class,
@@ -268,7 +265,7 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Tag not removed"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> removeTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws NotUpdatedException,SQLException {
+    public ResponseEntity<Long> removeTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws NotUpdatedException, SQLException, NotDeletedException {
         try {
             offerService.removeTag(id, tag);
             return new ResponseEntity<Long>(id, HttpStatus.OK);
@@ -278,7 +275,7 @@ public class OfferController {
 
     }
 
-    @PutMapping( value = "/{id}")
+    @PutMapping( value = "/{id}/addcategory")
     @ApiOperation(httpMethod = "PUT",
             value = "Add a category to offer",
             response = Long.class,
@@ -298,7 +295,7 @@ public class OfferController {
         }
     }
 
-    @PutMapping( value = "/{id}")
+    @PutMapping( value = "/{id}/removecategory")
     @ApiOperation(httpMethod = "PUT",
             value = "Remove a category from offer",
             response = Long.class,
@@ -308,7 +305,7 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Category not removed"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> removeCategory(@PathVariable("id") Long id) throws NotDeletedException,SQLException {
+    public ResponseEntity<Long> removeCategory(@PathVariable("id") Long id) throws NotDeletedException, SQLException, NotUpdatedException {
         try {
             offerService.removeCategory(id);
             return new ResponseEntity<Long>(id, HttpStatus.OK);

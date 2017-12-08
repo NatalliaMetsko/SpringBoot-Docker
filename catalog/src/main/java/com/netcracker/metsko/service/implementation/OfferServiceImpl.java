@@ -1,10 +1,7 @@
 package com.netcracker.metsko.service.implementation;
 
 import com.netcracker.metsko.dao.OfferDao;
-import com.netcracker.metsko.entity.Category;
-import com.netcracker.metsko.entity.Offer;
-import com.netcracker.metsko.entity.Price;
-import com.netcracker.metsko.entity.Tag;
+import com.netcracker.metsko.entity.*;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
