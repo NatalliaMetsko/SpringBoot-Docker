@@ -11,7 +11,7 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String tag;
 
     @ManyToMany
