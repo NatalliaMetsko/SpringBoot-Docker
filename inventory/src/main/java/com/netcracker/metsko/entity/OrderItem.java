@@ -1,6 +1,10 @@
 package com.netcracker.metsko.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
@@ -9,9 +13,11 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private  long id;
+    private long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
+    @NotNull
+    @Size(min = 3, max = 20)
     private String name;
 
     @Column
@@ -20,26 +26,28 @@ public class OrderItem {
     @Column
     private Date dateOfAddition;
 
-    @Column(nullable = false)
+    @Column
+    @NotNull
     private String category;
 
     @Column
     private double price;
 
-    @Column
-    private Long orderId;
+    @ManyToOne
+    @JsonBackReference
+    private Order order;
 
     public OrderItem() {
     }
 
     public OrderItem(String name, String description, Date dateOfAddition,
-                     String category, double price, Long order) {
+                     String category, double price, Order order) {
         this.name = name;
         this.description = description;
         this.dateOfAddition = dateOfAddition;
         this.category = category;
         this.price = price;
-        this.orderId = order;
+        this.order = order;
     }
 
     public long getId() {
@@ -90,12 +98,12 @@ public class OrderItem {
         this.price = price;
     }
 
-    public Long getOrder() {
-        return orderId;
+    public Order getOrder() {
+        return order;
     }
 
-    public void setOrder(Long order) {
-        this.orderId = order;
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     @Override
@@ -126,7 +134,7 @@ public class OrderItem {
         sb.append(", dateOfAddition=").append(dateOfAddition);
         sb.append(", category='").append(category).append('\'');
         sb.append(", price=").append(price);
-        sb.append(", order=").append(orderId);
+        sb.append(", order=").append(order);
         sb.append('}');
         return sb.toString();
     }

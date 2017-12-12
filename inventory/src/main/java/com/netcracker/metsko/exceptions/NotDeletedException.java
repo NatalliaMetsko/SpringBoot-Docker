@@ -1,8 +1,6 @@
 package com.netcracker.metsko.exceptions;
 
-import java.util.Objects;
-
-public class NotDeletedException extends Throwable{
+public class NotDeletedException extends Throwable {
 
     private String message;
 

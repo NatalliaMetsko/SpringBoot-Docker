@@ -1,8 +1,6 @@
 package com.netcracker.metsko.exceptions;
 
-import java.util.Objects;
-
-public class NotUpdatedException extends Throwable{
+public class NotUpdatedException extends Throwable {
 
     private String message;
 

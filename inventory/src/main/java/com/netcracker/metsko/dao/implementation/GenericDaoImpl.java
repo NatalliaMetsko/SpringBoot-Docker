@@ -1,10 +1,9 @@
 package com.netcracker.metsko.dao.implementation;
 
 import com.netcracker.metsko.dao.GenericDao;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.sql.SQLException;
@@ -13,10 +12,8 @@ import java.sql.SQLException;
 public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<T, Long> {
 
 
-
-    @Autowired
-    @Qualifier(value = "entityManagerInventory")
-    EntityManager entityManager;
+    @PersistenceContext
+    protected EntityManager entityManager;
 
     private Class<T> tClass;
 
@@ -39,10 +36,9 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
     @Override
     public T update(final T objectToUpdate) throws SQLException {
         try {
-                T t = entityManager.merge(objectToUpdate);
-                return t;
-        }catch (Exception e)
-        {
+            T t = entityManager.merge(objectToUpdate);
+            return t;
+        } catch (Exception e) {
             System.err.print("Transaction is being rolled back\n");
         }
         return objectToUpdate;
@@ -56,15 +52,14 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
     @Override
     public void delete(Long id) throws SQLException {
         try {
-                T t = entityManager.find(tClass, id);
-                entityManager.remove(t);
+            T t = entityManager.find(tClass, id);
+            entityManager.remove(t);
         } catch (Exception e) {
-              System.err.println("Transaction is being rolled back\n");
+            System.err.println("Transaction is being rolled back\n");
         }
     }
 
-    public void close()
-    {
+    public void close() {
         entityManager.close();
     }
 }

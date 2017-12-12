@@ -1,8 +1,11 @@
 package com.netcracker.metsko.entity;
 
 import javax.persistence.*;
-import java.util.*;
-import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "Inv_order")
 public class Order {
@@ -11,10 +14,13 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
+    @NotNull
+    @Size(min = 3, max = 20)
     private String name;
 
     @Column
+    @Size(min = 5, max = 100)
     private String description;
 
     @Column
@@ -23,7 +29,8 @@ public class Order {
     @Column
     private Date dataOfComplete;
 
-    @Column(nullable = false)
+    @Column
+    @NotNull
     private String customerEmail;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -116,6 +123,7 @@ public class Order {
     }
 
     public double getTotalPrice() {
+        this.totalPrice =orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
         return totalPrice;
     }
 
@@ -124,6 +132,7 @@ public class Order {
     }
 
     public int getItemAmount() {
+        this.itemAmount = orderItemList.size();
         return itemAmount;
     }
 
@@ -147,11 +156,12 @@ public class Order {
         this.paymentDate = paymentDate;
     }
 
-    public void addOrderItem(OrderItem orderItem){
+    public void addOrderItem(OrderItem orderItem) {
         this.orderItemList.add(orderItem);
+        orderItem.setOrder(this);
     }
 
-    public void removeOrderItem(OrderItem orderItem){
+    public void removeOrderItem(OrderItem orderItem) {
         this.orderItemList.remove(orderItem);
     }
 

@@ -26,7 +26,7 @@ public interface OrderService {
 
     void addOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
 
-    void removeOrderItem(Long orderId,OrderItem orderItem) throws SQLException, NotUpdatedException;
+    void removeOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
 
     void deleteOrder(Long id) throws SQLException, NotDeletedException;
 }
