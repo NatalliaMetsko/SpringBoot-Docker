@@ -16,8 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Swagger2Config {
 
     @Bean
-    public Docket api()
-    {
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
@@ -25,6 +24,7 @@ public class Swagger2Config {
                 .paths(PathSelectors.any())
                 .build();
     }
+
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Netcracker Project Swagger UI")

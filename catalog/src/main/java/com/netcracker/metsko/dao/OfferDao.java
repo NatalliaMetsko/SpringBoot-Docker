@@ -7,7 +7,7 @@ import com.netcracker.metsko.entity.Tag;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface OfferDao extends GenericDao<Offer, Long>{
+public interface OfferDao extends GenericDao<Offer, Long> {
 
 
     List<Offer> findByName(String name) throws SQLException;
@@ -16,7 +16,7 @@ public interface OfferDao extends GenericDao<Offer, Long>{
 
     List<Offer> findByTags(List<Tag> tagList) throws SQLException;
 
-    List<Offer> findAvailableOffers() throws  SQLException;
+    List<Offer> findAvailableOffers() throws SQLException;
 
     List<Offer> getPriceFromTo(Price priceFrom, Price price) throws SQLException;
 

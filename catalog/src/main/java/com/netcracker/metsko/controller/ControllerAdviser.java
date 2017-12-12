@@ -15,30 +15,26 @@ public class ControllerAdviser {
 
 
     @ExceptionHandler(NotCreatedException.class)
-    public ResponseEntity<ErrorMessage> handlerNotCreatedException()
-    {
+    public ResponseEntity<ErrorMessage> handlerNotCreatedException() {
         ErrorMessage errorMessage = new ErrorMessage(500, "Not created");
         return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
+
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorMessage> handlerNotFoundException()
-    {
-        ErrorMessage errorMessage= new ErrorMessage(404,"Not found");
+    public ResponseEntity<ErrorMessage> handlerNotFoundException() {
+        ErrorMessage errorMessage = new ErrorMessage(404, "Not found");
         return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.NOT_FOUND);
 
     }
 
     @ExceptionHandler(NotDeletedException.class)
-    public ResponseEntity<ErrorMessage> handlerNotDeletedException()
-    {
-        ErrorMessage errorMessage = new ErrorMessage( 500, "Not deleted");
+    public ResponseEntity<ErrorMessage> handlerNotDeletedException() {
+        ErrorMessage errorMessage = new ErrorMessage(500, "Not deleted");
         return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(NotUpdatedException.class)
-    public ResponseEntity<ErrorMessage> handlerNotUpdatedException()
-    {
+    public ResponseEntity<ErrorMessage> handlerNotUpdatedException() {
         ErrorMessage errorMessage = new ErrorMessage(500, "Not updated");
         return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }

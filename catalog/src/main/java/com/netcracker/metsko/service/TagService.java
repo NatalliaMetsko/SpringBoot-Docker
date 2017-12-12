@@ -22,7 +22,7 @@ public interface TagService {
 
     List<Tag> findAll() throws SQLException, NotFoundException;
 
-    List<Offer> findOffers(Long tagId)throws SQLException, NotFoundException;
+    List<Offer> findOffers(Long tagId) throws SQLException, NotFoundException;
 
     Tag updateTag(Tag tag) throws SQLException, NotUpdatedException;
 

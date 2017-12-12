@@ -19,34 +19,33 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
     private final Class<T> tClass;
 
     @Autowired
-    public GenericDaoImpl(){
-    ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
+    public GenericDaoImpl() {
+        ParameterizedType genericSuperclass = (ParameterizedType) getClass().getGenericSuperclass();
         this.tClass = (Class<T>) genericSuperclass.getActualTypeArguments()[0];
-}
+    }
 
     @Override
     public void create(T newObject) throws SQLException {
         try {
-               entityManager.persist(newObject);
+            entityManager.persist(newObject);
 
         } catch (Exception e) {
-                    System.err.print("Transaction is being rolled back");
+            System.err.print("Transaction is being rolled back");
         }
     }
 
     @Override
     public T update(final T objectToUpdate) throws SQLException {
-            try {
+        try {
 
-                 T t = entityManager.merge(objectToUpdate);
-                 return t;
+            T t = entityManager.merge(objectToUpdate);
+            return t;
 
-            }catch (Exception e)
-            {
-                        System.err.print("Transaction is being rolled back\n");
-                }
+        } catch (Exception e) {
+            System.err.print("Transaction is being rolled back\n");
+        }
 
-            return objectToUpdate;
+        return objectToUpdate;
     }
 
     @Override
@@ -57,16 +56,15 @@ public class GenericDaoImpl<T, Long extends Serializable> implements GenericDao<
     @Override
     public void delete(Long id) throws SQLException {
         try {
-                T t = entityManager.find(tClass,id);
-                entityManager.remove(t);
+            T t = entityManager.find(tClass, id);
+            entityManager.remove(t);
 
         } catch (Exception e) {
-                    System.err.println("Transaction is being rolled back\n");
+            System.err.println("Transaction is being rolled back\n");
         }
     }
 
-    public void close()
-    {
+    public void close() {
         entityManager.close();
     }
 }

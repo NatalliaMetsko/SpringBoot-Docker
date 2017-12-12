@@ -8,8 +8,8 @@ public interface GenericDao<T, Long> {
 
     Object read(Long id) throws SQLException;
 
-    Object update(T objectToUpdate)throws SQLException;
+    Object update(T objectToUpdate) throws SQLException;
 
-    void delete(Long id)throws SQLException;
+    void delete(Long id) throws SQLException;
 
 }

@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Service
-public class TagServiceImpl implements TagService{
+public class TagServiceImpl implements TagService {
 
     public TagServiceImpl() {
     }
@@ -26,11 +26,10 @@ public class TagServiceImpl implements TagService{
     private TagDao tagDao;
 
     @Transactional
-    public void createTag(Tag tag)throws NotCreatedException, SQLException {
-        try{
+    public void createTag(Tag tag) throws NotCreatedException, SQLException {
+        try {
             tagDao.create(tag);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new NotCreatedException("The tag");
         }
     }
@@ -38,23 +37,19 @@ public class TagServiceImpl implements TagService{
     @Transactional
     public Tag findTagById(Long id) throws NotFoundException, SQLException {
         Tag tag = (Tag) tagDao.read(id);
-        if(tag!=null)
-        {
-            return  tag;
-        }
-        else {
+        if (tag != null) {
+            return tag;
+        } else {
             throw new NotFoundException("This tag");
         }
     }
 
     @Transactional
-    public Tag findTagByName(String tagName) throws NotFoundException,SQLException {
+    public Tag findTagByName(String tagName) throws NotFoundException, SQLException {
         Tag tag = tagDao.findByName(tagName);
-        if(tag!=null)
-        {
+        if (tag != null) {
             return tag;
-        }
-        else{
+        } else {
             throw new NotFoundException("The tag");
         }
 
@@ -62,12 +57,10 @@ public class TagServiceImpl implements TagService{
 
     @Override
     public List<Tag> findAll() throws NotFoundException, SQLException {
-        List<Tag> tagList=tagDao.findAll();
-        if(tagList!=null)
-        {
+        List<Tag> tagList = tagDao.findAll();
+        if (tagList != null) {
             return tagList;
-        }
-        else{
+        } else {
             throw new NotFoundException("Tags");
         }
     }
@@ -75,10 +68,9 @@ public class TagServiceImpl implements TagService{
     @Transactional
     public List<Offer> findOffers(Long tagId) throws NotFoundException, SQLException {
         Tag tag = (Tag) tagDao.read(tagId);
-        if(tag!=null){
+        if (tag != null) {
             return tag.getOfferList();
-        }
-        else{
+        } else {
             throw new NotFoundException("The offers");
         }
 
@@ -87,23 +79,18 @@ public class TagServiceImpl implements TagService{
     @Transactional
     public Tag updateTag(Tag tag) throws NotUpdatedException, SQLException {
         Tag updatedTag = (Tag) tagDao.update(tag);
-        if(updatedTag!=null)
-        {
+        if (updatedTag != null) {
             return updatedTag;
-        }
-        else
-        {
+        } else {
             throw new NotUpdatedException("The tag");
         }
     }
 
     @Transactional
     public void deleteTag(Long tagId) throws NotDeletedException, SQLException {
-        try{
+        try {
             tagDao.delete(tagId);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new NotDeletedException("the tag");
         }
     }

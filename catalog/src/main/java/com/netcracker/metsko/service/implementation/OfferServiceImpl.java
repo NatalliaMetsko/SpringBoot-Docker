@@ -1,6 +1,9 @@
 package com.netcracker.metsko.service.implementation;
 
+import com.netcracker.metsko.dao.CategoryDao;
 import com.netcracker.metsko.dao.OfferDao;
+import com.netcracker.metsko.dao.PriceDao;
+import com.netcracker.metsko.dao.TagDao;
 import com.netcracker.metsko.entity.*;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
@@ -21,194 +24,184 @@ public class OfferServiceImpl implements OfferService {
     @Autowired
     private OfferDao offerDao;
 
+    @Autowired
+    private PriceDao priceDao;
+
+    @Autowired
+    private CategoryDao categoryDao;
+
+    @Autowired
+    private TagDao tagDao;
+
 
     @Transactional
-    public void createOffer(Offer offer) throws NotCreatedException,SQLException {
-            try {
-                offerDao.create(offer);
-            }
-            catch (Exception e )
-            {
-                throw new NotCreatedException("The offer"+ ExceptionMessage.NOT_CREATED+" "+ ExceptionMessage.NOT_NULL_ENTITY);
-            }
+    public void createOffer(Offer offer) throws NotCreatedException, SQLException {
+        try {
+            offerDao.create(offer);
+        } catch (Exception e) {
+            throw new NotCreatedException("The offer" + ExceptionMessage.NOT_CREATED + " " + ExceptionMessage.NOT_NULL_ENTITY);
+        }
     }
 
     @Transactional
-    public Offer updateOffer(Offer offer)throws NotUpdatedException, SQLException {
+    public Offer updateOffer(Offer offer) throws NotUpdatedException, SQLException {
         Offer updatedOffer = (Offer) offerDao.update(offer);
-        if (updatedOffer!=null)
-        {
+        if (updatedOffer != null) {
             return updatedOffer;
-        }
-        else
-        {
-            throw new NotUpdatedException("The offer" +ExceptionMessage.NOT_UPDATED);
+        } else {
+            throw new NotUpdatedException("The offer" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public void deleteOffer(Long offerId)throws NotDeletedException,SQLException {
-            try
-            {
-                offerDao.delete(offerId);
-            }
-            catch (Exception e)
-            {
-                throw new NotDeletedException("The offer"+ExceptionMessage.NOT_DELETED);
-            }
+    public void deleteOffer(Long offerId) throws NotDeletedException, SQLException {
+        try {
+            offerDao.delete(offerId);
+        } catch (Exception e) {
+            throw new NotDeletedException("The offer" + ExceptionMessage.NOT_DELETED);
+        }
     }
 
 
     @Transactional
-    public void setAvailability(Long id, boolean availability) throws NotUpdatedException,SQLException {
+    public void setAvailability(Long id, boolean availability) throws NotUpdatedException, SQLException {
         Offer offer = (Offer) offerDao.read(id);
-        if(offer!=null){
-        offer.setAvailability(availability);
-        offerDao.update(offer);
-        }
-        else {
-            throw new NotUpdatedException("The offer" +ExceptionMessage.NOT_UPDATED);
+        if (offer != null) {
+            offer.setAvailability(availability);
+            offerDao.update(offer);
+        } else {
+            throw new NotUpdatedException("The offer" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public Offer findById(Long id)throws NotFoundException, SQLException {
+    public Offer findById(Long id) throws NotFoundException, SQLException {
         Offer foundOffer = offerDao.findById(id);
-        if(foundOffer!=null)
-        {
+        if (foundOffer != null) {
             return foundOffer;
-        }
-        else {
-            throw new NotFoundException("The offer"+ExceptionMessage.NOT_FOUND);
-        }
-    }
-
-    @Transactional
-    public List<Offer> findAll()throws NotFoundException, SQLException {
-        List<Offer>  offerList =offerDao.findAll();
-        if(offerList!=null)
-        {
-            return  offerList;
-        }
-        else{
-            throw new NotFoundException("The offer"+ExceptionMessage.NOT_FOUND);
+        } else {
+            throw new NotFoundException("The offer" + ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Transactional
-    public List<Offer> findByTags(List<Tag> tagList)throws NotFoundException, SQLException {
-        List<Offer>  offerList =offerDao.findByTags(tagList);
-        if(offerList!=null)
-        {
-            return  offerList;
-        }
-        else{
-            throw new NotFoundException("The offers"+ExceptionMessage.NOT_FOUND);
+    public List<Offer> findAll() throws NotFoundException, SQLException {
+        List<Offer> offerList = offerDao.findAll();
+        if (offerList != null) {
+            return offerList;
+        } else {
+            throw new NotFoundException("The offer" + ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Transactional
-    public List<Offer> findAvailableOffers()throws NotFoundException, SQLException {
-        List<Offer>  offerList =offerDao.findAvailableOffers();
-        if(offerList!=null)
-        {
-            return  offerList;
+    public List<Offer> findByTags(List<Tag> tagList) throws NotFoundException, SQLException {
+        List<Offer> offerList = offerDao.findByTags(tagList);
+        if (offerList != null) {
+            return offerList;
+        } else {
+            throw new NotFoundException("The offers" + ExceptionMessage.NOT_FOUND);
         }
-        else{
-            throw new NotFoundException("Available offers"+ExceptionMessage.NOT_FOUND);
+    }
+
+    @Transactional
+    public List<Offer> findAvailableOffers() throws NotFoundException, SQLException {
+        List<Offer> offerList = offerDao.findAvailableOffers();
+        if (offerList != null) {
+            return offerList;
+        } else {
+            throw new NotFoundException("Available offers" + ExceptionMessage.NOT_FOUND);
         }
     }
 
 
     @Transactional
-    public void addPrice(Long offerId, Price price) throws NotUpdatedException,SQLException {
-        Offer offer= (Offer) offerDao.read(offerId);
-        if(offer!=null) {
+    public void addPrice(Long offerId, Price price) throws NotUpdatedException, SQLException {
+        Offer offer = (Offer) offerDao.read(offerId);
+        if (offer != null) {
+            priceDao.create(price);
+            price.setOffer(offer);
             offer.setPrice(price);
             offerDao.update(offer);
-        }
-        else
-        {
-            throw new NotUpdatedException("Te offer's price"+ExceptionMessage.NOT_UPDATED);
+            priceDao.update(price);
+        } else {
+            throw new NotUpdatedException("The offer's price" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public void changePrice(Long offerId, Price price)throws NotUpdatedException,SQLException {
+    public void changePrice(Long offerId, Price price) throws NotUpdatedException, SQLException {
         try {
+            priceDao.create(price);
             offerDao.changePrice(offerId, price);
-        }catch (Exception e)
-        {
-            throw new NotUpdatedException("Te offer's price" +ExceptionMessage.NOT_UPDATED);
+        } catch (Exception e) {
+            throw new NotUpdatedException("The offer's price" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public List<Offer> getPriceFromTo(Price priceFrom, Price priceTo) throws NotFoundException,SQLException{
+    public List<Offer> getPriceFromTo(Price priceFrom, Price priceTo) throws NotFoundException, SQLException {
         List<Offer> offerList = offerDao.getPriceFromTo(priceFrom, priceTo);
-        if(offerList!=null)
-        {
-            return  offerList;
-        }
-        else
-        {
-            throw new NotFoundException("The offers"+ExceptionMessage.NOT_FOUND);
+        if (offerList != null) {
+            return offerList;
+        } else {
+            throw new NotFoundException("The offers" + ExceptionMessage.NOT_FOUND);
         }
     }
 
 
     @Transactional
-    public void addTag(Long id, Tag tag) throws NotUpdatedException,SQLException {
+    public void addTag(Long id, Tag tag) throws NotUpdatedException, SQLException {
         Offer offer = (Offer) offerDao.read(id);
         if (offer != null) {
             offer.addTag(tag);
             offerDao.update(offer);
-        }
-        else{
-            throw new NotUpdatedException("The tag"+ExceptionMessage.NOT_ADDED);
+            tagDao.update(tag);
+        } else {
+            throw new NotUpdatedException("The tag" + ExceptionMessage.NOT_ADDED);
         }
     }
 
     @Override
-    public void removeTag(Long offerId, Tag tag) throws NotUpdatedException,SQLException {
+    public void removeTag(Long offerId, Tag tag) throws NotUpdatedException, SQLException {
         Offer offer = (Offer) offerDao.read(offerId);
-        if(offer!=null) {
-            if(offer.getTagList().contains(tag))
-            {
-                offer.getTagList().remove(tag);
-            }
-            else{
+        if (offer != null) {
+            if (offer.getTagList().contains(tag)) {
+                offer.removeTag(tag);
+                tagDao.update(tag);
+                offerDao.update(offer);
+            } else {
                 throw new NotUpdatedException("The tag doesn't exist for this offer");
             }
 
-        }
-        else{
-            throw new NotUpdatedException("The offer" +ExceptionMessage.NOT_UPDATED);
+        } else {
+            throw new NotUpdatedException("The offer" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public void addCategory(Long offerId, Category category) throws NotUpdatedException,SQLException {
+    public void addCategory(Long offerId, Category category) throws NotUpdatedException, SQLException {
         Offer offer = (Offer) offerDao.read(offerId);
-        if(offer!= null)
-        {
-            offer.setCategory(category);
+        if (offer != null) {
+            category.addOffer(offer);
+            categoryDao.update(category);
             offerDao.update(offer);
-        }
-        else
-        {
-            throw new NotUpdatedException("The category "+ExceptionMessage.NOT_ADDED);
+        } else {
+            throw new NotUpdatedException("The category " + ExceptionMessage.NOT_ADDED);
         }
     }
 
     @Transactional
-    public void removeCategory(Long idOffer) throws NotUpdatedException,SQLException {
+    public void removeCategory(Long idOffer) throws NotUpdatedException, SQLException {
         Offer offer = (Offer) offerDao.read(idOffer);
-        if(offer!=null) {
+        if (offer != null) {
+            Category category = offer.getCategory();
+            category.removeOffer(offer);
             offer.setCategory(null);
-        }
-        else{
-            throw new NotUpdatedException("The category " +ExceptionMessage.NOT_DELETED);
+            offerDao.update(offer);
+            categoryDao.update(category);
+        } else {
+            throw new NotUpdatedException("The category " + ExceptionMessage.NOT_DELETED);
         }
     }
 }

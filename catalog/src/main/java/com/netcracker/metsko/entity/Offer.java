@@ -1,8 +1,13 @@
 package com.netcracker.metsko.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
-import java.util.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Offer {
@@ -11,10 +16,13 @@ public class Offer {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
+    @NotNull
+    @Size(min = 3, max = 50)
     private String name;
 
     @Column
+    @Size(min = 5, max = 100)
     private String description;
 
     @Column
@@ -27,6 +35,7 @@ public class Offer {
     private List<Tag> tagList;
 
     @ManyToOne
+    @JsonBackReference
     private Category category;
 
     public Offer() {
@@ -98,14 +107,12 @@ public class Offer {
         this.category = category;
     }
 
-    public void addTag(Tag tag)
-    {
+    public void addTag(Tag tag) {
         this.tagList.add(tag);
         tag.getOfferList().add(this);
     }
 
-    public void removeTag(Tag tag)
-    {
+    public void removeTag(Tag tag) {
         this.tagList.remove(tag);
         tag.getOfferList().remove(this);
     }

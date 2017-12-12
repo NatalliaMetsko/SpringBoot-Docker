@@ -3,6 +3,7 @@ package com.netcracker.metsko.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,8 +14,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    @Column(unique = true)
     @NotNull
-    @Column(nullable = false, unique = true)
+    @Size(min = 3, max = 20)
     private String category;
 
     @OneToMany
@@ -53,14 +55,12 @@ public class Category {
         this.offerList = offerList;
     }
 
-    public void addOffer(Offer offer)
-    {
+    public void addOffer(Offer offer) {
         this.offerList.add(offer);
         offer.setCategory(this);
     }
 
-    public void removeOffer(Offer offer)
-    {
+    public void removeOffer(Offer offer) {
         this.offerList.remove(offer);
     }
 

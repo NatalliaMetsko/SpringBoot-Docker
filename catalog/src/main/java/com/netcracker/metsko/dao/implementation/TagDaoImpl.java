@@ -1,7 +1,6 @@
 package com.netcracker.metsko.dao.implementation;
 
 import com.netcracker.metsko.dao.TagDao;
-import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Tag;
 import org.springframework.stereotype.Repository;
 
@@ -15,13 +14,13 @@ public class TagDaoImpl extends GenericDaoImpl<Tag, Long> implements TagDao {
     }
 
     @Override
-    public List<Tag> findAll() throws SQLException{
+    public List<Tag> findAll() throws SQLException {
         return entityManager.createQuery(" select  t from Tag t").getResultList();
     }
 
     @Override
     public Tag findByName(String tagName) throws SQLException {
-        return entityManager.createQuery("select t from Tag t where t.tag='"+tagName+"'", Tag.class).getSingleResult();
+        return entityManager.createQuery("select t from Tag t where t.tag='" + tagName + "'", Tag.class).getSingleResult();
     }
 
 

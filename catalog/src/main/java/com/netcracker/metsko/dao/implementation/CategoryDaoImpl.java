@@ -18,18 +18,18 @@ public class CategoryDaoImpl extends GenericDaoImpl<Category, Long> implements C
 
     @Override
     public List<Category> findAll() throws SQLException {
-        return entityManager.createQuery("select c from Category c",Category.class).getResultList();
+        return entityManager.createQuery("select c from Category c", Category.class).getResultList();
     }
 
     @Override
     public Category findByName(String categoryName) throws SQLException {
-        return entityManager.createQuery("FROM Category c where c.category ='"+categoryName+"' ", Category.class).getSingleResult();
+        return entityManager.createQuery("FROM Category c where c.category ='" + categoryName + "' ", Category.class).getSingleResult();
     }
 
     @Override
     public List<Offer> findOfferList(Long categoryId) throws SQLException {
 
-        Category category = entityManager.createQuery("select c from Category c where c.id="+categoryId,Category.class).getSingleResult();
+        Category category = entityManager.createQuery("select c from Category c where c.id=" + categoryId, Category.class).getSingleResult();
         return category.getOfferList();
     }
 
