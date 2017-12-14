@@ -6,6 +6,7 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -15,9 +16,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Swagger2Config {
 
     @Bean
-    public Docket api()
-    {
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.netcracker.metsko.controller"))
                 .paths(PathSelectors.any())
@@ -28,10 +29,9 @@ public class Swagger2Config {
         return new ApiInfoBuilder()
                 .title("Netcracker Project Swagger UI")
                 .description("Manager Module")
-                .contact("Natallia Metsko")
+                .contact(new Contact("Natallia Metsko", null, "natallia.metsko@gmail.com"))
                 .build();
     }
-
 
 
 }
