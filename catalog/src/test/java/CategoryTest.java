@@ -1,15 +1,8 @@
-import com.netcracker.metsko.dao.CategoryDao;
-import com.netcracker.metsko.dao.implementation.CategoryDaoImpl;
 import com.netcracker.metsko.entity.Category;
-import com.netcracker.metsko.databasemanager.DatabaseManager;
-import org.junit.*;
-import javax.persistence.*;
-
+import org.junit.AfterClass;
+import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
 
 public class CategoryTest {
 
@@ -53,7 +46,6 @@ public class CategoryTest {
     }
     @Test
     public void delete() throws SQLException{
-
 
         categoryDao.delete(TEST_ID_TO_DELETE);
 

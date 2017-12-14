@@ -1,6 +1,10 @@
 package com.netcracker.metsko.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
@@ -9,9 +13,11 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private  long id;
+    private long id;
 
-    @Column
+    @Column(unique = true)
+    @NotNull
+    @Size(min = 3, max = 20)
     private String name;
 
     @Column
@@ -21,12 +27,14 @@ public class OrderItem {
     private Date dateOfAddition;
 
     @Column
+    @NotNull
     private String category;
 
     @Column
     private double price;
 
     @ManyToOne
+    @JsonBackReference
     private Order order;
 
     public OrderItem() {
@@ -119,7 +127,7 @@ public class OrderItem {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("OrderItem{");
+        final StringBuilder sb = new StringBuilder("OrderItemDao{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');

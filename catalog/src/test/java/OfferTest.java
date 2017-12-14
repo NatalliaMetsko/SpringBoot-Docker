@@ -1,5 +1,3 @@
-import com.netcracker.metsko.dao.OfferDao;
-import com.netcracker.metsko.dao.implementation.OfferDaoImpl;
 import com.netcracker.metsko.entity.Offer;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -65,7 +63,6 @@ public class OfferTest {
     }
     @Test
     public void delete()throws SQLException{
-
 
         offerDao.delete(TEST_ID_TO_DELETE);
         List<Offer> result = offerDao.findAll();

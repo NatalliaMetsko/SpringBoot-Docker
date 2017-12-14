@@ -1,8 +1,11 @@
 package com.netcracker.metsko.entity;
 
 import javax.persistence.*;
-import java.util.*;
-import java.time.LocalDate;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "Inv_order")
 public class Order {
@@ -11,22 +14,26 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column
+    @Column(unique = true)
+    @NotNull
+    @Size(min = 3, max = 20)
     private String name;
 
     @Column
+    @Size(min = 5, max = 100)
     private String description;
 
     @Column
-    private LocalDate dataOfOrder;
+    private Date dataOfOrder;
 
     @Column
-    private LocalDate dataOfComplete;
+    private Date dataOfComplete;
 
     @Column
+    @NotNull
     private String customerEmail;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private List<OrderItem> orderItemList;
 
     @Column
@@ -44,7 +51,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfComplete,
+    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete,
                  String customerEmail, List<OrderItem> orderItemList, double totalPrice,
                  int itemAmount, boolean signPayment, Date paymentDate) {
         this.name = name;
@@ -83,19 +90,19 @@ public class Order {
         this.description = description;
     }
 
-    public LocalDate getDataOfOrder() {
+    public Date getDataOfOrder() {
         return dataOfOrder;
     }
 
-    public void setDataOfOrder(LocalDate dataOfOrder) {
+    public void setDataOfOrder(Date dataOfOrder) {
         this.dataOfOrder = dataOfOrder;
     }
 
-    public LocalDate getDataOfComplete() {
+    public Date getDataOfComplete() {
         return dataOfComplete;
     }
 
-    public void setDataOfComplete(LocalDate dataOfComplete) {
+    public void setDataOfComplete(Date dataOfComplete) {
         this.dataOfComplete = dataOfComplete;
     }
 
@@ -116,6 +123,7 @@ public class Order {
     }
 
     public double getTotalPrice() {
+        this.totalPrice =orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
         return totalPrice;
     }
 
@@ -124,6 +132,7 @@ public class Order {
     }
 
     public int getItemAmount() {
+        this.itemAmount = orderItemList.size();
         return itemAmount;
     }
 
@@ -147,12 +156,12 @@ public class Order {
         this.paymentDate = paymentDate;
     }
 
-    public void addOrderItem(OrderItem orderItem){
+    public void addOrderItem(OrderItem orderItem) {
         this.orderItemList.add(orderItem);
         orderItem.setOrder(this);
     }
 
-    public void removeOrderItem(OrderItem orderItem){
+    public void removeOrderItem(OrderItem orderItem) {
         this.orderItemList.remove(orderItem);
     }
 
@@ -185,14 +194,14 @@ public class Order {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
-        sb.append(", dataOfOrder=").append(dataOfOrder);
-        sb.append(", dataOfComplete=").append(dataOfComplete);
+        sb.append(", dataOfOrder=").append(dataOfOrder.toString());
+        sb.append(", dataOfComplete=").append(dataOfComplete.toString());
         sb.append(", customerEmail='").append(customerEmail).append('\'');
         sb.append(", orderItemList=").append(orderItemList);
         sb.append(", totalPrice=").append(totalPrice);
         sb.append(", itemAmount=").append(itemAmount);
         sb.append(", signPayment=").append(signPayment);
-        sb.append(", paymentDate=").append(paymentDate);
+        sb.append(", paymentDate=").append(paymentDate.toString());
         sb.append('}');
         return sb.toString();
     }
