@@ -24,8 +24,6 @@ public class OrderDTO {
 
     private LocalDate dataOfCreation;
 
-    private boolean signPayment;
-
     private String status;
 
 }

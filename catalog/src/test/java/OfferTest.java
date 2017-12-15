@@ -1,3 +1,4 @@
+import com.netcracker.metsko.dao.implementation.OfferDaoImpl;
 import com.netcracker.metsko.entity.Offer;
 import org.junit.AfterClass;
 import org.junit.Test;

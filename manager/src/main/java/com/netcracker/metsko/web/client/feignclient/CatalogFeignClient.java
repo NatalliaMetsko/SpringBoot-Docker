@@ -12,7 +12,7 @@ import java.util.List;
 @FeignClient("catalog-service")
 public interface CatalogFeignClient {
 
-    @GetMapping(value = "/categories/offers/filtered")
+    @GetMapping(value = "/categories/offers/filteredOffers")
     List<OfferDTO> findFilteredOffers(@RequestBody OfferFilter offerFilter);
 
 }

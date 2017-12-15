@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -36,13 +37,13 @@ public class OrderController {
     @ApiOperation(httpMethod = "POST",
             value = "Create an order",
             response = Order.class,
-            nickname = "createCategory")
+            nickname = "createOrder")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Order created"),
             @ApiResponse(code = 500, message = "Order not created")
     })
     public ResponseEntity<Order> createOrder(@Validated @RequestBody Order order) throws NotCreatedException, SQLException {
-        if (order.getName().length() != 0 && order.getCustomerEmail().length() != 0) {
+        if (order.getCustomerEmail().length() != 0) {
             orderService.createOrder(order);
             return new ResponseEntity<Order>(order, HttpStatus.CREATED);
         } else {
@@ -70,7 +71,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping(value = "/email/{email}")
+    @GetMapping(value = "/customerEmail/{customerEmail}/orders")
     @ApiOperation(httpMethod = "GET",
             value = "Find an order by it's customerEmail",
             response = Order.class,
@@ -132,19 +133,19 @@ public class OrderController {
 
     }
 
-    @PutMapping(value = "/{id}/add")
+    @PutMapping(value = "/customerEmail/{customerEmail}/orders/{id}/addItems")
     @ApiOperation(httpMethod = "PUT",
-            value = "Add orderItem to offer",
+            value = "Add orderItem to order",
             response = Long.class,
             nickname = "addOrderItem")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OrderItemDao added"),
+            @ApiResponse(code = 200, message = "OrderItem added"),
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> addOrderItem(@PathVariable("id") Long id, @Validated @RequestBody OrderItem orderItem) throws NotUpdatedException, SQLException {
+    public ResponseEntity<Long> addOrderItem(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id, @Validated @RequestBody OrderItem orderItem) throws NotUpdatedException, SQLException {
         if (orderItem.getName().length() != 0) {
-            orderService.addOrderItem(id, orderItem);
+            orderService.addOrderItem(customerEmail, id, orderItem);
             return new ResponseEntity<Long>(id, HttpStatus.OK);
         } else {
             throw new NotUpdatedException(ExceptionMessage.NOT_ADDED);
@@ -157,7 +158,7 @@ public class OrderController {
             response = Long.class,
             nickname = "removeOrderItem")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "OrderItemDao removed"),
+            @ApiResponse(code = 200, message = "OrderItem removed"),
             @ApiResponse(code = 404, message = "Order not found"),
             @ApiResponse(code = 500, message = "Error")
     })
@@ -186,6 +187,92 @@ public class OrderController {
             return new ResponseEntity<Long>(id, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
+        }
+    }
+
+    @GetMapping(value = "/customerEmail/{customerEmail}/orders/paidOrders")
+    @ApiOperation(httpMethod = "GET",
+            value = "Find paid orders",
+            response = Order.class,
+            nickname = "findPaidOrders")
+    @ApiResponses(value = {
+            @ApiResponse(code = 302, message = "Paid orders found"),
+            @ApiResponse(code = 404, message = "Paid orders not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
+    public ResponseEntity<List<Order>> findPaidOrders(@PathVariable("customerEmail") String customerEmail) throws NotFoundException, SQLException {
+        try {
+            List<Order> orders = orderService.findPaidOrders(customerEmail);
+            return new ResponseEntity<List<Order>>(orders, HttpStatus.FOUND);
+        } catch (Exception e) {
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/customerEmail/{customerEmail}/orders/unpaidOrders")
+    @ApiOperation(httpMethod = "GET",
+            value = "Find unpaid orders",
+            response = Order.class,
+            nickname = "findUnPaidOrders")
+    @ApiResponses(value = {
+            @ApiResponse(code = 302, message = "Unpaid orders found"),
+            @ApiResponse(code = 404, message = "Unpaid orders not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
+    public ResponseEntity<List<Order>> findUnpaidOrders(@PathVariable("customerEmail") String customerEmail) throws NotFoundException, SQLException {
+        try {
+            List<Order> orders = orderService.findUnpaidOrders(customerEmail);
+            return new ResponseEntity<List<Order>>(orders, HttpStatus.FOUND);
+        } catch (Exception e) {
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/{customerEmail}/orders/status/{status}")
+    public ResponseEntity<List<Order>> findOrdersByStatus(@PathVariable("customerEmail") String customerEmail, @PathVariable("status") String status) throws NotFoundException, SQLException {
+        try {
+            List<Order> orders = orderService.findOrdersByStatus(customerEmail, status);
+            return new ResponseEntity<List<Order>>(orders, HttpStatus.FOUND);
+        } catch (Exception e) {
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
+    }
+
+    @GetMapping(value = "/customerEmail/{customerEmail}/orders/{id}/totalprice")
+    @ApiOperation(httpMethod = "GET",
+            value = "Find total price of order",
+            response = Long.class,
+            nickname = "findTotalPrice")
+    @ApiResponses(value = {
+            @ApiResponse(code = 302, message = "Total price found"),
+            @ApiResponse(code = 404, message = "Total price not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
+    public ResponseEntity<Double> findTotalPrice(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id) throws NotFoundException, SQLException {
+        try {
+            Double totalPrice = orderService.findTotalPrice(customerEmail, id);
+            return new ResponseEntity<Double>(totalPrice, HttpStatus.OK);
+        } catch (Exception e){
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
+    }
+
+    @PutMapping(value = "/customerEmail/{customerEmail}/orders/{id}")
+    @ApiOperation(httpMethod = "PUT",
+            value = "Pay total price of the order",
+            response = Long.class,
+            nickname = "payForOrder")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "The order is paid"),
+            @ApiResponse(code = 404, message = "The order is not paid"),
+            @ApiResponse(code = 500, message = "Error")
+    })
+    public ResponseEntity<Order> payForOrder(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id, @NotNull @RequestBody Double sumToPay) throws SQLException, NotUpdatedException{
+        try {
+            Order order = orderService.payForOrder(customerEmail,id, sumToPay);
+            return new ResponseEntity<Order>(order, HttpStatus.OK);
+        }catch (Exception e){
+            throw new NotUpdatedException("The order is not paid.");
         }
     }
 }

@@ -1,22 +1,26 @@
 package com.netcracker.metsko.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.netcracker.metsko.entity.enums.Status;
+import com.netcracker.metsko.util.LocalDateDeserializer;
+import com.netcracker.metsko.util.LocalDateSerializer;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-@Entity(name = "Inv_order")
+@Entity(name = "InvOrder")
 public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(unique = true)
-    @NotNull
-    @Size(min = 3, max = 20)
+    @Column
     private String name;
 
     @Column
@@ -24,16 +28,20 @@ public class Order {
     private String description;
 
     @Column
-    private Date dataOfOrder;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate dataOfOrder;
 
     @Column
-    private Date dataOfComplete;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate dataOfComplete;
 
     @Column
     @NotNull
     private String customerEmail;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany
     private List<OrderItem> orderItemList;
 
     @Column
@@ -43,17 +51,22 @@ public class Order {
     private int itemAmount;
 
     @Column
-    private boolean signPayment;
+    private boolean signPayment = false;
 
     @Column
-    private Date paymentDate;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate paymentDate;
+
+    @Column
+    private String status;
 
     public Order() {
     }
 
-    public Order(String name, String description, Date dataOfOrder, Date dataOfComplete,
+    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfComplete,
                  String customerEmail, List<OrderItem> orderItemList, double totalPrice,
-                 int itemAmount, boolean signPayment, Date paymentDate) {
+                 int itemAmount, LocalDate paymentDate, String status) {
         this.name = name;
         this.description = description;
         this.dataOfOrder = dataOfOrder;
@@ -62,8 +75,8 @@ public class Order {
         this.orderItemList = orderItemList;
         this.totalPrice = totalPrice;
         this.itemAmount = itemAmount;
-        this.signPayment = signPayment;
         this.paymentDate = paymentDate;
+        this.status = status;
     }
 
     public long getId() {
@@ -78,8 +91,8 @@ public class Order {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName() {
+        this.name = "Order#" + getId();
     }
 
     public String getDescription() {
@@ -90,20 +103,24 @@ public class Order {
         this.description = description;
     }
 
-    public Date getDataOfOrder() {
+    public LocalDate getDataOfOrder() {
         return dataOfOrder;
     }
 
-    public void setDataOfOrder(Date dataOfOrder) {
-        this.dataOfOrder = dataOfOrder;
+    public void setDataOfOrder() {
+        this.dataOfOrder = LocalDate.now();
     }
 
-    public Date getDataOfComplete() {
+    public LocalDate getDataOfComplete() {
         return dataOfComplete;
     }
 
-    public void setDataOfComplete(Date dataOfComplete) {
-        this.dataOfComplete = dataOfComplete;
+    public void setDataOfComplete() {
+        if (this.paymentDate != null) {
+            this.dataOfComplete = paymentDate.plusDays(7);
+        } else {
+            this.dataOfComplete = null;
+        }
     }
 
     public String getCustomerEmail() {
@@ -123,37 +140,56 @@ public class Order {
     }
 
     public double getTotalPrice() {
-        this.totalPrice =orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
+        this.totalPrice = orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
         return totalPrice;
     }
 
-    public void setTotalPrice(double totalPrice) {
-        this.totalPrice = totalPrice;
+    public void setTotalPrice() {
+        this.totalPrice = this.orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
     }
 
     public int getItemAmount() {
-        this.itemAmount = orderItemList.size();
         return itemAmount;
     }
 
-    public void setItemAmount(int itemAmount) {
-        this.itemAmount = itemAmount;
+    public void setItemAmount() {
+        this.itemAmount = orderItemList.size();
     }
 
-    public boolean isSignPayment() {
+    public boolean getSignPayment() {
         return signPayment;
     }
 
-    public void setSignPayment(boolean signPayment) {
-        this.signPayment = signPayment;
+    public void setSignPayment() {
+        this.signPayment = true;
     }
 
-    public Date getPaymentDate() {
+    public LocalDate getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(Date paymentDate) {
-        this.paymentDate = paymentDate;
+    public void setPaymentDate() {
+        if (this.signPayment) {
+            this.paymentDate = LocalDate.now();
+        } else {
+            this.paymentDate = null;
+        }
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus() {
+        if (!this.signPayment) {
+            this.status = String.valueOf(Status.UNPAID);
+        } else {
+            if ((this.signPayment) && (paymentDate.isBefore(dataOfComplete))) {
+                this.status = String.valueOf(Status.IN_PROGRESS);
+            } else {
+                this.status = String.valueOf(Status.COMPLETE);
+            }
+        }
     }
 
     public void addOrderItem(OrderItem orderItem) {
@@ -173,20 +209,22 @@ public class Order {
         return getId() == order.getId() &&
                 Double.compare(order.getTotalPrice(), getTotalPrice()) == 0 &&
                 getItemAmount() == order.getItemAmount() &&
-                isSignPayment() == order.isSignPayment() &&
+                getSignPayment() == order.getSignPayment() &&
                 Objects.equals(getName(), order.getName()) &&
                 Objects.equals(getDescription(), order.getDescription()) &&
                 Objects.equals(getDataOfOrder(), order.getDataOfOrder()) &&
                 Objects.equals(getDataOfComplete(), order.getDataOfComplete()) &&
                 Objects.equals(getCustomerEmail(), order.getCustomerEmail()) &&
                 Objects.equals(getOrderItemList(), order.getOrderItemList()) &&
-                Objects.equals(getPaymentDate(), order.getPaymentDate());
+                Objects.equals(getPaymentDate(), order.getPaymentDate()) &&
+                Objects.equals(getStatus(), order.getStatus());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfComplete(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), isSignPayment(), getPaymentDate());
+        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfComplete(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), getSignPayment(), getPaymentDate(), getStatus());
     }
+
 
     @Override
     public String toString() {
@@ -194,14 +232,15 @@ public class Order {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
-        sb.append(", dataOfOrder=").append(dataOfOrder.toString());
-        sb.append(", dataOfComplete=").append(dataOfComplete.toString());
+        sb.append(", dataOfOrder=").append(dataOfOrder);
+        sb.append(", dataOfComplete=").append(dataOfComplete);
         sb.append(", customerEmail='").append(customerEmail).append('\'');
         sb.append(", orderItemList=").append(orderItemList);
         sb.append(", totalPrice=").append(totalPrice);
         sb.append(", itemAmount=").append(itemAmount);
         sb.append(", signPayment=").append(signPayment);
-        sb.append(", paymentDate=").append(paymentDate.toString());
+        sb.append(", paymentDate=").append(paymentDate);
+        sb.append(", status='").append(status).append('\'');
         sb.append('}');
         return sb.toString();
     }

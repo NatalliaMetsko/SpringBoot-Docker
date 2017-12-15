@@ -1,9 +1,6 @@
 package com.netcracker.metsko.service;
 
-import com.netcracker.metsko.entity.Category;
-import com.netcracker.metsko.entity.Offer;
-import com.netcracker.metsko.entity.Price;
-import com.netcracker.metsko.entity.Tag;
+import com.netcracker.metsko.entity.*;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
@@ -46,4 +43,6 @@ public interface OfferService {
     void addCategory(Long offerId, Category category) throws SQLException, NotUpdatedException;
 
     void removeCategory(Long offerId) throws SQLException, NotUpdatedException;
+
+    List<Offer> findFilteredOffers(OfferFilter offerFilter) throws SQLException, NotFoundException;
 }

@@ -1,9 +1,7 @@
 package com.netcracker.metsko.web.client.feignclient;
 
 import com.netcracker.metsko.entity.OfferDTO;
-import com.netcracker.metsko.entity.Order;
 import com.netcracker.metsko.entity.OrderDTO;
-import com.netcracker.metsko.entity.OrderItem;
 import org.springframework.cloud.netflix.feign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +11,7 @@ import java.util.List;
 public interface InventoryFeignClient {
 
     @PostMapping
-    void createOrder(@RequestBody Order order);
+    void createOrder(@RequestBody OrderDTO order);
 
     /*добавить в OrderService создание OrderItem через OfferDTO*/
     @PutMapping(value = "/{customerEmail}/orders/{id}")
@@ -22,10 +20,10 @@ public interface InventoryFeignClient {
     @GetMapping(value = "/{customerEmail}/orders")
     List<OrderDTO> findAllCustomersOrders(@PathVariable("customerEmail") String customerEmail);
 
-    @GetMapping(value = "/{customerEmail}/orders/paid")
+    @GetMapping(value = "/{customerEmail}/orders/paidOrders")
     List<OrderDTO> findPaidOrders(@PathVariable("customerEmail") String customerEmail);
 
-    @GetMapping(value = "/{customerEmail}/orders/unpaid")
+    @GetMapping(value = "/{customerEmail}/orders/unpaidOrders")
     List<OrderDTO> findUnpaidOrders(@PathVariable("customerEmal") String customerEmail);
 
     @GetMapping(value = "/{customerEmail}/orders/totalprice")
@@ -40,6 +38,4 @@ public interface InventoryFeignClient {
     @GetMapping(value = "/{customerEmail}/orders/{id}")
     OrderDTO findOrderById(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id);
 
-    @PutMapping(value = "/{id}")
-    OrderDTO updateOrderByAddingOrRemoving(@PathVariable("id") Long id, @RequestBody OrderItem orderItem); //????
 }

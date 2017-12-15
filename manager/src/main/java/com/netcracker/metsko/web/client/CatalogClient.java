@@ -12,24 +12,28 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @Component
 public class CatalogClient {
 
+    private static final Logger LOGGER = Logger.getLogger(CatalogClient.class.getName());
+
     protected String serviceUrl = "http://localhost:8081/api/v1/catalog/offers";
 
-    private final RestTemplate restTemplate;
-
     @Autowired
-    public CatalogClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private RestTemplate restTemplate;
 
+    public CatalogClient() {
+    }
 
     public List<OfferDTO> getOffers(OfferFilter offerFilter) {
         HttpEntity<OfferFilter> entity = new HttpEntity<OfferFilter>(offerFilter);
-        ResponseEntity<List<OfferDTO>> response = restTemplate.exchange(serviceUrl + "/categories/offers/filtered", HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfferDTO>>() {});
+        ResponseEntity<List<OfferDTO>> response = restTemplate.exchange(serviceUrl + "/categories/offers/filteredOffers", HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfferDTO>>() {});
         List<OfferDTO> dtoList = response.getBody();
+
+        LOGGER.info(dtoList.toString());
+
         return dtoList;
     }
 

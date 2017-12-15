@@ -24,9 +24,19 @@ public interface OrderService {
 
     Order updateOrder(Order order) throws SQLException, NotUpdatedException;
 
-    void addOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
+    void addOrderItem(String customerEmail, Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
 
     void removeOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
 
     void deleteOrder(Long id) throws SQLException, NotDeletedException;
+
+    List<Order> findPaidOrders(String customerEmail) throws SQLException, NotFoundException;
+
+    List<Order> findUnpaidOrders(String customerEmail) throws SQLException, NotFoundException;
+
+    List<Order> findOrdersByStatus(String customerEmail, String status) throws SQLException, NotFoundException;
+
+    Double findTotalPrice(String customerEmail, Long orderId) throws SQLException, NotFoundException;
+
+    Order payForOrder(String customerEmail, Long id, Double sumToPay) throws SQLException, NotUpdatedException;
 }

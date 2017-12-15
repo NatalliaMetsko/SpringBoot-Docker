@@ -155,7 +155,7 @@ public class OfferController {
         return offerService.findByTags(tagList);
     }
 
-    @GetMapping(value = "/available/")
+    @GetMapping(value = "/available")
     @ApiOperation(httpMethod = "GET",
             value = "Find available offers",
             response = Offer.class,
@@ -285,7 +285,7 @@ public class OfferController {
         }
     }
 
-    @PutMapping(value = "/{id}/removecategory")
+    @PutMapping(value = "/{id}/removeCategory")
     @ApiOperation(httpMethod = "PUT",
             value = "Remove a category from offer",
             response = Long.class,
@@ -302,6 +302,13 @@ public class OfferController {
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
         }
+    }
+
+
+    @GetMapping(value = "/categories/offers/filteredOffers")
+    List<Offer> findFilteredOffers(@RequestBody OfferFilter offerFilter) throws SQLException, NotFoundException{
+        List<Offer> offers = offerService.findFilteredOffers(offerFilter);
+        return offers;
     }
 
 }
