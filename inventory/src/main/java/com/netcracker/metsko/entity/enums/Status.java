@@ -2,7 +2,10 @@ package com.netcracker.metsko.entity.enums;
 
 public enum Status {
 
-    UNPAID,
+    PENDING,
     IN_PROGRESS,
-    COMPLETE
+    ACTIVE,
+    CANCELED,
+    TERMINATED,
+    NOT_AVAILABLE
 }

@@ -23,10 +23,15 @@ zuul:
     catalog-service:
         path: /catalog/**
         serviceId: catalog-service
-        stripPrefix: false
+        stripPrefix: true
         sensitiveHeaders:
     inventory-service:
         path: /inventory/**
         serviceId: inventory-service
-        stripPrefix: false
+        stripPrefix: true
+        sensitiveHeaders:
+    manager-service:
+        path: /manager/**
+        serviceId: manager-service
+        tripPrefix: true
         sensitiveHeaders:

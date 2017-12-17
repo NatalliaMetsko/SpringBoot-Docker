@@ -5,6 +5,7 @@ import com.netcracker.metsko.dao.OrderItemDao;
 import com.netcracker.metsko.entity.ExceptionMessage;
 import com.netcracker.metsko.entity.Order;
 import com.netcracker.metsko.entity.OrderItem;
+import com.netcracker.metsko.entity.enums.Status;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
@@ -33,13 +34,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void createOrder(Order order) throws NotCreatedException, SQLException {
         try {
-            order.setName();
-            order.setDataOfOrder();
-            order.setDataOfComplete();
-            order.setPaymentDate();
-            order.setStatus();
-            order.setTotalPrice();
-            order.setItemAmount();
+            order.setFields();
             orderDao.create(order);
         } catch (Exception e) {
             throw new NotCreatedException("The Order" + ExceptionMessage.NOT_CREATED);
@@ -91,10 +86,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order updateOrder(Order order) throws SQLException, NotUpdatedException {
         try {
-            order.setSignPayment();
-            order.setPaymentDate();
-            order.setDataOfComplete();
-            order.setStatus();
+            order.setFields();
             Order updatedOrder = (Order) orderDao.update(order);
             if (updatedOrder != null) {
                 return updatedOrder;
@@ -114,8 +106,7 @@ public class OrderServiceImpl implements OrderService {
             if (order != null) {
                 orderItemDao.create(orderItem);
                 order.addOrderItem(orderItem);
-                order.setTotalPrice();
-                order.setItemAmount();
+                order.setFields();
                 orderDao.update(order);
                 orderItemDao.update(orderItem);
             } else {
@@ -132,8 +123,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = (Order) orderDao.read(orderId);
             if (order != null) {
                 order.removeOrderItem(orderItem);
-                order.setTotalPrice();
-                order.setItemAmount();
+                order.setFields();
                 orderDao.update(order);
             } else {
                 throw new NotUpdatedException("OrderItem" + ExceptionMessage.NOT_DELETED);
@@ -212,13 +202,14 @@ public class OrderServiceImpl implements OrderService {
     public Order payForOrder(String customerEmail, Long id, Double sumToPay) throws SQLException, NotUpdatedException {
         try {
             Order order = orderDao.findCustomerOrdersAndById(customerEmail, id);
-            if (sumToPay==order.getTotalPrice() && (!order.getSignPayment()))
-            {
-                order.setSignPayment();
-                order.setPaymentDate();
-                order.setStatus();
-                order.setDataOfComplete();
-                return order;
+            if (sumToPay==order.getTotalPrice()) {
+                if (!order.getStatus().equals(String.valueOf(Status.CANCELED))) {
+                    order.setSignPayment();
+                    order.setFields();
+                    return order;
+                } else {
+                    throw new NotUpdatedException("The order is canceled");
+                }
             }
             else{
                 throw new NotUpdatedException("There is not enough money");

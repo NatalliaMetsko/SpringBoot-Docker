@@ -4,6 +4,7 @@ package com.netcracker.metsko.web.client;
 import com.netcracker.metsko.entity.OfferDTO;
 import com.netcracker.metsko.entity.OfferFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,6 +21,10 @@ public class CatalogClient {
     private static final Logger LOGGER = Logger.getLogger(CatalogClient.class.getName());
 
     protected String serviceUrl = "http://localhost:8081/api/v1/catalog/offers";
+
+
+    @Value("url.inventory")
+    private String url;
 
     @Autowired
     private RestTemplate restTemplate;

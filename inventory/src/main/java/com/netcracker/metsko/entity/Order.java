@@ -35,7 +35,12 @@ public class Order {
     @Column
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate dataOfComplete;
+    private LocalDate dataOfReceive;
+
+    @Column
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate dataOfCompletion;
 
     @Column
     @NotNull
@@ -64,13 +69,14 @@ public class Order {
     public Order() {
     }
 
-    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfComplete,
-                 String customerEmail, List<OrderItem> orderItemList, double totalPrice,
-                 int itemAmount, LocalDate paymentDate, String status) {
+    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfReceive,
+                 LocalDate dataOfCompletion, String customerEmail, List<OrderItem> orderItemList,
+                 double totalPrice, int itemAmount, LocalDate paymentDate, String status) {
         this.name = name;
         this.description = description;
         this.dataOfOrder = dataOfOrder;
-        this.dataOfComplete = dataOfComplete;
+        this.dataOfReceive = dataOfReceive;
+        this.dataOfCompletion = dataOfCompletion;
         this.customerEmail = customerEmail;
         this.orderItemList = orderItemList;
         this.totalPrice = totalPrice;
@@ -83,7 +89,7 @@ public class Order {
         return id;
     }
 
-    public void setId(long id) {
+    private void setId(long id) {
         this.id = id;
     }
 
@@ -91,7 +97,7 @@ public class Order {
         return name;
     }
 
-    public void setName() {
+    private void setName() {
         this.name = "Order#" + getId();
     }
 
@@ -107,20 +113,29 @@ public class Order {
         return dataOfOrder;
     }
 
-    public void setDataOfOrder() {
+    private void setDataOfOrder() {
         this.dataOfOrder = LocalDate.now();
     }
 
-    public LocalDate getDataOfComplete() {
-        return dataOfComplete;
+    public LocalDate getDataOfReceive() {
+        return dataOfReceive;
     }
 
-    public void setDataOfComplete() {
+    private void setDataOfReceive() {
         if (this.paymentDate != null) {
-            this.dataOfComplete = paymentDate.plusDays(7);
+            this.dataOfReceive = paymentDate.plusDays(7);
+            this.status = String.valueOf(Status.ACTIVE);
         } else {
-            this.dataOfComplete = null;
+            this.dataOfReceive = null;
         }
+    }
+
+    public LocalDate getDataOfCompletion() {
+        return dataOfCompletion;
+    }
+
+    private void setDataOfCompletion() {
+        this.dataOfCompletion = dataOfReceive.plusYears(1);
     }
 
     public String getCustomerEmail() {
@@ -140,11 +155,11 @@ public class Order {
     }
 
     public double getTotalPrice() {
-        this.totalPrice = orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
+        setTotalPrice();
         return totalPrice;
     }
 
-    public void setTotalPrice() {
+    private void setTotalPrice() {
         this.totalPrice = this.orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
     }
 
@@ -168,7 +183,7 @@ public class Order {
         return paymentDate;
     }
 
-    public void setPaymentDate() {
+    private void setPaymentDate() {
         if (this.signPayment) {
             this.paymentDate = LocalDate.now();
         } else {
@@ -177,17 +192,25 @@ public class Order {
     }
 
     public String getStatus() {
+        setStatus();
         return status;
     }
 
-    public void setStatus() {
-        if (!this.signPayment) {
-            this.status = String.valueOf(Status.UNPAID);
+    private void setStatus() {
+        if (orderItemList.size() == 0) {
+            this.status = String.valueOf(Status.NOT_AVAILABLE);
         } else {
-            if ((this.signPayment) && (paymentDate.isBefore(dataOfComplete))) {
-                this.status = String.valueOf(Status.IN_PROGRESS);
+            if (!this.signPayment) {
+                this.status = String.valueOf(Status.PENDING);
             } else {
-                this.status = String.valueOf(Status.COMPLETE);
+                if ((this.signPayment) && (paymentDate.isBefore(dataOfReceive))) {
+                    this.status = String.valueOf(Status.IN_PROGRESS);
+                } else {
+                    if (LocalDate.now().equals(dataOfCompletion)) {
+                        this.signPayment = false;
+                        this.status = String.valueOf(Status.TERMINATED);
+                    }
+                }
             }
         }
     }
@@ -199,6 +222,18 @@ public class Order {
 
     public void removeOrderItem(OrderItem orderItem) {
         this.orderItemList.remove(orderItem);
+    }
+
+    public void setFields() {
+        setName();
+        setItemAmount();
+        setDataOfOrder();
+        setDataOfReceive();
+        setDataOfCompletion();
+        setTotalPrice();
+        setPaymentDate();
+        setStatus();
+
     }
 
     @Override
@@ -213,7 +248,8 @@ public class Order {
                 Objects.equals(getName(), order.getName()) &&
                 Objects.equals(getDescription(), order.getDescription()) &&
                 Objects.equals(getDataOfOrder(), order.getDataOfOrder()) &&
-                Objects.equals(getDataOfComplete(), order.getDataOfComplete()) &&
+                Objects.equals(getDataOfReceive(), order.getDataOfReceive()) &&
+                Objects.equals(getDataOfCompletion(), order.getDataOfCompletion()) &&
                 Objects.equals(getCustomerEmail(), order.getCustomerEmail()) &&
                 Objects.equals(getOrderItemList(), order.getOrderItemList()) &&
                 Objects.equals(getPaymentDate(), order.getPaymentDate()) &&
@@ -222,9 +258,8 @@ public class Order {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfComplete(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), getSignPayment(), getPaymentDate(), getStatus());
+        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfReceive(), getDataOfCompletion(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), getSignPayment(), getPaymentDate(), getStatus());
     }
-
 
     @Override
     public String toString() {
@@ -233,7 +268,8 @@ public class Order {
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", dataOfOrder=").append(dataOfOrder);
-        sb.append(", dataOfComplete=").append(dataOfComplete);
+        sb.append(", dataOfReceive=").append(dataOfReceive);
+        sb.append(", dataOfCompletion=").append(dataOfCompletion);
         sb.append(", customerEmail='").append(customerEmail).append('\'');
         sb.append(", orderItemList=").append(orderItemList);
         sb.append(", totalPrice=").append(totalPrice);
