@@ -41,7 +41,7 @@ public class InventoryClient {
     }
 
 
-    public List<OrderDTO> findAllCustomersOrders(String customerEmail) throws RestClientException {
+    public List<OrderDTO> findCustomerOrders(String customerEmail) throws RestClientException {
         ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
         }, customerEmail);
         List<OrderDTO> dtoList = response.getBody();
@@ -81,14 +81,14 @@ public class InventoryClient {
         return orderDTO;
     }
 
-    List<OrderDTO> findOrdersByStatus(String customerEmail, String status) {
+    public List<OrderDTO> findOrdersByStatus(String customerEmail, String status) {
         ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/status/{status}", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
         }, customerEmail, status);
         List<OrderDTO> dtoList = response.getBody();
         return dtoList;
     }
 
-    OrderDTO findOrderById(String customerEmail, Long id) {
+    public OrderDTO findOrderById(String customerEmail, Long id) {
         ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/{id}", HttpMethod.GET, null, OrderDTO.class, customerEmail, id);
         OrderDTO orderDTO = response.getBody();
         return orderDTO;

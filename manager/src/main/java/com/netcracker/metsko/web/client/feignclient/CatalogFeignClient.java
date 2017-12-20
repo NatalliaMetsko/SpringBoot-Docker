@@ -1,18 +1,18 @@
 package com.netcracker.metsko.web.client.feignclient;
 
 import com.netcracker.metsko.entity.OfferDTO;
-import com.netcracker.metsko.entity.OfferFilter;
 import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 
 @FeignClient("catalog-service")
 public interface CatalogFeignClient {
 
-    @GetMapping(value = "/categories/offers/filteredOffers")
-    List<OfferDTO> findFilteredOffers(@RequestBody OfferFilter offerFilter);
+    @PostMapping(value = "/categories/offers/filteredOffers")
+    List<OfferDTO> findFilteredOffers(@RequestBody Map<String, String> offerFilter);
 
 }

@@ -5,11 +5,13 @@ import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import com.netcracker.metsko.exceptions.NotUpdatedException;
+import com.netcracker.metsko.interceptor.LoggerInterceptor;
 import com.netcracker.metsko.service.OfferService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/catalog/offers")
@@ -25,6 +30,11 @@ public class OfferController {
 
     @Autowired
     OfferService offerService;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    private static final Logger log = Logger.getLogger(LoggerInterceptor.class.getName());
 
     @PostMapping
     @ApiOperation(httpMethod = "POST",
@@ -239,7 +249,7 @@ public class OfferController {
     public ResponseEntity<Long> addTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws NotUpdatedException, SQLException {
         try {
             offerService.addTag(id, tag);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>(id, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_ADDED);
         }
@@ -305,10 +315,16 @@ public class OfferController {
     }
 
 
-    @GetMapping(value = "/categories/offers/filteredOffers")
-    List<Offer> findFilteredOffers(@RequestBody OfferFilter offerFilter) throws SQLException, NotFoundException{
-        List<Offer> offers = offerService.findFilteredOffers(offerFilter);
-        return offers;
+    @PostMapping(value = "/categories/offers/filteredOffers")
+    ResponseEntity<List<OfferDTO>> findFilteredOffers(@RequestBody Map<String, String> offerFilter) throws SQLException, NotFoundException {
+        try {
+            log.info(offerFilter.toString());
+            List<Offer> offers = offerService.findFilteredOffers(offerFilter);
+            List<OfferDTO> offersDTO = offers.stream().map(offer -> modelMapper.map(offer, OfferDTO.class)).collect(Collectors.toList());
+            return new ResponseEntity<List<OfferDTO>>(offersDTO, HttpStatus.FOUND);
+        } catch (Exception e) {
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
     }
 
 }

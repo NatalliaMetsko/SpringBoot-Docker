@@ -2,7 +2,6 @@ package com.netcracker.metsko.web.client;
 
 
 import com.netcracker.metsko.entity.OfferDTO;
-import com.netcracker.metsko.entity.OfferFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @Component
@@ -23,7 +23,7 @@ public class CatalogClient {
     protected String serviceUrl = "http://localhost:8081/api/v1/catalog/offers";
 
 
-    @Value("url.inventory")
+    @Value("url.catalog")
     private String url;
 
     @Autowired
@@ -32,9 +32,9 @@ public class CatalogClient {
     public CatalogClient() {
     }
 
-    public List<OfferDTO> getOffers(OfferFilter offerFilter) {
-        HttpEntity<OfferFilter> entity = new HttpEntity<OfferFilter>(offerFilter);
-        ResponseEntity<List<OfferDTO>> response = restTemplate.exchange(serviceUrl + "/categories/offers/filteredOffers", HttpMethod.GET, entity, new ParameterizedTypeReference<List<OfferDTO>>() {});
+    public List<OfferDTO> getOffers(Map<String, String> offerFilter) {
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(offerFilter);
+        ResponseEntity<List<OfferDTO>> response = restTemplate.exchange(serviceUrl + "/categories/offers/filteredOffers", HttpMethod.POST, entity, new ParameterizedTypeReference<List<OfferDTO>>() {});
         List<OfferDTO> dtoList = response.getBody();
 
         LOGGER.info(dtoList.toString());

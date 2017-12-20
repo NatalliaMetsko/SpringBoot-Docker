@@ -34,6 +34,9 @@ public class Offer {
     @ManyToMany
     private List<Tag> tagList;
 
+    @Column
+    private String tags;
+
     @ManyToOne
     @JsonBackReference
     private Category category;
@@ -41,13 +44,14 @@ public class Offer {
     public Offer() {
     }
 
-    public Offer(String name, String description, boolean availability,
-                 Price price, List<Tag> tagList, Category category) {
+    public Offer(String name, String description, boolean availability, Price price,
+                 List<Tag> tagList, String tags, Category category) {
         this.name = name;
         this.description = description;
         this.availability = availability;
         this.price = price;
         this.tagList = tagList;
+        this.tags = tags;
         this.category = category;
     }
 
@@ -107,8 +111,22 @@ public class Offer {
         this.category = category;
     }
 
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void addPrice(Price price) {
+        this.price = price;
+        price.setOffer(this);
+    }
+
     public void addTag(Tag tag) {
         this.tagList.add(tag);
+        this.tags = tags.concat(tag.getTag()+" ");
         tag.getOfferList().add(this);
     }
 
@@ -116,6 +134,7 @@ public class Offer {
         this.tagList.remove(tag);
         tag.getOfferList().remove(this);
     }
+
 
     @Override
     public boolean equals(Object object) {
@@ -128,12 +147,13 @@ public class Offer {
                 Objects.equals(getDescription(), offer.getDescription()) &&
                 Objects.equals(getPrice(), offer.getPrice()) &&
                 Objects.equals(getTagList(), offer.getTagList()) &&
+                Objects.equals(getTags(), offer.getTags()) &&
                 Objects.equals(getCategory(), offer.getCategory());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), isAvailability(), getPrice(), getTagList(), getCategory());
+        return Objects.hash(getId(), getName(), getDescription(), isAvailability(), getPrice(), getTagList(), getTags(), getCategory());
     }
 
     @Override
@@ -143,8 +163,9 @@ public class Offer {
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
         sb.append(", availability=").append(availability);
-        sb.append(", priceList=").append(price);
+        sb.append(", price=").append(price);
         sb.append(", tagList=").append(tagList);
+        sb.append(", tags='").append(tags).append('\'');
         sb.append(", category=").append(category);
         sb.append('}');
         return sb.toString();

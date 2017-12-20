@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -187,13 +188,9 @@ public class OfferServiceImpl implements OfferService {
     public void addTag(Long id, Tag tag) throws NotUpdatedException, SQLException {
         try {
             Offer offer = (Offer) offerDao.read(id);
-            if (offer != null) {
-                offer.addTag(tag);
-                offerDao.update(offer);
-                tagDao.update(tag);
-            } else {
-                throw new NotUpdatedException("The tag" + ExceptionMessage.NOT_ADDED);
-            }
+            offer.addTag(tag);
+            offerDao.update(offer);
+            tagDao.update(tag);
         } catch (Exception e) {
             throw new NotUpdatedException("The tag" + ExceptionMessage.NOT_ADDED);
         }
@@ -255,9 +252,12 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Override
-    public List<Offer> findFilteredOffers(OfferFilter filter) throws SQLException, NotFoundException {
+    public List<Offer> findFilteredOffers(Map<String, String> filter) throws SQLException, NotFoundException {
         try {
-            List<Offer> offerList = offerDao.findAll().stream().filter(offer -> (offer.getCategory().equals(filter.getCategory()) && offer.getTagList().equals(filter.getTagList()) && offer.getPrice().equals(filter.getPrice()))).collect(Collectors.toList());
+            List<Offer> offerAllList = offerDao.findAll();
+            List<Offer> offerList = offerAllList.stream().filter(offer -> (offer.getCategory().getCategory().equals(filter.get("category"))
+                    && checkTags(offer.getTags(), filter.get("tagList"))
+                    && Double.toString(offer.getPrice().getPrice()).equals(filter.get("price")))).collect(Collectors.toList());
             if (offerList.size() != 0) {
                 return offerList;
             } else {
@@ -267,4 +267,21 @@ public class OfferServiceImpl implements OfferService {
             throw new NotFoundException("The offers " + ExceptionMessage.NOT_FOUND);
         }
     }
+
+    private boolean checkTags(String tags, String filterTags) {
+        String[] filter = filterTags.trim().split(" ");
+        int checker = 0;
+        for (int i = 0; i < filter.length; i++) {
+            if (tags.contains(filter[i])) {
+                checker++;
+            }
+        }
+
+        if (checker > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

@@ -8,3 +8,8 @@ eureka:
 url:
   inventroy: http://localhost:8082/api/v1/inventory/orders
   catalog: http://localhost:8081/api/v1/catalog/offers
+spring:
+  mvc:
+    view:
+      prefix: /WEB-INF/jsp/
+      suffix: .jsp

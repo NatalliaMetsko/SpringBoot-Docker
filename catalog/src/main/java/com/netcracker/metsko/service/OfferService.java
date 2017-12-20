@@ -1,6 +1,9 @@
 package com.netcracker.metsko.service;
 
-import com.netcracker.metsko.entity.*;
+import com.netcracker.metsko.entity.Category;
+import com.netcracker.metsko.entity.Offer;
+import com.netcracker.metsko.entity.Price;
+import com.netcracker.metsko.entity.Tag;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -44,5 +48,5 @@ public interface OfferService {
 
     void removeCategory(Long offerId) throws SQLException, NotUpdatedException;
 
-    List<Offer> findFilteredOffers(OfferFilter offerFilter) throws SQLException, NotFoundException;
+    List<Offer> findFilteredOffers(Map<String, String> filter) throws SQLException, NotFoundException;
 }

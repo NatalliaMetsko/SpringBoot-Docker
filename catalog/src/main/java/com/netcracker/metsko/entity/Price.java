@@ -1,6 +1,8 @@
 package com.netcracker.metsko.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -18,6 +20,7 @@ public class Price {
     private String currency;
 
     @OneToOne
+    @JsonBackReference
     private Offer offer;
 
     public Price() {

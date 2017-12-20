@@ -3,7 +3,6 @@ package com.netcracker.metsko.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -22,9 +21,6 @@ public class OrderItem {
     private String description;
 
     @Column
-    private Date dateOfAddition;
-
-    @Column
     @NotNull
     private String category;
 
@@ -37,11 +33,10 @@ public class OrderItem {
     public OrderItem() {
     }
 
-    public OrderItem(String name, String description, Date dateOfAddition,
-                     String category, double price, Order order) {
+    public OrderItem(String name, String description, String category,
+                     double price, Order order) {
         this.name = name;
         this.description = description;
-        this.dateOfAddition = dateOfAddition;
         this.category = category;
         this.price = price;
         this.order = order;
@@ -69,14 +64,6 @@ public class OrderItem {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Date getDateOfAddition() {
-        return dateOfAddition;
-    }
-
-    public void setDateOfAddition(Date dateOfAddition) {
-        this.dateOfAddition = dateOfAddition;
     }
 
     public String getCategory() {
@@ -112,14 +99,13 @@ public class OrderItem {
                 Double.compare(orderItem.getPrice(), getPrice()) == 0 &&
                 Objects.equals(getName(), orderItem.getName()) &&
                 Objects.equals(getDescription(), orderItem.getDescription()) &&
-                Objects.equals(getDateOfAddition(), orderItem.getDateOfAddition()) &&
                 Objects.equals(getCategory(), orderItem.getCategory()) &&
                 Objects.equals(getOrder(), orderItem.getOrder());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDateOfAddition(), getCategory(), getPrice(), getOrder());
+        return Objects.hash(getId(), getName(), getDescription(), getCategory(), getPrice(), getOrder());
     }
 
     @Override
@@ -128,7 +114,6 @@ public class OrderItem {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
-        sb.append(", dateOfAddition=").append(dateOfAddition);
         sb.append(", category='").append(category).append('\'');
         sb.append(", price=").append(price);
         sb.append(", order=").append(order);

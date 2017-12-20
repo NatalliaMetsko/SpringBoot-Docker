@@ -18,7 +18,7 @@ public interface InventoryFeignClient {
     OrderDTO addOrderItem(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id, @RequestBody OfferDTO offerDTO);
 
     @GetMapping(value = "/{customerEmail}/orders")
-    List<OrderDTO> findAllCustomersOrders(@PathVariable("customerEmail") String customerEmail);
+    List<OrderDTO> findCustomerOrders(@PathVariable("customerEmail") String customerEmail);
 
     @GetMapping(value = "/{customerEmail}/orders/paidOrders")
     List<OrderDTO> findPaidOrders(@PathVariable("customerEmail") String customerEmail);
