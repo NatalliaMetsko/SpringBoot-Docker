@@ -33,5 +33,5 @@ zuul:
     manager-service:
         path: /manager/**
         serviceId: manager-service
-        tripPrefix: true
+        stripPrefix: true
         sensitiveHeaders:
