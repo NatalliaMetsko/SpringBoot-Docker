@@ -1,5 +1,7 @@
 package com.netcracker.metsko.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -12,7 +14,7 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(unique = true)
+    @Column
     @NotNull
     @Size(min = 3, max = 20)
     private String name;
@@ -20,24 +22,22 @@ public class OrderItem {
     @Column
     private String description;
 
-    @Column
-    @NotNull
-    private String category;
+
 
     @Column
     private double price;
 
     @ManyToOne
+    @JsonBackReference
     private Order order;
 
     public OrderItem() {
     }
 
-    public OrderItem(String name, String description, String category,
+    public OrderItem(String name, String description,
                      double price, Order order) {
         this.name = name;
         this.description = description;
-        this.category = category;
         this.price = price;
         this.order = order;
     }
@@ -66,14 +66,6 @@ public class OrderItem {
         this.description = description;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public double getPrice() {
         return price;
     }
@@ -99,13 +91,12 @@ public class OrderItem {
                 Double.compare(orderItem.getPrice(), getPrice()) == 0 &&
                 Objects.equals(getName(), orderItem.getName()) &&
                 Objects.equals(getDescription(), orderItem.getDescription()) &&
-                Objects.equals(getCategory(), orderItem.getCategory()) &&
                 Objects.equals(getOrder(), orderItem.getOrder());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getCategory(), getPrice(), getOrder());
+        return Objects.hash(getId(), getName(), getDescription(),  getPrice(), getOrder());
     }
 
     @Override
@@ -114,7 +105,6 @@ public class OrderItem {
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", description='").append(description).append('\'');
-        sb.append(", category='").append(category).append('\'');
         sb.append(", price=").append(price);
         sb.append(", order=").append(order);
         sb.append('}');

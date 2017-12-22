@@ -8,10 +8,11 @@ import com.netcracker.metsko.util.LocalDateSerializer;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 @Entity(name = "InvOrder")
 public class Order {
@@ -24,13 +25,9 @@ public class Order {
     private String name;
 
     @Column
-    @Size(min = 5, max = 100)
-    private String description;
-
-    @Column
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate dataOfOrder;
+    private LocalDate dataOfCreation;
 
     @Column
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -69,12 +66,24 @@ public class Order {
     public Order() {
     }
 
-    public Order(String name, String description, LocalDate dataOfOrder, LocalDate dataOfReceive,
-                 LocalDate dataOfCompletion, String customerEmail, List<OrderItem> orderItemList,
-                 double totalPrice, int itemAmount, LocalDate paymentDate, String status) {
+    public Order(String customerEmail, String status) {
+        this.name = "Order#" + getNumber();
+        this.dataOfCreation = LocalDate.now();
+        this.customerEmail = customerEmail;
+        this.dataOfReceive = null;
+        this.dataOfCompletion = null;
+        this.orderItemList = Collections.EMPTY_LIST;
+        this.totalPrice = 0;
+        this.itemAmount = 0;
+        this.paymentDate = null;
+        this.status = status;
+    }
+
+    public Order(String name, LocalDate dataOfOrder, LocalDate dataOfReceive, LocalDate dataOfCompletion,
+                 String customerEmail, List<OrderItem> orderItemList, double totalPrice,
+                 int itemAmount, LocalDate paymentDate, String status) {
         this.name = name;
-        this.description = description;
-        this.dataOfOrder = dataOfOrder;
+        this.dataOfCreation = dataOfOrder;
         this.dataOfReceive = dataOfReceive;
         this.dataOfCompletion = dataOfCompletion;
         this.customerEmail = customerEmail;
@@ -97,44 +106,32 @@ public class Order {
         return name;
     }
 
-    private void setName() {
-        this.name = "Order#" + getId();
+    private void setName(String name) {
+        this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public LocalDate getDataOfCreation() {
+        return dataOfCreation;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getDataOfOrder() {
-        return dataOfOrder;
-    }
-
-    private void setDataOfOrder() {
-        this.dataOfOrder = LocalDate.now();
+    public void setDataOfCreation(LocalDate dataOfCreation) {
+        this.dataOfCreation = dataOfCreation;
     }
 
     public LocalDate getDataOfReceive() {
         return dataOfReceive;
     }
 
-    private void setDataOfReceive() {
-        if (this.paymentDate != null) {
-            this.dataOfReceive = paymentDate.plusDays(7);
-            this.status = String.valueOf(Status.ACTIVE);
-        } else {
-            this.dataOfReceive = null;
-        }
+    public void setDataOfReceive() {
+        this.dataOfReceive = paymentDate.plusDays(7);
+        this.status = String.valueOf(Status.ACTIVE);
     }
 
     public LocalDate getDataOfCompletion() {
         return dataOfCompletion;
     }
 
-    private void setDataOfCompletion() {
+    public void setDataOfCompletion() {
         this.dataOfCompletion = dataOfReceive.plusYears(1);
     }
 
@@ -155,19 +152,28 @@ public class Order {
     }
 
     public double getTotalPrice() {
-        setTotalPrice();
+        this.totalPrice = orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
         return totalPrice;
     }
 
     private void setTotalPrice() {
-        this.totalPrice = this.orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
+        this.totalPrice = orderItemList.stream().mapToDouble(OrderItem::getPrice).sum();
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public int getItemAmount() {
+        this.itemAmount = orderItemList.size();
         return itemAmount;
     }
 
-    public void setItemAmount() {
+    public void setItemAmount(int itemAmount) {
+        this.itemAmount = itemAmount;
+    }
+
+    private void setItemAmount() {
         this.itemAmount = orderItemList.size();
     }
 
@@ -183,22 +189,17 @@ public class Order {
         return paymentDate;
     }
 
-    private void setPaymentDate() {
-        if (this.signPayment) {
-            this.paymentDate = LocalDate.now();
-        } else {
-            this.paymentDate = null;
-        }
+    public void setPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = paymentDate;
     }
 
     public String getStatus() {
-        setStatus();
         return status;
     }
 
-    private void setStatus() {
-        if (orderItemList.size() == 0) {
-            this.status = String.valueOf(Status.NOT_AVAILABLE);
+    public void setStatus() {
+        if (this.orderItemList.size() == 0) {
+            this.status = String.valueOf(Status.EMPTY);
         } else {
             if (!this.signPayment) {
                 this.status = String.valueOf(Status.PENDING);
@@ -215,26 +216,29 @@ public class Order {
         }
     }
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public void addOrderItem(OrderItem orderItem) {
-        this.orderItemList.add(orderItem);
-        orderItem.setOrder(this);
+        if (!this.status.equals(String.valueOf(Status.CANCELED))) {
+            this.orderItemList.add(orderItem);
+            orderItem.setOrder(this);
+            this.setItemAmount();
+            this.totalPrice = totalPrice + orderItem.getPrice();
+            this.status = String.valueOf(Status.PENDING);
+        } else {
+            System.out.println(getName() + " canceled\n");
+        }
     }
 
     public void removeOrderItem(OrderItem orderItem) {
-        this.orderItemList.remove(orderItem);
-    }
-
-    public void setFields() {
-        setName();
-        setItemAmount();
-        setDataOfOrder();
-        setDataOfReceive();
-        setDataOfCompletion();
-        setTotalPrice();
-        setPaymentDate();
-        setStatus();
+        if (this.status.equals(String.valueOf(Status.PENDING))) {
+            this.orderItemList.remove(orderItem);
+        } else System.out.println(getName() + " canceled\n");
 
     }
+
 
     @Override
     public boolean equals(Object object) {
@@ -246,8 +250,7 @@ public class Order {
                 getItemAmount() == order.getItemAmount() &&
                 getSignPayment() == order.getSignPayment() &&
                 Objects.equals(getName(), order.getName()) &&
-                Objects.equals(getDescription(), order.getDescription()) &&
-                Objects.equals(getDataOfOrder(), order.getDataOfOrder()) &&
+                Objects.equals(getDataOfCreation(), order.getDataOfCreation()) &&
                 Objects.equals(getDataOfReceive(), order.getDataOfReceive()) &&
                 Objects.equals(getDataOfCompletion(), order.getDataOfCompletion()) &&
                 Objects.equals(getCustomerEmail(), order.getCustomerEmail()) &&
@@ -258,7 +261,7 @@ public class Order {
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getDescription(), getDataOfOrder(), getDataOfReceive(), getDataOfCompletion(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), getSignPayment(), getPaymentDate(), getStatus());
+        return Objects.hash(getId(), getName(), getDataOfCreation(), getDataOfReceive(), getDataOfCompletion(), getCustomerEmail(), getOrderItemList(), getTotalPrice(), getItemAmount(), getSignPayment(), getPaymentDate(), getStatus());
     }
 
     @Override
@@ -266,8 +269,7 @@ public class Order {
         final StringBuilder sb = new StringBuilder("Order{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
-        sb.append(", description='").append(description).append('\'');
-        sb.append(", dataOfOrder=").append(dataOfOrder);
+        sb.append(", dataOfCreation=").append(dataOfCreation);
         sb.append(", dataOfReceive=").append(dataOfReceive);
         sb.append(", dataOfCompletion=").append(dataOfCompletion);
         sb.append(", customerEmail='").append(customerEmail).append('\'');
@@ -279,5 +281,11 @@ public class Order {
         sb.append(", status='").append(status).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    private String getNumber() {
+        Random random = new Random();
+        Integer number = random.nextInt(1000000000);
+        return Integer.toString(number);
     }
 }

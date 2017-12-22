@@ -2,6 +2,7 @@ package com.netcracker.metsko.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -35,6 +36,7 @@ public class Offer {
     private List<Tag> tagList;
 
     @Column
+    @JsonIgnore
     private String tags;
 
     @ManyToOne

@@ -1,4 +1,4 @@
-package com.netcracker.metsko.entity;
+package com.netcracker.metsko.entity.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -21,17 +21,15 @@ public class OrderDTO {
 
     private String name;
 
-    private String description;
-
-    private double totalPrice;
-
-    private int itemAmount;
-
     private String customerEmail;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate dataOfCreation;
+
+    private double totalPrice;
+
+    private int itemAmount;
 
     private String status;
 
@@ -49,14 +47,6 @@ public class OrderDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public double getTotalPrice() {

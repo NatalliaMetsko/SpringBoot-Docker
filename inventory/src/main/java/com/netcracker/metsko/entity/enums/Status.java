@@ -7,5 +7,5 @@ public enum Status {
     ACTIVE,
     CANCELED,
     TERMINATED,
-    NOT_AVAILABLE
+    EMPTY
 }

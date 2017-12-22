@@ -21,7 +21,7 @@ public class OrderDTO {
 
     private String name;
 
-    private String description;
+    private String customerEmail;
 
     private double totalPrice;
 
@@ -33,6 +33,7 @@ public class OrderDTO {
 
     private String status;
 
-
-
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
 }

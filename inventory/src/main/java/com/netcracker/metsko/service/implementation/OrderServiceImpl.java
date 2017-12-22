@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -34,7 +35,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public void createOrder(Order order) throws NotCreatedException, SQLException {
         try {
-            order.setFields();
             orderDao.create(order);
         } catch (Exception e) {
             throw new NotCreatedException("The Order" + ExceptionMessage.NOT_CREATED);
@@ -86,7 +86,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Order updateOrder(Order order) throws SQLException, NotUpdatedException {
         try {
-            order.setFields();
             Order updatedOrder = (Order) orderDao.update(order);
             if (updatedOrder != null) {
                 return updatedOrder;
@@ -100,31 +99,35 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Transactional
-    public void addOrderItem(String customerEmail, Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException {
+    public Order addOrderItem(String customerEmail, Long id, OrderItem orderItem) throws SQLException, NotUpdatedException, NotFoundException {
         try {
-            Order order = (Order) orderDao.findCustomerOrdersAndById(customerEmail, orderId);
-            if (order != null) {
+            Order order = orderDao.findCustomerOrdersAndById(customerEmail, id);
+            if (order.getStatus().equals(String.valueOf(Status.PENDING))
+                    || order.getStatus().equals(String.valueOf(Status.EMPTY))) {
                 orderItemDao.create(orderItem);
                 order.addOrderItem(orderItem);
-                order.setFields();
-                orderDao.update(order);
+                Order updatedOrder = (Order) orderDao.update(order);
                 orderItemDao.update(orderItem);
+                return updatedOrder;
             } else {
-                throw new NotUpdatedException("OrderItem" + ExceptionMessage.NOT_ADDED);
+                throw new NotUpdatedException("The order is not suitable.\n");
             }
         } catch (Exception e) {
-            throw new NotUpdatedException("OrderItem" + ExceptionMessage.NOT_ADDED);
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Transactional
-    public void removeOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException {
+    public Order removeOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException {
         try {
             Order order = (Order) orderDao.read(orderId);
-            if (order != null) {
+            if (order.getStatus().equals(String.valueOf(Status.PENDING))) {
                 order.removeOrderItem(orderItem);
-                order.setFields();
+                if (order.getItemAmount() == 0) {
+                    order.setStatus(String.valueOf(Status.EMPTY));
+                }
                 orderDao.update(order);
+                return order;
             } else {
                 throw new NotUpdatedException("OrderItem" + ExceptionMessage.NOT_DELETED);
             }
@@ -145,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findPaidOrders(String customerEmail) throws SQLException, NotFoundException {
         try {
-            List<Order> order =  orderDao.findPaidOrders(customerEmail);
+            List<Order> order = orderDao.findPaidOrders(customerEmail);
             if (order != null) {
                 return order;
             } else {
@@ -159,7 +162,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findUnpaidOrders(String customerEmail) throws SQLException, NotFoundException {
         try {
-            List<Order> order =  orderDao.findUnpaidOrders(customerEmail);
+            List<Order> order = orderDao.findUnpaidOrders(customerEmail);
             if (order != null) {
                 return order;
             } else {
@@ -173,12 +176,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<Order> findOrdersByStatus(String customerEmail, String status) throws SQLException, NotFoundException {
         try {
-            List<Order> order =  orderDao.findOrdersByStatus(customerEmail, status);
-            if (order != null) {
-                return order;
-            } else {
-                throw new NotFoundException("The orders" + ExceptionMessage.NOT_FOUND);
-            }
+            List<Order> order = orderDao.findOrdersByStatus(customerEmail, status.toUpperCase());
+            return order;
+
         } catch (Exception e) {
             throw new NotFoundException("The orders " + ExceptionMessage.NOT_FOUND);
         }
@@ -187,7 +187,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Double findTotalPrice(String customerEmail, Long orderId) throws SQLException, NotFoundException {
         try {
-            Order order =  orderDao.findCustomerOrdersAndById(customerEmail, orderId);
+            Order order = orderDao.findCustomerOrdersAndById(customerEmail, orderId);
             if (order != null) {
                 return order.getTotalPrice();
             } else {
@@ -198,24 +198,34 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    @Override
-    public Order payForOrder(String customerEmail, Long id, Double sumToPay) throws SQLException, NotUpdatedException {
+    @Transactional
+    public Order payForOrder(String customerEmail, Long id, Double sumToPay) throws
+            SQLException, NotUpdatedException {
         try {
             Order order = orderDao.findCustomerOrdersAndById(customerEmail, id);
-            if (sumToPay==order.getTotalPrice()) {
-                if (!order.getStatus().equals(String.valueOf(Status.CANCELED))) {
+            if ((sumToPay == order.getTotalPrice()) && (!order.getStatus().equals(String.valueOf(Status.CANCELED)))) {
                     order.setSignPayment();
-                    order.setFields();
-                    return order;
+                    order.setPaymentDate(LocalDate.now());
+                    order.setDataOfReceive();
+                    order.setDataOfCompletion();
+                    Order updated = (Order) orderDao.update(order);
+                    return updated;
                 } else {
                     throw new NotUpdatedException("The order is canceled");
                 }
-            }
-            else{
-                throw new NotUpdatedException("There is not enough money");
-            }
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
+            throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
+        }
+    }
+
+    @Transactional
+    public Order cancelOrder(String customerEmail, Long id) throws SQLException, NotUpdatedException {
+        try {
+            Order order = orderDao.findCustomerOrdersAndById(customerEmail, id);
+            order.setStatus(String.valueOf(Status.CANCELED));
+            Order updated = (Order) orderDao.update(order);
+            return updated;
+        } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
         }
     }

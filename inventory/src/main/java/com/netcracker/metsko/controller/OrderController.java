@@ -1,10 +1,16 @@
 package com.netcracker.metsko.controller;
 
-import com.netcracker.metsko.entity.*;
+import com.netcracker.metsko.entity.ExceptionMessage;
+import com.netcracker.metsko.entity.Order;
+import com.netcracker.metsko.entity.OrderItem;
+import com.netcracker.metsko.entity.dto.OrderDTO;
+import com.netcracker.metsko.entity.dto.OrderItemDTO;
+import com.netcracker.metsko.entity.enums.Status;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import com.netcracker.metsko.exceptions.NotUpdatedException;
+import com.netcracker.metsko.interceptor.LoggerInterceptor;
 import com.netcracker.metsko.service.OrderService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,10 +26,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "api/v1/inventory/orders")
+@RequestMapping(value = "api/v1/inventory")
 @Api(value = "Controller", description = "This is order controller")
 public class OrderController {
 
@@ -33,25 +40,27 @@ public class OrderController {
     @Autowired
     private ModelMapper modelMapper;
 
+    private static final Logger log = Logger.getLogger(LoggerInterceptor.class.getName());
+
     public OrderController() {
     }
 
-    @PostMapping
+    @PostMapping(value = "/customerEmail/{customerEmail}/orders")
     @ApiOperation(httpMethod = "POST",
             value = "Create an order",
-            response = Order.class,
             nickname = "createOrder")
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Order created"),
             @ApiResponse(code = 500, message = "Order not created")
     })
-    public ResponseEntity<OrderDTO> createOrder( @Validated @RequestBody OrderDTO orderDTO) throws NotCreatedException, SQLException {
-        if (orderDTO.getCustomerEmail().length() != 0) {
-            Order order = modelMapper.map(orderDTO, Order.class);
-            order.setFields();
+    public ResponseEntity<OrderDTO> createOrder(@PathVariable("customerEmail") String customerEmail) throws NotCreatedException, SQLException {
+        try{
+            Order order = new Order(customerEmail, String.valueOf(Status.EMPTY));
+            log.info(order.toString());
             orderService.createOrder(order);
-            return new ResponseEntity<OrderDTO>(orderDTO, HttpStatus.CREATED);
-        } else {
+            OrderDTO dto = modelMapper.map(order, OrderDTO.class);
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        } catch (Exception e){
             throw new NotCreatedException(ExceptionMessage.NULL_FIELDS);
         }
     }
@@ -70,8 +79,7 @@ public class OrderController {
     public ResponseEntity<List<Order>> findAll() throws SQLException, NotFoundException {
         try {
             List<Order> orderList = orderService.findAll();
-
-            return new ResponseEntity<List<Order>>(orderList, HttpStatus.FOUND);
+            return new ResponseEntity<>(orderList, HttpStatus.FOUND);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
@@ -87,17 +95,17 @@ public class OrderController {
             @ApiResponse(code = 404, message = "Orders not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<List<OrderDTO>> findCustomerOrders(@PathVariable("email") String customerEmail) throws NotFoundException, SQLException {
+    public ResponseEntity<List<OrderDTO>> findCustomerOrders(@PathVariable("customerEmail") String customerEmail) throws NotFoundException, SQLException {
         try {
             List<Order> orderList = orderService.findCustomerOrders(customerEmail);
             List<OrderDTO> ordersDTO=orderList.stream().map(order -> modelMapper.map(order,OrderDTO.class)).collect(Collectors.toList());
-            return new ResponseEntity<List<OrderDTO>>(ordersDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(ordersDTO, HttpStatus.FOUND);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
     }
 
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/customerEmail/{customerEmail}/orders/{id}")
     @ApiOperation(httpMethod = "GET",
             value = "Find an order by it's id",
             response = Order.class,
@@ -111,7 +119,7 @@ public class OrderController {
         try {
             Order order = orderService.findOrderById(id);
             OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
-            return new ResponseEntity<OrderDTO>(orderDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(orderDTO, HttpStatus.FOUND);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
@@ -127,22 +135,19 @@ public class OrderController {
             @ApiResponse(code = 404, message = "Order not found"),
             @ApiResponse(code = 500, message = "Order not updated")
     })
-    public ResponseEntity<Order> updateOrder(@Validated @RequestBody Order order) throws NotUpdatedException, SQLException {
+    public ResponseEntity<Order> updateOrder(@RequestBody Order order) throws NotUpdatedException, SQLException {
         try {
-            if (order.getCustomerEmail().length() != 0 && orderService.findOrderById(order.getId()) != null) {
                 Order updatedOrder = orderService.updateOrder(order);
-                return new ResponseEntity<Order>(order, HttpStatus.OK);
-            } else {
-                throw new NotUpdatedException(ExceptionMessage.NULL_FIELDS);
-            }
-        } catch (NotFoundException e) {
+                return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
+
+        } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
         }
 
     }
 
-    @PutMapping(value = "/customerEmail/{customerEmail}/orders/{id}/addItems")
-    @ApiOperation(httpMethod = "PUT",
+    @PostMapping(value = "/customerEmail/{customerEmail}/orders/{id}/orderItems")
+    @ApiOperation(httpMethod = "POST",
             value = "Add orderItem to order",
             response = Long.class,
             nickname = "addOrderItem")
@@ -151,18 +156,20 @@ public class OrderController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public ResponseEntity<Long> addOrderItem(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id, @Validated @RequestBody OrderItemDTO orderItemDTO) throws NotUpdatedException, SQLException {
-        if (orderItemDTO.getName().length() != 0) {
+    public ResponseEntity<OrderDTO> addOrderItem(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id, @Validated @RequestBody OrderItemDTO orderItemDTO) throws NotUpdatedException, SQLException, NotFoundException {
+        try{
             OrderItem orderItem = modelMapper.map(orderItemDTO, OrderItem.class);
-            orderService.addOrderItem(customerEmail, id, orderItem);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
-        } else {
+            orderItem.setOrder(orderService.findOrderById(id));
+            log.info(orderItem.toString());
+            Order order = orderService.addOrderItem(customerEmail, id, orderItem);
+            OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+            return new ResponseEntity<>(orderDTO, HttpStatus.OK);
+        } catch (Exception e){
             throw new NotUpdatedException(ExceptionMessage.NOT_ADDED);
         }
     }
 
-    @PutMapping(value = "/{id}/remove")
+    @PutMapping(value = "orders/{id}/remove")
     @ApiOperation(httpMethod = "PUT",
             value = "Remove an orderItem from order",
             response = Long.class,
@@ -172,10 +179,10 @@ public class OrderController {
             @ApiResponse(code = 404, message = "Order not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> removeOrderItem(@PathVariable("id") Long id, @Validated @RequestBody OrderItem orderItem) throws NotUpdatedException, SQLException {
+    public ResponseEntity<Order> removeOrderItem(@PathVariable("id") Long id, @Validated @RequestBody OrderItem orderItem) throws NotUpdatedException, SQLException {
         try {
-            orderService.removeOrderItem(id, orderItem);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            Order order = orderService.removeOrderItem(id, orderItem);
+            return new ResponseEntity<>(order, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
         }
@@ -194,7 +201,27 @@ public class OrderController {
     public ResponseEntity<Long> deleteOrder(@PathVariable("id") Long id) throws NotDeletedException, SQLException {
         try {
             orderService.deleteOrder(id);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>(id, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
+        }
+    }
+
+    @PutMapping(value = "/customerEmail/{customerEmail}/orders/{id}")
+    @ApiOperation(httpMethod = "PUT",
+            value = "Cancel the order",
+            response = Long.class,
+            nickname = "cancelOrder")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Order canceled"),
+            @ApiResponse(code = 404, message = "Order not found"),
+            @ApiResponse(code = 500, message = "Error")
+    })
+    public ResponseEntity<OrderDTO> cancelOrder(@PathVariable("customerEmail") String customerEmail,@PathVariable("id") Long id) throws NotDeletedException, SQLException, NotUpdatedException {
+        try {
+            Order order = orderService.cancelOrder(customerEmail, id);
+            OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
+            return new ResponseEntity<>(orderDTO, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
         }
@@ -214,7 +241,7 @@ public class OrderController {
         try {
             List<Order> orders = orderService.findPaidOrders(customerEmail);
             List<OrderDTO> ordersDTO = orders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).collect(Collectors.toList());
-            return new ResponseEntity<List<OrderDTO>>(ordersDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(ordersDTO, HttpStatus.FOUND);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
@@ -234,18 +261,18 @@ public class OrderController {
         try {
             List<Order> orders = orderService.findUnpaidOrders(customerEmail);
             List<OrderDTO> ordersDTO = orders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).collect(Collectors.toList());
-            return new ResponseEntity<List<OrderDTO>>(ordersDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(ordersDTO, HttpStatus.FOUND);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
     }
 
-    @GetMapping(value = "/{customerEmail}/orders/status/{status}")
+    @GetMapping(value = "/customerEmail/{customerEmail}/orders/status/{status}")
     public ResponseEntity<List<OrderDTO>> findOrdersByStatus(@PathVariable("customerEmail") String customerEmail, @PathVariable("status") String status) throws NotFoundException, SQLException {
         try {
             List<Order> orders = orderService.findOrdersByStatus(customerEmail, status);
             List<OrderDTO> ordersDTO = orders.stream().map(order -> modelMapper.map(order, OrderDTO.class)).collect(Collectors.toList());
-            return new ResponseEntity<List<OrderDTO>>(ordersDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(ordersDTO, HttpStatus.FOUND);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
@@ -264,13 +291,13 @@ public class OrderController {
     public ResponseEntity<Double> findTotalPrice(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id) throws NotFoundException, SQLException {
         try {
             Double totalPrice = orderService.findTotalPrice(customerEmail, id);
-            return new ResponseEntity<Double>(totalPrice, HttpStatus.OK);
+            return new ResponseEntity<>(totalPrice, HttpStatus.OK);
         } catch (Exception e){
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
     }
 
-    @PutMapping(value = "/customerEmail/{customerEmail}/orders/{id}")
+    @PutMapping(value = "/customerEmail/{customerEmail}/orders/{id}/payments")
     @ApiOperation(httpMethod = "PUT",
             value = "Pay total price of the order",
             response = Long.class,
@@ -284,7 +311,7 @@ public class OrderController {
         try {
             Order order = orderService.payForOrder(customerEmail,id, sumToPay);
             OrderDTO orderDTO = modelMapper.map(order, OrderDTO.class);
-            return new ResponseEntity<OrderDTO>(orderDTO, HttpStatus.OK);
+            return new ResponseEntity<>(orderDTO, HttpStatus.OK);
         }catch (Exception e){
             throw new NotUpdatedException("The order is not paid.");
         }

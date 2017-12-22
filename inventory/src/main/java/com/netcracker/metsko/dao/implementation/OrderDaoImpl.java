@@ -42,7 +42,7 @@ public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDa
 
     @Override
     public List<Order> findOrdersByStatus(String customerEmail, String status) throws SQLException, NotFoundException {
-        return entityManager.createQuery("select io from InvOrder io where io.customerEmail='"+customerEmail+"' and io.status="+status, Order.class).getResultList();
+        return entityManager.createQuery("select io from InvOrder io where io.customerEmail='"+customerEmail+"' and io.status='"+status+"'", Order.class).getResultList();
     }
 
 }

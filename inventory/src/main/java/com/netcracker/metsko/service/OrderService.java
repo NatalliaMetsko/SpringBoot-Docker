@@ -24,9 +24,9 @@ public interface OrderService {
 
     Order updateOrder(Order order) throws SQLException, NotUpdatedException;
 
-    void addOrderItem(String customerEmail, Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
+    Order addOrderItem(String customerEmail,Long id, OrderItem orderItem) throws SQLException, NotUpdatedException, NotFoundException;
 
-    void removeOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
+    Order removeOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException;
 
     void deleteOrder(Long id) throws SQLException, NotDeletedException;
 
@@ -39,4 +39,6 @@ public interface OrderService {
     Double findTotalPrice(String customerEmail, Long orderId) throws SQLException, NotFoundException;
 
     Order payForOrder(String customerEmail, Long id, Double sumToPay) throws SQLException, NotUpdatedException;
+
+    Order cancelOrder(String customewEmail, Long id) throws SQLException, NotUpdatedException;
 }

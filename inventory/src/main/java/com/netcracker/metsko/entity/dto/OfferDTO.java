@@ -1,4 +1,4 @@
-package com.netcracker.metsko.entity;
+package com.netcracker.metsko.entity.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
