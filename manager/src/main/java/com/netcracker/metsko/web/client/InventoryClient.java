@@ -2,6 +2,9 @@ package com.netcracker.metsko.web.client;
 
 import com.netcracker.metsko.entity.OrderDTO;
 import com.netcracker.metsko.entity.OrderItemDTO;
+import com.netcracker.metsko.exceptions.NotCreatedException;
+import com.netcracker.metsko.exceptions.NotFoundException;
+import com.netcracker.metsko.exceptions.NotUpdatedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Component
@@ -19,7 +23,7 @@ public class InventoryClient {
 //    @Value("url.inventory")
 //    private String url;
 
-    protected String url ="http://yumasday:8082/api/v1/inventory";
+    protected String url = "http://yumasday:8082/api/v1/inventory";
 
     @Autowired
     private RestTemplate restTemplate;
@@ -27,64 +31,89 @@ public class InventoryClient {
     public InventoryClient() {
     }
 
-    public OrderDTO createOrder(String customerEmail) throws RestClientException {
-        ResponseEntity<OrderDTO> response = restTemplate.postForEntity(url + "/customerEmail/{customerEmail}/orders",null, OrderDTO.class, customerEmail);
-        OrderDTO orderDTO = response.getBody();
-        return orderDTO;
+    public OrderDTO createOrder(String customerEmail) throws RestClientException, NotCreatedException, SQLException {
+        try {
+            HttpEntity<String> entity = new HttpEntity<>(customerEmail);
+            ResponseEntity<OrderDTO> response = restTemplate.postForEntity(url + "/orders", entity, OrderDTO.class);
+            OrderDTO orderDTO = response.getBody();
+            return orderDTO;
+        } catch (Exception e) {
+            throw new NotCreatedException();
+        }
     }
 
-    public OrderDTO addOrderItem(String customerEmail, Long id, OrderItemDTO orderItem) {
-        HttpEntity<OrderItemDTO> entity = new HttpEntity<>(orderItem);
-        ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/{id}/orderItems", HttpMethod.POST, entity, OrderDTO.class, customerEmail, id);
-        OrderDTO orderDTO = response.getBody();
-        return orderDTO;
+    public OrderDTO addOrderItem(Long id, OrderItemDTO orderItem) throws SQLException, NotUpdatedException {
+        try {
+            HttpEntity<OrderItemDTO> entity = new HttpEntity<>(orderItem);
+            ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/orders/{id}/orderitems", HttpMethod.POST, entity, OrderDTO.class, id);
+            OrderDTO orderDTO = response.getBody();
+            return orderDTO;
+        } catch (Exception e) {
+            throw new NotUpdatedException();
+        }
     }
 
-    public List<OrderDTO> findCustomerOrders(String customerEmail) throws RestClientException {
-        ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
-        }, customerEmail);
-        List<OrderDTO> dtoList = response.getBody();
-        return dtoList;
+    public OrderDTO removeOrderItem(Long id, Long orderItemId) throws SQLException, NotUpdatedException {
+        try {
+            HttpEntity<Long> entity = new HttpEntity<>(orderItemId);
+            ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/orders/{id}/removeorderitems", HttpMethod.PUT, entity, OrderDTO.class, id);
+            OrderDTO orderDTO = response.getBody();
+            return orderDTO;
+        } catch (Exception e) {
+            throw new NotUpdatedException();
+        }
     }
 
-
-    public List<OrderDTO> findPaidOrders(String customerEmail) {
-        ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/paidOrders", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
-        }, customerEmail);
-        List<OrderDTO> dtoList = response.getBody();
-        return dtoList;
+    public List<OrderDTO> getOrdersByPayment(boolean signPayment) throws SQLException, NotFoundException {
+        try {
+            ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/orders/payments?signPayment={signPayment}", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
+            }, signPayment);
+            List<OrderDTO> dtoList = response.getBody();
+            return dtoList;
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    public List<OrderDTO> findUnpaidOrders(String customerEmail) {
-        ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/unpaidOrders", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
-        }, customerEmail);
-        List<OrderDTO> dtoList = response.getBody();
-        return dtoList;
+    public Double findTotalPrice(Long id) throws SQLException, NotFoundException {
+        try {
+            ResponseEntity<Double> response = restTemplate.exchange(url + "/orders/{id}/totalprices", HttpMethod.GET, null, Double.class, id);
+            Double price = response.getBody();
+            return price;
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    public Double findTotalPrice(String customerEmail, Long id) {
-        ResponseEntity<Double> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/{id}/totalprice", HttpMethod.GET, null, Double.class, customerEmail, id);
-        Double price = response.getBody();
-        return price;
+    public OrderDTO payForOrder(Long id) throws SQLException, NotUpdatedException {
+        try {
+            ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/orders/{id}/payments", HttpMethod.PUT, null, OrderDTO.class, id);
+            OrderDTO orderDTO = response.getBody();
+            return orderDTO;
+        }catch (Exception e){
+            throw new NotUpdatedException();
+        }
     }
 
-    public OrderDTO payForOrder(String customerEmail, Long id, Double sumToPay) {
-        HttpEntity<Double> entity = new HttpEntity<Double>(sumToPay);
-        ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/{id}/payments", HttpMethod.PUT, entity, OrderDTO.class, customerEmail, id);
-        OrderDTO orderDTO = response.getBody();
-        return orderDTO;
+    public List<OrderDTO> findOrdersByStatus(String status) throws SQLException, NotFoundException {
+        try {
+            ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/orders/status/{status}", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
+            }, status);
+            List<OrderDTO> dtoList = response.getBody();
+            return dtoList;
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    public List<OrderDTO> findOrdersByStatus(String customerEmail, String status) {
-        ResponseEntity<List<OrderDTO>> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/status/{status}", HttpMethod.GET, null, new ParameterizedTypeReference<List<OrderDTO>>() {
-        }, customerEmail, status);
-        List<OrderDTO> dtoList = response.getBody();
-        return dtoList;
-    }
+    public OrderDTO findOrderById(Long id) throws SQLException, NotFoundException {
+        try {
+            ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/orders/{id}", HttpMethod.GET, null, OrderDTO.class, id);
+            OrderDTO orderDTO = response.getBody();
+            return orderDTO;
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
 
-    public OrderDTO findOrderById(String customerEmail, Long id) {
-        ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/customerEmail/{customerEmail}/orders/{id}", HttpMethod.GET, null, OrderDTO.class, customerEmail, id);
-        OrderDTO orderDTO = response.getBody();
-        return orderDTO;
     }
 }

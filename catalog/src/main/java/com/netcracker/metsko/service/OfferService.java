@@ -1,9 +1,7 @@
 package com.netcracker.metsko.service;
 
-import com.netcracker.metsko.entity.Category;
 import com.netcracker.metsko.entity.Offer;
 import com.netcracker.metsko.entity.Price;
-import com.netcracker.metsko.entity.Tag;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
@@ -30,21 +28,21 @@ public interface OfferService {
 
     List<Offer> findAll() throws SQLException, NotFoundException;
 
-    List<Offer> findByTags(List<Tag> tagList) throws SQLException, NotFoundException;
+    List<Offer> findByTags(String tagList) throws SQLException, NotFoundException;
 
-    List<Offer> findAvailableOffers() throws SQLException, NotFoundException;
+    List<Offer> findOffersByAvailability(boolean availability) throws SQLException, NotFoundException;
 
     void addPrice(Long offerId, Price price) throws SQLException, NotUpdatedException;
 
-    void changePrice(Long offerId, Price price) throws SQLException, NotUpdatedException;
+    void changePrice(Long offerId, Double price) throws SQLException, NotUpdatedException;
 
-    List<Offer> getPriceFromTo(Price priceFrom, Price priceTo) throws SQLException, NotFoundException;
+    List<Offer> getPriceFromTo(Double priceFrom, Double priceTo) throws SQLException, NotFoundException;
 
-    void addTag(Long offerId, Tag tag) throws SQLException, NotUpdatedException;
+    void addTag(Long offerId, Long tagId) throws SQLException, NotUpdatedException;
 
-    void removeTag(Long offerId, Tag tag) throws SQLException, NotUpdatedException;
+    void removeTag(Long offerId, Long tagId) throws SQLException, NotUpdatedException;
 
-    void addCategory(Long offerId, Category category) throws SQLException, NotUpdatedException;
+    void addCategory(Long offerId, Long categoryId) throws SQLException, NotUpdatedException;
 
     void removeCategory(Long offerId) throws SQLException, NotUpdatedException;
 

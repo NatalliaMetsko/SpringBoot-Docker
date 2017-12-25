@@ -1,4 +1,4 @@
-package com.netcracker.metsko.entity;
+package com.netcracker.metsko.entity.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -8,15 +8,9 @@ import lombok.ToString;
 @Data
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OfferDTO {
+public class PriceDTO {
 
-    private Long id;
+    private String currency;
 
-    private String name;
-
-    private String description;
-
-    private double price;
-
-
+    private Double price;
 }

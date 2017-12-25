@@ -1,4 +1,4 @@
-package com.netcracker.metsko.controller;
+package com.netcracker.metsko.web.controller;
 
 import com.netcracker.metsko.entity.ErrorMessage;
 import com.netcracker.metsko.exceptions.NotCreatedException;
@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+
 @ControllerAdvice
 public class ControllerAdviser {
 
@@ -18,6 +19,7 @@ public class ControllerAdviser {
     public ResponseEntity<ErrorMessage> handlerNotCreatedException() {
         ErrorMessage errorMessage = new ErrorMessage(200, "Not created");
         return new ResponseEntity<ErrorMessage>(errorMessage, HttpStatus.OK);
+
     }
 
     @ExceptionHandler(NotFoundException.class)

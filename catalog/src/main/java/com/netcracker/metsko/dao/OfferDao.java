@@ -1,8 +1,6 @@
 package com.netcracker.metsko.dao;
 
 import com.netcracker.metsko.entity.Offer;
-import com.netcracker.metsko.entity.Price;
-import com.netcracker.metsko.entity.Tag;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -14,13 +12,13 @@ public interface OfferDao extends GenericDao<Offer, Long> {
 
     Offer findById(Long id) throws SQLException;
 
-    List<Offer> findByTags(List<Tag> tagList) throws SQLException;
+    List<Offer> findOffersByAvailability(boolean availability) throws SQLException;
 
-    List<Offer> findAvailableOffers() throws SQLException;
+    List<Offer> getPriceFromTo(Double priceFrom, Double price) throws SQLException;
 
-    List<Offer> getPriceFromTo(Price priceFrom, Price price) throws SQLException;
+    List<Offer> getPriceFrom(Double priceFrom) throws SQLException;
 
-    void changePrice(Long offerId, Price price) throws SQLException;
+    List<Offer> getPriceTo(Double priceTo) throws SQLException;
 
     List<Offer> findAll() throws SQLException;
 

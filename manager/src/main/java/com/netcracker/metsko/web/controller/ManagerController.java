@@ -1,20 +1,26 @@
 package com.netcracker.metsko.web.controller;
 
 
+import com.netcracker.metsko.ManagerApplication;
 import com.netcracker.metsko.entity.Filter;
 import com.netcracker.metsko.entity.OfferDTO;
 import com.netcracker.metsko.entity.OrderDTO;
 import com.netcracker.metsko.entity.OrderItemDTO;
-import com.netcracker.metsko.interceptor.LoggerInterceptor;
+import com.netcracker.metsko.exceptions.NotCreatedException;
+import com.netcracker.metsko.exceptions.NotFoundException;
+import com.netcracker.metsko.exceptions.NotUpdatedException;
 import com.netcracker.metsko.web.client.CatalogClient;
 import com.netcracker.metsko.web.client.InventoryClient;
 import io.swagger.annotations.Api;
-import org.modelmapper.ModelMapper;
+import org.hibernate.validator.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,96 +31,127 @@ import java.util.logging.Logger;
 @Api(value = "Controller", description = "This is manager controller")
 public class ManagerController {
 
-    private static final Logger log = Logger.getLogger(LoggerInterceptor.class.getName());
-
     @Autowired
     private CatalogClient catalogClient;
 
     @Autowired
     private InventoryClient inventoryClient;
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private Logger LOGGER = Logger.getLogger(ManagerApplication.class.getName());
 
-
-    @PostMapping(value = "/offers/filter")
-    public ResponseEntity<List<OfferDTO>> getFilteredOffers(@RequestBody Filter filter) {
-        log.info(filter.toString());
-        Map<String, String> map = new HashMap<>();
-        map.put("category", filter.getCategory());
-        map.put("tagList", filter.getTagList());
-        map.put("price", filter.getPrice().toString());
-        List<OfferDTO> dtoList = catalogClient.getOffers(map);
-        return new ResponseEntity<>(dtoList, HttpStatus.FOUND);
+    @PostMapping(value = "/offers/filters")
+    public ResponseEntity<List<OfferDTO>> getFilteredOffers(@Valid @RequestBody Filter filter) throws NotFoundException, SQLException {
+        try {
+            LOGGER.info(filter.toString());
+            Map<String, String> map = new HashMap<>();
+            map.put("category", filter.getCategory());
+            map.put("tagList", filter.getTagList());
+            if (filter.getMin() == null) {
+                map.put("min", Double.toString(0));
+            } else {
+                map.put("min", Double.toString(filter.getMin()));
+            }
+            if (filter.getMax() == null) {
+                map.put("max", Double.toString(0));
+            } else {
+                map.put("max", Double.toString(filter.getMax()));
+            }
+            LOGGER.info(map.toString());
+            List<OfferDTO> dtoList = catalogClient.getOffers(map);
+            return new ResponseEntity<>(dtoList, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    @PostMapping(value = "/customerEmail/{customerEmail}/orders")
-    public ResponseEntity<OrderDTO> createOrder(@PathVariable("customerEmail") String customerEmail) {
-        log.info("Create order for " + customerEmail);
-        OrderDTO dto = inventoryClient.createOrder(customerEmail);
-        return new ResponseEntity<>(dto, HttpStatus.FOUND);
+    @PostMapping(value = "/orders")
+    public ResponseEntity<OrderDTO> createOrder(@Email @RequestBody String customerEmail) throws SQLException, NotCreatedException {
+        try {
+            OrderDTO dto = inventoryClient.createOrder(customerEmail);
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotCreatedException();
+        }
     }
 
-    @PostMapping(value = "/customerEmail/{customerEmail}/orders/{id}/orderItems")
-    public ResponseEntity<OrderDTO> addOrderItem(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id, @RequestBody OfferDTO offerDTO) {
-        OrderItemDTO orderItemDTO = new OrderItemDTO();
-        orderItemDTO.setName(offerDTO.getName());
-        orderItemDTO.setDescription(offerDTO.getDescription());
-        orderItemDTO.setPrice(offerDTO.getPrice());
-        log.info("Add "+orderItemDTO.toString()+" for " + customerEmail + "'s order");
-        OrderDTO dto = inventoryClient.addOrderItem(customerEmail, id, orderItemDTO);
-        return new ResponseEntity<>(dto, HttpStatus.FOUND);
+    @PostMapping(value = "/orders/{id}/orderItems")
+    public ResponseEntity<OrderDTO> addOrderItem(@PathVariable("id") Long id, @RequestBody Long offerId) throws NotFoundException, SQLException, NotUpdatedException {
+        try {
+            OfferDTO offerDTO = catalogClient.findOfferById(offerId);
+            OrderItemDTO orderItemDTO = new OrderItemDTO();
+            orderItemDTO.setName(offerDTO.getName());
+            orderItemDTO.setDescription(offerDTO.getDescription());
+            orderItemDTO.setPrice(offerDTO.getPrice());
+            OrderDTO dto = inventoryClient.addOrderItem(id, orderItemDTO);
+            return new ResponseEntity<>(dto, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotUpdatedException();
+        }
     }
 
-    @GetMapping(value = "/customerEmail/{customerEmail}/orders")
-    public ResponseEntity<List<OrderDTO>> getOrders(@PathVariable("customerEmail") String customerEmail) {
-        log.info(customerEmail);
-        List<OrderDTO> orders = inventoryClient.findCustomerOrders(customerEmail);
-        return new ResponseEntity<>(orders, HttpStatus.FOUND);
+    @PutMapping(value = "/orders/{id}/orderItems")
+    public ResponseEntity<OrderDTO> removeOrderItem(@PathVariable("id") Long id, @RequestBody Long orderItemId) throws NotUpdatedException {
+        try {
+            OrderDTO orderDTO = inventoryClient.removeOrderItem(id, orderItemId);
+            return new ResponseEntity<>(orderDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotUpdatedException();
+        }
     }
 
-    @GetMapping(value = "/customerEmail/{customerEmail}/orders/paidOrders")
-    public ResponseEntity<List<OrderDTO>> getPaidOrders(@PathVariable("customerEmail") String customerEmail) {
-        log.info(customerEmail);
-        List<OrderDTO> orders = inventoryClient.findPaidOrders(customerEmail);
-        return new ResponseEntity<>(orders, HttpStatus.FOUND);
+    @GetMapping(value = "/orders/payments")
+    public ResponseEntity<List<OrderDTO>> getOrdersByPayment(@RequestParam("signPayment") boolean signPayment) throws NotFoundException {
+        try {
+            List<OrderDTO> orders = inventoryClient.getOrdersByPayment(signPayment);
+            return new ResponseEntity<>(orders, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    @GetMapping(value = "/customerEmail/{customerEmail}/orders/unpaidOrders")
-    public ResponseEntity<List<OrderDTO>> getUnpaidOrders(@PathVariable("customerEmail") String customerEmail) {
-        log.info(customerEmail);
-        List<OrderDTO> orders = inventoryClient.findUnpaidOrders(customerEmail);
-        return new ResponseEntity<>(orders, HttpStatus.FOUND);
+    @GetMapping(value = "/orders/{id}/totalprices")
+    public ResponseEntity<Double> getTotalPrice(@PathVariable("id") Long id) throws NotFoundException {
+        try {
+            Double price = inventoryClient.findTotalPrice(id);
+            return new ResponseEntity<>(price, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    @GetMapping(value = "/customerEmail/{customerEmail}/orders/{id}/totalPrice")
-    public ResponseEntity<Double> getTotalPrice(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id) {
-        log.info(customerEmail);
-        Double price = inventoryClient.findTotalPrice(customerEmail, id);
-        return new ResponseEntity<>(price, HttpStatus.FOUND);
+    @PutMapping(value = "/orders/{id}/payments")
+    public ResponseEntity<OrderDTO> payForOrders(@PathVariable("id") Long id) throws NotUpdatedException, SQLException {
+        try {
+            OrderDTO order = inventoryClient.payForOrder(id);
+            return new ResponseEntity<>(order, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotUpdatedException();
+        }
     }
 
-
-    @PutMapping(value = "/customerEmail/{customerEmail}/orders/{id}/payment")
-    public ResponseEntity<OrderDTO> payForOrders(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id, @RequestBody Double payment) {
-        log.info(customerEmail);
-        OrderDTO order = inventoryClient.payForOrder(customerEmail, id, payment);
-        return new ResponseEntity<>(order, HttpStatus.FOUND);
+    @GetMapping(value = "/orders/status/{status}")
+    public ResponseEntity<List<OrderDTO>> findOrdersByStatus(@PathVariable("status") String status) throws NotFoundException, SQLException {
+        try {
+            List<OrderDTO> orders = inventoryClient.findOrdersByStatus(status);
+            return new ResponseEntity<>(orders, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    @GetMapping(value = "/customerEmail/{customerEmail}/orders/status/{status}")
-    public ResponseEntity<List<OrderDTO>> findOrdersByStatus(@PathVariable("customerEmail") String customerEmail, @PathVariable("status") String status) {
-        log.info(customerEmail);
-        List<OrderDTO> orders = inventoryClient.findOrdersByStatus(customerEmail, status);
-        return new ResponseEntity<>(orders, HttpStatus.FOUND);
+    @GetMapping(value = "/orders/{id}")
+    public ResponseEntity<OrderDTO> findOrdersById(@PathVariable("id") Long id) throws NotFoundException, SQLException {
+        try {
+            OrderDTO order = inventoryClient.findOrderById(id);
+            return new ResponseEntity<>(order, HttpStatus.OK);
+        } catch (Exception e) {
+            throw new NotFoundException();
+        }
     }
 
-    @GetMapping(value = "/customerEmail/{customerEmail}/orders/{id}")
-    public ResponseEntity<OrderDTO> findOrdersById(@PathVariable("customerEmail") String customerEmail, @PathVariable("id") Long id) {
-        log.info(customerEmail);
-        OrderDTO order = inventoryClient.findOrderById(customerEmail, id);
-        return new ResponseEntity<>(order, HttpStatus.FOUND);
+    @GetMapping("/home")
+    public String home(ModelMap modal) {
+        modal.addAttribute("title", "Manager Module");
+        return "index";
     }
-
-
 }

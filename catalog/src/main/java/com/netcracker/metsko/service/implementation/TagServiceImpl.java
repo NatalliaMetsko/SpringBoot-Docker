@@ -34,7 +34,7 @@ public class TagServiceImpl implements TagService {
         }
     }
 
-    @Transactional
+    @Override
     public Tag findTagById(Long id) throws NotFoundException, SQLException {
         Tag tag = (Tag) tagDao.read(id);
         if (tag != null) {
@@ -44,7 +44,7 @@ public class TagServiceImpl implements TagService {
         }
     }
 
-    @Transactional
+    @Override
     public Tag findTagByName(String tagName) throws NotFoundException, SQLException {
         Tag tag = tagDao.findByName(tagName);
         if (tag != null) {
@@ -65,7 +65,7 @@ public class TagServiceImpl implements TagService {
         }
     }
 
-    @Transactional
+    @Override
     public List<Offer> findOffers(Long tagId) throws NotFoundException, SQLException {
         Tag tag = (Tag) tagDao.read(tagId);
         if (tag != null) {

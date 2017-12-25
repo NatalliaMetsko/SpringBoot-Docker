@@ -10,12 +10,12 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDTO {
-
 
     private Long id;
 
@@ -32,6 +32,8 @@ public class OrderDTO {
     private LocalDate dataOfCreation;
 
     private String status;
+
+    private List<OrderItemDTO> orderItemList;
 
     public void setCustomerEmail(String customerEmail) {
         this.customerEmail = customerEmail;

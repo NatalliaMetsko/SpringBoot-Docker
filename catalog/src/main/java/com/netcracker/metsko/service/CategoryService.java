@@ -24,7 +24,7 @@ public interface CategoryService {
 
     Category updateCategory(Category category) throws SQLException, NotUpdatedException;
 
-    void deleteCategory(Long categoryId) throws SQLException, NotDeletedException;
+    String deleteCategory(Long categoryId) throws SQLException, NotDeletedException;
 
     List<Offer> findOfferList(Long categoryId) throws SQLException, NotFoundException;
 

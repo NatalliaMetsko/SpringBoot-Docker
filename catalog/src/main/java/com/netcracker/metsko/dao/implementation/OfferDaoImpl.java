@@ -2,8 +2,6 @@ package com.netcracker.metsko.dao.implementation;
 
 import com.netcracker.metsko.dao.OfferDao;
 import com.netcracker.metsko.entity.Offer;
-import com.netcracker.metsko.entity.Price;
-import com.netcracker.metsko.entity.Tag;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;
@@ -30,22 +28,23 @@ public class OfferDaoImpl extends GenericDaoImpl<Offer, Long> implements OfferDa
     }
 
     @Override
-    public List<Offer> findByTags(List<Tag> tagList) throws SQLException {
-        return entityManager.createQuery("select o from Offer  o where o.tagList=" + tagList, Offer.class).getResultList();
+    public List<Offer> findOffersByAvailability(boolean availability) throws SQLException {
+        return entityManager.createQuery("select o from Offer  o where o.availability=" + availability, Offer.class).getResultList();
     }
 
     @Override
-    public List<Offer> findAvailableOffers() throws SQLException {
-        return entityManager.createQuery("select o from Offer  o where o.availability=" + true, Offer.class).getResultList();
+    public List<Offer> getPriceFromTo(Double priceFrom, Double priceTo) throws SQLException {
+        return entityManager.createQuery("select o from Offer  o where o.availability="+true+" and o.price between " + priceFrom + " and " + priceTo, Offer.class).getResultList();
     }
 
     @Override
-    public List<Offer> getPriceFromTo(Price priceFrom, Price priceTo) throws SQLException {
-        return entityManager.createQuery("select o from Offer  o where o.price between " + priceFrom.getPrice() + " and " + priceTo.getPrice() + " ", Offer.class).getResultList();
+    public List<Offer> getPriceFrom(Double priceFrom) throws SQLException {
+        return entityManager.createQuery("select o from Offer  o where o.price > " + priceFrom, Offer.class).getResultList();
     }
 
     @Override
-    public void changePrice(Long offerId, Price price) throws SQLException {
-        entityManager.createQuery("select o from Offer  o where o.id=" + offerId, Offer.class).getSingleResult().setPrice(price);
+    public List<Offer> getPriceTo(Double priceTo) throws SQLException {
+        return entityManager.createQuery("select o from Offer  o where o.price < " + priceTo, Offer.class).getResultList();
     }
+
 }

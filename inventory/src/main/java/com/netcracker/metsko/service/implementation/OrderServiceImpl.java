@@ -45,11 +45,7 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> findAll() throws NotFoundException, SQLException {
         try {
             List<Order> orderList = orderDao.findAll();
-            if (orderList != null) {
-                return orderList;
-            } else {
-                throw new NotFoundException("Orders " + ExceptionMessage.NOT_FOUND);
-            }
+            return orderList;
         } catch (Exception e) {
             throw new NotFoundException("Orders " + ExceptionMessage.NOT_FOUND);
         }
@@ -59,11 +55,7 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> findCustomerOrders(String email) throws SQLException, NotFoundException {
         try {
             List<Order> orderList = orderDao.findCustomerOrders(email);
-            if (orderList != null) {
-                return orderList;
-            } else {
-                throw new NotFoundException("Customer's orders" + ExceptionMessage.NOT_FOUND);
-            }
+            return orderList;
         } catch (Exception e) {
             throw new NotFoundException("Customer's orders" + ExceptionMessage.NOT_FOUND);
         }
@@ -73,11 +65,7 @@ public class OrderServiceImpl implements OrderService {
     public Order findOrderById(Long id) throws SQLException, NotFoundException {
         try {
             Order order = (Order) orderDao.read(id);
-            if (order != null) {
-                return order;
-            } else {
-                throw new NotFoundException("The Order" + ExceptionMessage.NOT_FOUND);
-            }
+            return order;
         } catch (Exception e) {
             throw new NotFoundException("The Order" + ExceptionMessage.NOT_FOUND);
         }
@@ -87,28 +75,22 @@ public class OrderServiceImpl implements OrderService {
     public Order updateOrder(Order order) throws SQLException, NotUpdatedException {
         try {
             Order updatedOrder = (Order) orderDao.update(order);
-            if (updatedOrder != null) {
-                return updatedOrder;
-            } else {
-                throw new NotUpdatedException("The Order" + ExceptionMessage.NOT_UPDATED);
-            }
+            return updatedOrder;
         } catch (Exception e) {
             throw new NotUpdatedException("The Order" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
-
     @Transactional
-    public Order addOrderItem(String customerEmail, Long id, OrderItem orderItem) throws SQLException, NotUpdatedException, NotFoundException {
+    public Order addOrderItem(Long id, OrderItem orderItem) throws SQLException, NotUpdatedException, NotFoundException {
         try {
-            Order order = orderDao.findCustomerOrdersAndById(customerEmail, id);
+            Order order = (Order) orderDao.read(id);
             if (order.getStatus().equals(String.valueOf(Status.PENDING))
                     || order.getStatus().equals(String.valueOf(Status.EMPTY))) {
                 orderItemDao.create(orderItem);
                 order.addOrderItem(orderItem);
-                Order updatedOrder = (Order) orderDao.update(order);
                 orderItemDao.update(orderItem);
-                return updatedOrder;
+                return (Order) orderDao.update(order);
             } else {
                 throw new NotUpdatedException("The order is not suitable.\n");
             }
@@ -118,11 +100,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Transactional
-    public Order removeOrderItem(Long orderId, OrderItem orderItem) throws SQLException, NotUpdatedException {
+    public Order removeOrderItem(Long orderId, Long orderItemId) throws SQLException, NotUpdatedException {
         try {
             Order order = (Order) orderDao.read(orderId);
             if (order.getStatus().equals(String.valueOf(Status.PENDING))) {
-                order.removeOrderItem(orderItem);
+                order.removeOrderItem((OrderItem) orderItemDao.read(orderItemId));
                 if (order.getItemAmount() == 0) {
                     order.setStatus(String.valueOf(Status.EMPTY));
                 }
@@ -146,85 +128,59 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findPaidOrders(String customerEmail) throws SQLException, NotFoundException {
+    public List<Order> getOrdersByPayment(boolean signPayment) throws SQLException, NotFoundException {
         try {
-            List<Order> order = orderDao.findPaidOrders(customerEmail);
-            if (order != null) {
-                return order;
-            } else {
-                throw new NotFoundException("The orders" + ExceptionMessage.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            throw new NotFoundException("The orders " + ExceptionMessage.NOT_FOUND);
-        }
-    }
-
-    @Override
-    public List<Order> findUnpaidOrders(String customerEmail) throws SQLException, NotFoundException {
-        try {
-            List<Order> order = orderDao.findUnpaidOrders(customerEmail);
-            if (order != null) {
-                return order;
-            } else {
-                throw new NotFoundException("The orders" + ExceptionMessage.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            throw new NotFoundException("The orders " + ExceptionMessage.NOT_FOUND);
-        }
-    }
-
-    @Override
-    public List<Order> findOrdersByStatus(String customerEmail, String status) throws SQLException, NotFoundException {
-        try {
-            List<Order> order = orderDao.findOrdersByStatus(customerEmail, status.toUpperCase());
+            List<Order> order = orderDao.getOrdersByPayment(signPayment);
             return order;
-
         } catch (Exception e) {
             throw new NotFoundException("The orders " + ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Override
-    public Double findTotalPrice(String customerEmail, Long orderId) throws SQLException, NotFoundException {
+    public List<Order> findOrdersByStatus(String status) throws SQLException, NotFoundException {
         try {
-            Order order = orderDao.findCustomerOrdersAndById(customerEmail, orderId);
-            if (order != null) {
-                return order.getTotalPrice();
-            } else {
-                throw new NotFoundException("The total price" + ExceptionMessage.NOT_FOUND);
-            }
+            List<Order> order = orderDao.findOrdersByStatus(status.toUpperCase());
+            return order;
+        } catch (Exception e) {
+            throw new NotFoundException("The orders " + ExceptionMessage.NOT_FOUND);
+        }
+    }
+
+    @Override
+    public Double findTotalPrice(Long orderId) throws SQLException, NotFoundException {
+        try {
+            Order order = (Order) orderDao.read(orderId);
+            return order.getTotalPrice();
         } catch (Exception e) {
             throw new NotFoundException("The total price " + ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Transactional
-    public Order payForOrder(String customerEmail, Long id, Double sumToPay) throws
-            SQLException, NotUpdatedException {
+    public Order payForOrder(Long id) throws SQLException, NotUpdatedException {
         try {
-            Order order = orderDao.findCustomerOrdersAndById(customerEmail, id);
-            if ((sumToPay == order.getTotalPrice()) && (!order.getStatus().equals(String.valueOf(Status.CANCELED)))) {
-                    order.setSignPayment();
-                    order.setPaymentDate(LocalDate.now());
-                    order.setDataOfReceive();
-                    order.setDataOfCompletion();
-                    Order updated = (Order) orderDao.update(order);
-                    return updated;
-                } else {
-                    throw new NotUpdatedException("The order is canceled");
-                }
+            Order order = (Order) orderDao.read(id);
+            if (order.getStatus().equals(String.valueOf(Status.PENDING))) {
+                order.setSignPayment();
+                order.setPaymentDate(LocalDate.now());
+                order.setDataOfCompletion();
+                order.setStatus(String.valueOf(Status.ACTIVE));
+                return (Order) orderDao.update(order);
+            } else {
+                throw new NotUpdatedException("The order is not available for paying.");
+            }
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public Order cancelOrder(String customerEmail, Long id) throws SQLException, NotUpdatedException {
+    public Order cancelOrder(Long id) throws SQLException, NotUpdatedException {
         try {
-            Order order = orderDao.findCustomerOrdersAndById(customerEmail, id);
+            Order order = (Order) orderDao.read(id);
             order.setStatus(String.valueOf(Status.CANCELED));
-            Order updated = (Order) orderDao.update(order);
-            return updated;
+            return (Order) orderDao.update(order);
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
         }

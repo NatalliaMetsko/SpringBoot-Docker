@@ -42,11 +42,16 @@ public class CategoryController {
             @ApiResponse(code = 500, message = "Category not created")
     })
     public ResponseEntity<Category> createCategory(@Validated @RequestBody Category newCategory) throws NotCreatedException, SQLException {
-        if (newCategory.getCategory().length() != 0) {
-            categoryService.createCategory(newCategory);
-            return new ResponseEntity<Category>(newCategory, HttpStatus.CREATED);
-        } else {
-            throw new NotCreatedException(ExceptionMessage.NULL_FIELDS);
+        try {
+            if (newCategory.getCategory().length() != 0) {
+                categoryService.createCategory(newCategory);
+                return new ResponseEntity<>(newCategory, HttpStatus.CREATED);
+            } else {
+                throw new NotCreatedException(ExceptionMessage.NULL_FIELDS);
+            }
+        }catch (Exception e)
+        {
+            throw new NotCreatedException(ExceptionMessage.NOT_CREATED);
         }
     }
 
@@ -63,14 +68,14 @@ public class CategoryController {
     public ResponseEntity<Category> findById(@PathVariable("id") Long categoryId) throws NotFoundException, SQLException {
         try {
             Category category = categoryService.findById(categoryId);
-            return new ResponseEntity<Category>(category, HttpStatus.FOUND);
+            return new ResponseEntity<>(category, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
 
     }
 
-    @GetMapping(value = "/name/{name}")
+    @GetMapping(value = "/name")
     @ApiOperation(httpMethod = "GET",
             value = "Find a category by it's name",
             response = Category.class,
@@ -80,10 +85,10 @@ public class CategoryController {
             @ApiResponse(code = 404, message = "Category not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Category> findByName(@PathVariable("name") String name) throws NotFoundException, SQLException {
+    public ResponseEntity<Category> findByName(@RequestParam("name") String name) throws NotFoundException, SQLException {
         try {
             Category category = categoryService.findByName(name);
-            return new ResponseEntity<Category>(category, HttpStatus.FOUND);
+            return new ResponseEntity<>(category, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }
@@ -101,8 +106,12 @@ public class CategoryController {
             @ApiResponse(code = 500, message = "Error")
     })
     public ResponseEntity<List<Category>> findAll() throws NotFoundException, SQLException {
-        List<Category> categoryList = categoryService.findAll();
-        return new ResponseEntity<List<Category>>(categoryList, HttpStatus.FOUND);
+        try {
+            List<Category> categoryList = categoryService.findAll();
+            return new ResponseEntity<>(categoryList, HttpStatus.OK);
+        }catch (Exception e){
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
     }
 
     @PutMapping
@@ -116,11 +125,10 @@ public class CategoryController {
             @ApiResponse(code = 500, message = "Category not updated")
     })
     public ResponseEntity<Category> updateCategory(@Validated @RequestBody Category category) throws NotUpdatedException, SQLException, NotFoundException {
-
         try {
             if (category.getCategory().length() != 0 && categoryService.findById(category.getId()) != null) {
                 Category updatedCategory = categoryService.updateCategory(category);
-                return new ResponseEntity<Category>(updatedCategory, HttpStatus.OK);
+                return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
             } else {
                 throw new NotUpdatedException(ExceptionMessage.NULL_FIELDS);
             }
@@ -139,10 +147,10 @@ public class CategoryController {
             @ApiResponse(code = 404, message = "Category not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> deleteCategory(@PathVariable("id") Long categoryId) throws NotDeletedException, SQLException {
+    public ResponseEntity<String> deleteCategory(@PathVariable("id") Long categoryId) throws NotDeletedException, SQLException {
         try {
-            categoryService.deleteCategory(categoryId);
-            return new ResponseEntity<Long>(categoryId, HttpStatus.OK);
+            String result = categoryService.deleteCategory(categoryId);
+            return new ResponseEntity<>( result,HttpStatus.OK);
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
         }
@@ -162,7 +170,7 @@ public class CategoryController {
     public ResponseEntity<List<Offer>> findOfferList(@PathVariable("id") Long id) throws NotFoundException, SQLException {
         try {
             List<Offer> offerList = categoryService.findOfferList(id);
-            return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);
+            return new ResponseEntity<>(offerList, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }

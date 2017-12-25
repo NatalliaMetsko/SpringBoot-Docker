@@ -8,8 +8,3 @@ eureka:
 url:
   inventory: http://yumasday:8082/api/v1/inventory
   catalog: http://yumasday:8081/api/v1/catalog/offers
-spring:
-  mvc:
-    view:
-      prefix: /WEB-INF/jsp/
-      suffix: .jsp

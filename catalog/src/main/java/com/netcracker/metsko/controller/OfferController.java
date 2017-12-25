@@ -1,11 +1,14 @@
 package com.netcracker.metsko.controller;
 
-import com.netcracker.metsko.entity.*;
+import com.netcracker.metsko.entity.Category;
+import com.netcracker.metsko.entity.ExceptionMessage;
+import com.netcracker.metsko.entity.Offer;
+import com.netcracker.metsko.entity.Price;
+import com.netcracker.metsko.entity.dto.OfferDTO;
 import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotDeletedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import com.netcracker.metsko.exceptions.NotUpdatedException;
-import com.netcracker.metsko.interceptor.LoggerInterceptor;
 import com.netcracker.metsko.service.OfferService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,12 +18,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @RestController
@@ -34,8 +37,6 @@ public class OfferController {
     @Autowired
     private ModelMapper modelMapper;
 
-    private static final Logger log = Logger.getLogger(LoggerInterceptor.class.getName());
-
     @PostMapping
     @ApiOperation(httpMethod = "POST",
             value = "Create an offer",
@@ -45,11 +46,11 @@ public class OfferController {
             @ApiResponse(code = 201, message = "Offer created"),
             @ApiResponse(code = 500, message = "Offer not created")
     })
-    public ResponseEntity<Offer> createOffer(@RequestBody Offer newOffer) throws NotCreatedException, SQLException {
+    public ResponseEntity<String> createOffer(@Validated @RequestBody Offer newOffer) throws NotCreatedException, SQLException {
 
         if (newOffer.getName().length() != 0) {
             offerService.createOffer(newOffer);
-            return new ResponseEntity<Offer>(newOffer, HttpStatus.CREATED);
+            return new ResponseEntity<>("The offer is created", HttpStatus.CREATED);
         } else {
             throw new NotCreatedException(ExceptionMessage.NULL_FIELDS);
         }
@@ -69,7 +70,7 @@ public class OfferController {
         try {
             if (offer.getName().length() != 0 && offerService.findById(offer.getId()) != null) {
                 Offer updatedOffer = offerService.updateOffer(offer);
-                return new ResponseEntity<Offer>(updatedOffer, HttpStatus.OK);
+                return new ResponseEntity<>(updatedOffer, HttpStatus.OK);
             } else {
                 throw new NotUpdatedException(ExceptionMessage.NULL_FIELDS);
             }
@@ -88,10 +89,10 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> deleteOffer(@PathVariable("id") Long id) throws NotDeletedException, SQLException {
+    public ResponseEntity<String> deleteOffer(@PathVariable("id") Long id) throws NotDeletedException, SQLException {
         try {
             offerService.deleteOffer(id);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>("The offer is deleted", HttpStatus.OK);
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
         }
@@ -109,10 +110,10 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> setAvailability(@PathVariable("id") Long id, @RequestBody boolean availability) throws NotUpdatedException, SQLException {
+    public ResponseEntity<Void> setAvailability(@PathVariable("id") Long id, @RequestParam("availability") boolean availability) throws NotUpdatedException, SQLException {
         try {
             offerService.setAvailability(id, availability);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
         }
@@ -129,9 +130,10 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Offer> findById(@PathVariable("id") Long id) throws NotFoundException, SQLException {
+    public ResponseEntity<OfferDTO> findById(@PathVariable("id") Long id) throws NotFoundException, SQLException {
         Offer foundOffer = offerService.findById(id);
-        return new ResponseEntity<Offer>(foundOffer, HttpStatus.FOUND);
+        OfferDTO offerDTO = modelMapper.map(foundOffer, OfferDTO.class);
+        return new ResponseEntity<>(offerDTO, HttpStatus.OK);
     }
 
     @GetMapping
@@ -147,10 +149,10 @@ public class OfferController {
     })
     public ResponseEntity<List<Offer>> findAll() throws NotFoundException, SQLException {
         List<Offer> offerList = offerService.findAll();
-        return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);
+        return new ResponseEntity<>(offerList, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/bytag/")
+    @GetMapping(value = "/searchbytags")
     @ApiOperation(httpMethod = "GET",
             value = "Find offers by tags",
             response = Offer.class,
@@ -161,27 +163,28 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offers not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public List<Offer> findByTags(@RequestBody List<Tag> tagList) throws NotFoundException, SQLException {
-        return offerService.findByTags(tagList);
+    public ResponseEntity<List<Offer>> findByTags(@RequestParam String tagList) throws NotFoundException, SQLException {
+        List<Offer> list = offerService.findByTags(tagList);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/available")
+    @GetMapping(value = "/availability")
     @ApiOperation(httpMethod = "GET",
-            value = "Find available offers",
+            value = "Find (un)available offers",
             response = Offer.class,
-            nickname = "findAvailableOffers",
+            nickname = "findOffersByAvailability",
             responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 302, message = "Offers found"),
             @ApiResponse(code = 404, message = "Offers not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<List<Offer>> findAvailableOffers() throws NotFoundException, SQLException {
-        List<Offer> offerList = offerService.findAvailableOffers();
-        return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);
+    public ResponseEntity<List<Offer>> findOffersByAvailability(@RequestParam("availability") boolean availability) throws NotFoundException, SQLException {
+        List<Offer> offerList = offerService.findOffersByAvailability(availability);
+        return new ResponseEntity<>(offerList, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/{id}/addprice")
+    @PutMapping(value = "/{id}/prices")
     @ApiOperation(httpMethod = "PUT",
             value = "Add price to offer",
             response = Long.class,
@@ -191,17 +194,17 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> addPrice(@PathVariable("id") Long id, @RequestBody Price price) throws NotUpdatedException, SQLException {
+    public ResponseEntity<String> addPrice(@PathVariable("id") Long id, @RequestBody Price price) throws NotUpdatedException, SQLException {
         try {
             offerService.addPrice(id, price);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>("The price is added.", HttpStatus.OK);
         } catch (Exception e) {
 
             throw new NotUpdatedException(ExceptionMessage.NOT_ADDED);
         }
     }
 
-    @PutMapping(value = "/{id}/change")
+    @PutMapping(value = "/{id}/changeprices")
     @ApiOperation(httpMethod = "PUT",
             value = "Change offer's price",
             response = Category.class,
@@ -211,16 +214,16 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> changePrice(@PathVariable("id") Long id, @RequestBody Price price) throws NotUpdatedException, SQLException {
+    public ResponseEntity<String> changePrice(@PathVariable("id") Long id, @RequestParam Double price) throws NotUpdatedException, SQLException {
         try {
             offerService.changePrice(id, price);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>("The price is changed.", HttpStatus.OK);
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_UPDATED);
         }
     }
 
-    @GetMapping(value = "/pricefilter/")
+    @GetMapping(value = "/pricefilters")
     @ApiOperation(httpMethod = "GET",
             value = "Find offers between two prices",
             response = Offer.class,
@@ -231,12 +234,17 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offers not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<List<Offer>> getOfferByPriceFromTo(@RequestBody Price priceFrom, @RequestBody Price priceTo) throws NotFoundException, SQLException {
-        List<Offer> offerList = offerService.getPriceFromTo(priceFrom, priceTo);
-        return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);
+    public ResponseEntity<List<Offer>> getOfferByPriceFromTo(@RequestParam("min") double priceFrom, @RequestParam("max") double priceTo) throws NotFoundException, SQLException {
+        try {
+            List<Offer> offerList = offerService.getPriceFromTo(priceFrom, priceTo);
+            return new ResponseEntity<>(offerList, HttpStatus.OK);
+
+        } catch (Exception e) {
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
     }
 
-    @PutMapping(value = "/{id}/addtag")
+    @PutMapping(value = "/{id}/tags")
     @ApiOperation(httpMethod = "PUT",
             value = "Add a tag to offer",
             response = Long.class,
@@ -246,17 +254,17 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> addTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws NotUpdatedException, SQLException {
+    public ResponseEntity<String> addTag(@PathVariable("id") Long id, @RequestParam Long tagId) throws NotUpdatedException, SQLException {
         try {
-            offerService.addTag(id, tag);
-            return new ResponseEntity<>(id, HttpStatus.OK);
+            offerService.addTag(id, tagId);
+            return new ResponseEntity<>("The tag is added.",HttpStatus.OK);
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_ADDED);
         }
 
     }
 
-    @PutMapping(value = "/{id}/removetag")
+    @PutMapping(value = "/{id}/removetags")
     @ApiOperation(httpMethod = "PUT",
             value = "Remove a tag from offer",
             response = Long.class,
@@ -266,17 +274,17 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Tag not removed"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> removeTag(@PathVariable("id") Long id, @RequestBody Tag tag) throws NotUpdatedException, SQLException, NotDeletedException {
+    public ResponseEntity<String> removeTag(@PathVariable("id") Long id, @RequestParam("tagId") Long tagId) throws NotUpdatedException, SQLException, NotDeletedException {
         try {
-            offerService.removeTag(id, tag);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            offerService.removeTag(id, tagId);
+            return new ResponseEntity<>("The tag is removed.", HttpStatus.OK);
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
         }
 
     }
 
-    @PutMapping(value = "/{id}/addcategory")
+    @PutMapping(value = "/{id}/categories")
     @ApiOperation(httpMethod = "PUT",
             value = "Add a category to offer",
             response = Long.class,
@@ -286,16 +294,16 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Offer not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> addCategory(@PathVariable("id") Long id, @RequestBody Category category) throws NotUpdatedException, SQLException {
+    public ResponseEntity<String> addCategory(@PathVariable("id") Long id, @RequestParam Long categoryId) throws NotUpdatedException, SQLException {
         try {
-            offerService.addCategory(id, category);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            offerService.addCategory(id, categoryId);
+            return new ResponseEntity<>("The category is added.", HttpStatus.OK);
         } catch (Exception e) {
             throw new NotUpdatedException(ExceptionMessage.NOT_ADDED);
         }
     }
 
-    @PutMapping(value = "/{id}/removeCategory")
+    @PutMapping(value = "/{id}/removecategories")
     @ApiOperation(httpMethod = "PUT",
             value = "Remove a category from offer",
             response = Long.class,
@@ -305,10 +313,10 @@ public class OfferController {
             @ApiResponse(code = 404, message = "Category not removed"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> removeCategory(@PathVariable("id") Long id) throws NotDeletedException, SQLException, NotUpdatedException {
+    public ResponseEntity<String> removeCategory(@PathVariable("id") Long id) throws NotDeletedException, SQLException, NotUpdatedException {
         try {
             offerService.removeCategory(id);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>("The category is removed.", HttpStatus.OK);
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
         }
@@ -318,10 +326,9 @@ public class OfferController {
     @PostMapping(value = "/categories/offers/filteredOffers")
     ResponseEntity<List<OfferDTO>> findFilteredOffers(@RequestBody Map<String, String> offerFilter) throws SQLException, NotFoundException {
         try {
-            log.info(offerFilter.toString());
             List<Offer> offers = offerService.findFilteredOffers(offerFilter);
             List<OfferDTO> offersDTO = offers.stream().map(offer -> modelMapper.map(offer, OfferDTO.class)).collect(Collectors.toList());
-            return new ResponseEntity<List<OfferDTO>>(offersDTO, HttpStatus.FOUND);
+            return new ResponseEntity<>(offersDTO, HttpStatus.FOUND);
         } catch (Exception e) {
             throw new NotFoundException(ExceptionMessage.NOT_FOUND);
         }

@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @ToString
@@ -32,6 +33,8 @@ public class OrderDTO {
     private int itemAmount;
 
     private String status;
+
+    private List<OrderItemDTO> orderItemList;
 
     public Long getId() {
         return id;

@@ -102,39 +102,27 @@ public class OfferServiceImpl implements OfferService {
     public List<Offer> findAll() throws NotFoundException, SQLException {
         try {
             List<Offer> offerList = offerDao.findAll();
-            if (offerList.size() != 0) {
-                return offerList;
-            } else {
-                throw new NotFoundException("The offer" + ExceptionMessage.NOT_FOUND);
-            }
+            return offerList;
         } catch (Exception e) {
             throw new NotFoundException("The offer" + ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Transactional
-    public List<Offer> findByTags(List<Tag> tagList) throws NotFoundException, SQLException {
+    public List<Offer> findByTags(String tagList) throws NotFoundException, SQLException {
         try {
-            List<Offer> offerList = offerDao.findByTags(tagList);
-            if (offerList.size() != 0) {
-                return offerList;
-            } else {
-                throw new NotFoundException("The offers" + ExceptionMessage.NOT_FOUND);
-            }
+            List<Offer> offerList = offerDao.findAll().stream().filter(offer -> checkTags(offer.getTags(), tagList)).collect(Collectors.toList());
+            return offerList;
         } catch (Exception e) {
             throw new NotFoundException("The offers" + ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Transactional
-    public List<Offer> findAvailableOffers() throws NotFoundException, SQLException {
+    public List<Offer> findOffersByAvailability(boolean availability) throws NotFoundException, SQLException {
         try {
-            List<Offer> offerList = offerDao.findAvailableOffers();
-            if (offerList.size() != 0) {
-                return offerList;
-            } else {
-                throw new NotFoundException("Available offers" + ExceptionMessage.NOT_FOUND);
-            }
+            List<Offer> offerList = offerDao.findOffersByAvailability(availability);
+            return offerList;
         } catch (Exception e) {
             throw new NotFoundException("Available offers" + ExceptionMessage.NOT_FOUND);
         }
@@ -160,23 +148,40 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Transactional
-    public void changePrice(Long offerId, Price price) throws NotUpdatedException, SQLException {
+    public void changePrice(Long offerId, Double price) throws NotUpdatedException, SQLException {
         try {
-            priceDao.create(price);
-            offerDao.changePrice(offerId, price);
+            Offer offer = offerDao.findById(offerId);
+            offer.getPrice().setPrice(price);
+            Offer updated = (Offer) offerDao.update(offer);
+            priceDao.update(updated.getPrice());
         } catch (Exception e) {
             throw new NotUpdatedException("The offer's price" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public List<Offer> getPriceFromTo(Price priceFrom, Price priceTo) throws NotFoundException, SQLException {
+    public List<Offer> getPriceFromTo(Double priceFrom, Double priceTo) throws NotFoundException, SQLException {
         try {
-            List<Offer> offerList = offerDao.getPriceFromTo(priceFrom, priceTo);
-            if (offerList.size() != 0) {
+            if ((priceFrom > 0) && (priceTo > 0) && (priceFrom < priceTo)) {
+                List<Offer> offerList = offerDao.getPriceFromTo(priceFrom, priceTo);
                 return offerList;
             } else {
-                throw new NotFoundException("The offers" + ExceptionMessage.NOT_FOUND);
+                if ((priceFrom > 0) && (priceTo == 0)) {
+                    List<Offer> offerList = offerDao.getPriceFrom(priceFrom);
+                    return offerList;
+                } else {
+                    if ((priceFrom == 0) && (priceTo == 0)) {
+                        List<Offer> offerList = offerDao.findAll();
+                        return offerList;
+                    } else {
+                        if ((priceFrom == 0) || (priceTo > 0)) {
+                            List<Offer> offerList = offerDao.getPriceTo(priceTo);
+                            return offerList;
+                        } else {
+                            throw new NotFoundException("Wrong parameters");
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             throw new NotFoundException("The offers" + ExceptionMessage.NOT_FOUND);
@@ -185,9 +190,10 @@ public class OfferServiceImpl implements OfferService {
 
 
     @Transactional
-    public void addTag(Long id, Tag tag) throws NotUpdatedException, SQLException {
+    public void addTag(Long id, Long tagId) throws NotUpdatedException, SQLException {
         try {
             Offer offer = (Offer) offerDao.read(id);
+            Tag tag = (Tag) tagDao.read(tagId);
             offer.addTag(tag);
             offerDao.update(offer);
             tagDao.update(tag);
@@ -196,19 +202,15 @@ public class OfferServiceImpl implements OfferService {
         }
     }
 
-    @Override
-    public void removeTag(Long offerId, Tag tag) throws NotUpdatedException, SQLException {
+    @Transactional
+    public void removeTag(Long offerId, Long tagId) throws NotUpdatedException, SQLException {
         try {
             Offer offer = (Offer) offerDao.read(offerId);
-            if (offer != null) {
-                if (offer.getTagList().contains(tag)) {
-                    offer.removeTag(tag);
-                    tagDao.update(tag);
-                    offerDao.update(offer);
-                } else {
-                    throw new NotUpdatedException("The tag doesn't exist for this offer");
-                }
-
+            Tag tag = (Tag) tagDao.read(tagId);
+            if (offer.getTagList().contains(tag)) {
+                offer.removeTag(tag);
+                tagDao.update(tag);
+                offerDao.update(offer);
             } else {
                 throw new NotUpdatedException("The offer" + ExceptionMessage.NOT_UPDATED);
             }
@@ -218,9 +220,10 @@ public class OfferServiceImpl implements OfferService {
     }
 
     @Transactional
-    public void addCategory(Long offerId, Category category) throws NotUpdatedException, SQLException {
+    public void addCategory(Long offerId, Long categoryId) throws NotUpdatedException, SQLException {
         try {
             Offer offer = (Offer) offerDao.read(offerId);
+            Category category = (Category) categoryDao.read(categoryId);
             if (offer != null) {
                 category.addOffer(offer);
                 categoryDao.update(category);
@@ -254,29 +257,23 @@ public class OfferServiceImpl implements OfferService {
     @Override
     public List<Offer> findFilteredOffers(Map<String, String> filter) throws SQLException, NotFoundException {
         try {
-            List<Offer> offerAllList = offerDao.findAll();
+            List<Offer> offerAllList = getPriceFromTo(Double.valueOf(filter.get("min")), Double.valueOf(filter.get("max")));
             List<Offer> offerList = offerAllList.stream().filter(offer -> (offer.getCategory().getCategory().equals(filter.get("category"))
-                    && checkTags(offer.getTags(), filter.get("tagList"))
-                    && Double.toString(offer.getPrice().getPrice()).equals(filter.get("price")))).collect(Collectors.toList());
-            if (offerList.size() != 0) {
-                return offerList;
-            } else {
-                throw new NotFoundException("The offers " + ExceptionMessage.NOT_FOUND);
-            }
+                    && checkTags(offer.getTags(), filter.get("tagList")))).collect(Collectors.toList());
+            return offerList;
         } catch (Exception e) {
             throw new NotFoundException("The offers " + ExceptionMessage.NOT_FOUND);
         }
     }
 
-    private boolean checkTags(String tags, String filterTags) {
+    private boolean checkTags(String offerTags, String filterTags) {
         String[] filter = filterTags.trim().split(" ");
         int checker = 0;
         for (int i = 0; i < filter.length; i++) {
-            if (tags.contains(filter[i])) {
+            if (offerTags.contains(filter[i])) {
                 checker++;
             }
         }
-
         if (checker > 0) {
             return true;
         } else {

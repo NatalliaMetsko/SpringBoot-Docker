@@ -13,11 +13,7 @@ public interface OrderDao extends GenericDao<Order, Long> {
 
     List<Order> findCustomerOrders(String email) throws SQLException;
 
-    Order findCustomerOrdersAndById(String customerEmail, Long orderId);
+    List<Order> getOrdersByPayment(boolean signPayment)throws SQLException, NotFoundException;
 
-    List<Order> findPaidOrders(String customerEmail)throws SQLException, NotFoundException;
-
-    List<Order> findUnpaidOrders(String customerEmail) throws SQLException, NotFoundException;
-
-    List<Order> findOrdersByStatus(String customerEmail, String status) throws SQLException, NotFoundException;
+    List<Order> findOrdersByStatus(String status) throws SQLException, NotFoundException;
 }

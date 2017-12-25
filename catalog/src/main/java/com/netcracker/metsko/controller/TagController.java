@@ -15,6 +15,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
@@ -28,7 +29,6 @@ public class TagController {
     @Autowired
     private TagService tagService;
 
-
     public TagController() {
     }
 
@@ -41,12 +41,16 @@ public class TagController {
             @ApiResponse(code = 201, message = "Tag created"),
             @ApiResponse(code = 500, message = "Tag not created")
     })
-    public ResponseEntity<Tag> createTag(@RequestBody Tag tag) throws NotCreatedException, SQLException {
-        if (tag.getTag().length() != 0) {
-            tagService.createTag(tag);
-            return new ResponseEntity<Tag>(tag, HttpStatus.CREATED);
-        } else {
-            throw new NotCreatedException(ExceptionMessage.NULL_FIELDS);
+    public ResponseEntity<Tag> createTag(@Validated @RequestBody Tag tag) throws NotCreatedException, SQLException {
+        try {
+            if (tag.getTag().length() != 0) {
+                tagService.createTag(tag);
+                return new ResponseEntity<>(tag, HttpStatus.CREATED);
+            } else {
+                throw new NotCreatedException(ExceptionMessage.NULL_FIELDS);
+            }
+        }catch (Exception e){
+            throw new NotCreatedException(ExceptionMessage.NOT_CREATED);
         }
     }
 
@@ -61,11 +65,15 @@ public class TagController {
             @ApiResponse(code = 500, message = "Error")
     })
     public ResponseEntity<Tag> findById(@PathVariable("id") Long id) throws NotFoundException, SQLException {
-        Tag tag = tagService.findTagById(id);
-        return new ResponseEntity<Tag>(tag, HttpStatus.FOUND);
+        try {
+            Tag tag = tagService.findTagById(id);
+            return new ResponseEntity<>(tag, HttpStatus.OK);
+        }catch (Exception e){
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
     }
 
-    @GetMapping(value = "/name/{name}")
+    @GetMapping(value = "/name")
     @ApiOperation(httpMethod = "GET",
             value = "Find a tag by it's name",
             response = Tag.class,
@@ -75,13 +83,16 @@ public class TagController {
             @ApiResponse(code = 404, message = "Tag not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Tag> findByName(@PathVariable("name") String name) throws NotFoundException, SQLException {
-        Tag tag = tagService.findTagByName(name);
-        return new ResponseEntity<Tag>(tag, HttpStatus.FOUND);
+    public ResponseEntity<Tag> findByName(@RequestParam("name") String name) throws NotFoundException, SQLException {
+        try {
+            Tag tag = tagService.findTagByName(name);
+            return new ResponseEntity<>(tag, HttpStatus.OK);
+        }catch (Exception e){
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
     }
 
     @GetMapping
-
     @ApiOperation(httpMethod = "GET",
             value = "Find all tags",
             response = Tag.class,
@@ -93,8 +104,12 @@ public class TagController {
             @ApiResponse(code = 500, message = "Error")
     })
     public ResponseEntity<List<Tag>> findAll() throws NotFoundException, SQLException {
-        List<Tag> tagList = tagService.findAll();
-        return new ResponseEntity<List<Tag>>(tagList, HttpStatus.FOUND);
+        try {
+            List<Tag> tagList = tagService.findAll();
+            return new ResponseEntity<>(tagList, HttpStatus.OK);
+        }catch (Exception e){
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
     }
 
     @GetMapping(value = "/{id}/offers")
@@ -109,8 +124,12 @@ public class TagController {
             @ApiResponse(code = 500, message = "Error")
     })
     public ResponseEntity<List<Offer>> findOffers(@PathVariable("id") Long id) throws NotFoundException, SQLException {
-        List<Offer> offerList = tagService.findOffers(id);
-        return new ResponseEntity<List<Offer>>(offerList, HttpStatus.FOUND);
+        try {
+            List<Offer> offerList = tagService.findOffers(id);
+            return new ResponseEntity<>(offerList, HttpStatus.OK);
+        }catch (Exception e){
+            throw new NotFoundException(ExceptionMessage.NOT_FOUND);
+        }
     }
 
     @PutMapping
@@ -127,7 +146,7 @@ public class TagController {
         try {
             if (tag.getTag().length() != 0 && tagService.findTagById(tag.getId()) != null) {
                 Tag updatedTag = tagService.updateTag(tag);
-                return new ResponseEntity<Tag>(updatedTag, HttpStatus.OK);
+                return new ResponseEntity<>(updatedTag, HttpStatus.OK);
             } else {
                 throw new NotUpdatedException(ExceptionMessage.NULL_FIELDS);
             }
@@ -147,10 +166,10 @@ public class TagController {
             @ApiResponse(code = 404, message = "Tag not found"),
             @ApiResponse(code = 500, message = "Error")
     })
-    public ResponseEntity<Long> deleteTag(@PathVariable("id") Long id) throws NotDeletedException, SQLException {
+    public ResponseEntity<String> deleteTag(@PathVariable("id") Long id) throws NotDeletedException, SQLException {
         try {
             tagService.deleteTag(id);
-            return new ResponseEntity<Long>(id, HttpStatus.OK);
+            return new ResponseEntity<>("The tag deleted", HttpStatus.OK);
         } catch (Exception e) {
             throw new NotDeletedException(ExceptionMessage.NOT_DELETED);
         }

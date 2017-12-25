@@ -26,23 +26,13 @@ public class OrderDaoImpl extends GenericDaoImpl<Order, Long> implements OrderDa
     }
 
     @Override
-    public Order findCustomerOrdersAndById(String customerEmail, Long orderId) {
-        return entityManager.createQuery("select io from  InvOrder io where io.customerEmail = '" + customerEmail+"' and io.id="+orderId, Order.class).getSingleResult();
+    public List<Order> getOrdersByPayment(boolean signPayment) throws SQLException, NotFoundException {
+        return entityManager.createQuery("select io from InvOrder io where io.signPayment="+signPayment, Order.class).getResultList();
     }
 
     @Override
-    public List<Order> findPaidOrders(String customerEmail) throws SQLException, NotFoundException {
-        return entityManager.createQuery("select io from InvOrder io where io.customerEmail='"+customerEmail+"' and io.signPayment="+true, Order.class).getResultList();
-    }
-
-    @Override
-    public List<Order> findUnpaidOrders(String customerEmail) throws SQLException, NotFoundException {
-        return entityManager.createQuery("select io from InvOrder io where io.customerEmail='"+customerEmail+"' and io.signPayment="+false, Order.class).getResultList();
-    }
-
-    @Override
-    public List<Order> findOrdersByStatus(String customerEmail, String status) throws SQLException, NotFoundException {
-        return entityManager.createQuery("select io from InvOrder io where io.customerEmail='"+customerEmail+"' and io.status='"+status+"'", Order.class).getResultList();
+    public List<Order> findOrdersByStatus(String status) throws SQLException, NotFoundException {
+        return entityManager.createQuery("select io from InvOrder io where io.status='"+status+"'", Order.class).getResultList();
     }
 
 }

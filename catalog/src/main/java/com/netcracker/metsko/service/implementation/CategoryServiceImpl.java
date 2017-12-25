@@ -23,7 +23,7 @@ public class CategoryServiceImpl implements CategoryService {
     private CategoryDao categoryDao;
 
     @Transactional
-    public void createCategory(Category category) throws NotCreatedException {
+    public void createCategory(Category category) throws NotCreatedException, SQLException {
         try {
             categoryDao.create(category);
         } catch (Exception e) {
@@ -31,64 +31,64 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    @Transactional
+    @Override
     public Category findById(Long id) throws NotFoundException, SQLException {
-        Category category = (Category) categoryDao.read(id);
-
-        if (category == null) {
-
-            throw new NotFoundException("This category" + ExceptionMessage.NOT_FOUND);
-
-        } else {
+        try {
+            Category category = (Category) categoryDao.read(id);
             return category;
+        } catch (Exception e) {
+            throw new NotFoundException("This category" + ExceptionMessage.NOT_FOUND);
         }
     }
 
-    @Transactional
+    @Override
     public Category findByName(String name) throws SQLException, NotFoundException {
-        Category category = categoryDao.findByName(name);
-        if (category != null) {
+        try {
             return categoryDao.findByName(name);
-        } else {
+        } catch (Exception e) {
             throw new NotFoundException("Category" + ExceptionMessage.NOT_FOUND);
         }
     }
 
-    @Transactional
+    @Override
     public List<Category> findAll() throws SQLException, NotFoundException {
-        List<Category> categoryList = categoryDao.findAll();
-        if (categoryList != null) {
-            return categoryList;
-        } else {
+        try {
+            return categoryDao.findAll();
+        } catch (Exception e) {
             throw new NotFoundException("Categories " + ExceptionMessage.NOT_FOUND);
         }
     }
 
     @Transactional
     public Category updateCategory(Category category) throws SQLException, NotUpdatedException {
-        Category updatedCategory = (Category) categoryDao.update(category);
-        if (updatedCategory != null) {
-            return updatedCategory;
-        } else {
+        try {
+            return (Category) categoryDao.update(category);
+        } catch (Exception e) {
             throw new NotUpdatedException("This category" + ExceptionMessage.NOT_UPDATED);
         }
     }
 
     @Transactional
-    public void deleteCategory(Long categoryId) throws SQLException, NotDeletedException {
+    public String deleteCategory(Long categoryId) throws SQLException, NotDeletedException {
         try {
-            categoryDao.delete(categoryId);
+            Category category = (Category) categoryDao.read(categoryId);
+            if (category.getOfferList().size() > 0) {
+                return "The category is not empty and can't be deleted.";
+            } else {
+                categoryDao.delete(categoryId);
+                return "The category is deleted.";
+            }
         } catch (Exception e) {
             throw new NotDeletedException("The category " + ExceptionMessage.NOT_DELETED);
         }
     }
 
-    @Transactional
+    @Override
     public List<Offer> findOfferList(Long id) throws SQLException, NotFoundException {
-        List<Offer> offerList = categoryDao.findOfferList(id);
-        if (offerList != null) {
+        try {
+            List<Offer> offerList = categoryDao.findOfferList(id);
             return offerList;
-        } else {
+        } catch (Exception e) {
             throw new NotFoundException("Offers " + ExceptionMessage.NOT_FOUND);
         }
     }

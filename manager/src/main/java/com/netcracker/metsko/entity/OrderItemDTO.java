@@ -16,8 +16,6 @@ public class OrderItemDTO {
 
     private double price;
 
-
-
     public String getName() {
         return name;
     }
