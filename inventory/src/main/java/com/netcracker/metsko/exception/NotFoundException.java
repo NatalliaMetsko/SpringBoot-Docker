@@ -1,4 +1,4 @@
-package com.netcracker.metsko.exceptions;
+package com.netcracker.metsko.exception;
 
 public class NotFoundException extends Throwable {
 

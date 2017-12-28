@@ -1,10 +1,10 @@
 package com.netcracker.metsko.controller;
 
 import com.netcracker.metsko.entity.ErrorMessage;
-import com.netcracker.metsko.exceptions.NotCreatedException;
-import com.netcracker.metsko.exceptions.NotDeletedException;
-import com.netcracker.metsko.exceptions.NotFoundException;
-import com.netcracker.metsko.exceptions.NotUpdatedException;
+import com.netcracker.metsko.exception.NotCreatedException;
+import com.netcracker.metsko.exception.NotDeletedException;
+import com.netcracker.metsko.exception.NotFoundException;
+import com.netcracker.metsko.exception.NotUpdatedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

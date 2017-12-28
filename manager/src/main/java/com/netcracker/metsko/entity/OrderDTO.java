@@ -1,7 +1,6 @@
 package com.netcracker.metsko.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.netcracker.metsko.util.LocalDateDeserializer;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @Data
 @ToString
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDTO {
 
     private Long id;

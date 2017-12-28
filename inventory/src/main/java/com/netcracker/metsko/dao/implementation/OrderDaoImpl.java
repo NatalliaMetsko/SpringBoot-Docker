@@ -2,7 +2,7 @@ package com.netcracker.metsko.dao.implementation;
 
 import com.netcracker.metsko.dao.OrderDao;
 import com.netcracker.metsko.entity.Order;
-import com.netcracker.metsko.exceptions.NotFoundException;
+import com.netcracker.metsko.exception.NotFoundException;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLException;

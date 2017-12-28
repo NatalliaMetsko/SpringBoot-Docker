@@ -1,7 +1,6 @@
 package com.netcracker.metsko.web.controller;
 
 
-import com.netcracker.metsko.ManagerApplication;
 import com.netcracker.metsko.entity.Filter;
 import com.netcracker.metsko.entity.OfferDTO;
 import com.netcracker.metsko.entity.OrderDTO;
@@ -16,15 +15,14 @@ import org.hibernate.validator.constraints.Email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.ModelMap;
+import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1/manager")
@@ -37,12 +35,9 @@ public class ManagerController {
     @Autowired
     private InventoryClient inventoryClient;
 
-    private Logger LOGGER = Logger.getLogger(ManagerApplication.class.getName());
-
     @PostMapping(value = "/offers/filters")
-    public ResponseEntity<List<OfferDTO>> getFilteredOffers(@Valid @RequestBody Filter filter) throws NotFoundException, SQLException {
+    public ResponseEntity<List<OfferDTO>> getFilteredOffers(@Validated @RequestBody Filter filter) throws NotFoundException, SQLException {
         try {
-            LOGGER.info(filter.toString());
             Map<String, String> map = new HashMap<>();
             map.put("category", filter.getCategory());
             map.put("tagList", filter.getTagList());
@@ -56,7 +51,6 @@ public class ManagerController {
             } else {
                 map.put("max", Double.toString(filter.getMax()));
             }
-            LOGGER.info(map.toString());
             List<OfferDTO> dtoList = catalogClient.getOffers(map);
             return new ResponseEntity<>(dtoList, HttpStatus.OK);
         } catch (Exception e) {
@@ -100,9 +94,10 @@ public class ManagerController {
     }
 
     @GetMapping(value = "/orders/payments")
-    public ResponseEntity<List<OrderDTO>> getOrdersByPayment(@RequestParam("signPayment") boolean signPayment) throws NotFoundException {
+    public ResponseEntity<List<OrderDTO>> getOrdersByPayment(@RequestParam("signPayment") boolean signPayment, Model model) throws NotFoundException {
         try {
             List<OrderDTO> orders = inventoryClient.getOrdersByPayment(signPayment);
+            model.addAttribute("orders", orders);
             return new ResponseEntity<>(orders, HttpStatus.OK);
         } catch (Exception e) {
             throw new NotFoundException();
@@ -149,9 +144,9 @@ public class ManagerController {
         }
     }
 
-    @GetMapping("/home")
-    public String home(ModelMap modal) {
-        modal.addAttribute("title", "Manager Module");
-        return "index";
-    }
+//    @GetMapping("/home")
+//    public String home(Model map) {
+//        map.addAttribute("name", "Manager");
+//        return "home";
+//    }
 }

@@ -1,20 +1,12 @@
 package com.netcracker.metsko.entity.dto;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.netcracker.metsko.util.LocalDateDeserializer;
-import com.netcracker.metsko.util.LocalDateSerializer;
 import lombok.Data;
-import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@ToString
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDTO {
 
 
@@ -24,8 +16,6 @@ public class OrderDTO {
 
     private String customerEmail;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate dataOfCreation;
 
     private double totalPrice;

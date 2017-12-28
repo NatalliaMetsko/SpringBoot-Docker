@@ -2,7 +2,7 @@ package com.netcracker.metsko.dao;
 
 
 import com.netcracker.metsko.entity.Order;
-import com.netcracker.metsko.exceptions.NotFoundException;
+import com.netcracker.metsko.exception.NotFoundException;
 
 import java.sql.SQLException;
 import java.util.List;

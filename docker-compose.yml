@@ -1,0 +1,51 @@
+version: "3"
+services:
+  discovery:
+    image: discovery
+    ports:
+      - "8761:8761"
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+    volumes:
+      - /mnt_pg_data:/var/lib/postgresql/data
+  gateway:
+    image: gateway
+    ports:
+      - "8765:8765"
+    environment:
+      - EUREKA_IP=yumasday
+  catalog:
+    image: catalog
+    ports:
+     - "8081:8081"
+    environment:
+      - EUREKA_IP=yumasday
+      - DATABASE_HOST=yumasday
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=catalogdb
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=12345
+  inventory:
+    image: inventory
+    ports:
+     - "8082:8082"
+    environment:
+      - EUREKA_IP=yumasday
+      - DATABASE_HOST=yumasday
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=inventorydb
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=12345
+  manager:
+    image: manager
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_IP=yumasday
+      - INVENTORY_IP=yumasday
+      - CATALOG_IP=yumasday

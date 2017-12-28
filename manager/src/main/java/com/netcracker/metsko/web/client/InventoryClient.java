@@ -6,6 +6,7 @@ import com.netcracker.metsko.exceptions.NotCreatedException;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import com.netcracker.metsko.exceptions.NotUpdatedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -20,10 +21,8 @@ import java.util.List;
 @Component
 public class InventoryClient {
 
-//    @Value("url.inventory")
-//    private String url;
-
-    protected String url = "http://yumasday:8082/api/v1/inventory";
+    @Value("${url.inventory}")
+    private String url;
 
     @Autowired
     private RestTemplate restTemplate;

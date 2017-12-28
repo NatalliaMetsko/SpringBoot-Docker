@@ -1,15 +1,21 @@
 server:
   port: 8081
 spring:
+  profiles: container
   datasource:
-    url: jdbc:postgresql://localhost:5432/catalogdb
-    username: postgres
-    password: 12345
-    driver-class-name: org.postgresql.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
+      url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5432}/${DATABASE_NAME:catalogdb}
+      username: ${DATABASE_USER:postgres}
+      password: ${DATABASE_PASSWORD:12345}
+      initialize: true
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/catalogdb
+#    username: postgres
+#    password: 12345
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://${EUREKA_IP:localhost}:8761/eureka/

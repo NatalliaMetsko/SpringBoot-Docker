@@ -4,6 +4,7 @@ package com.netcracker.metsko.web.client;
 import com.netcracker.metsko.entity.OfferDTO;
 import com.netcracker.metsko.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -18,11 +19,8 @@ import java.util.Map;
 @Component
 public class CatalogClient {
 
-
-    protected String url = "http://yumasday:8081/api/v1/catalog/offers";
-
-//    @Value("url.catalog")
-//    private static String url;
+    @Value("${url.catalog}")
+    private String url;
 
     @Autowired
     private RestTemplate restTemplate;

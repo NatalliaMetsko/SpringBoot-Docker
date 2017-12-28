@@ -6,10 +6,10 @@ import com.netcracker.metsko.entity.ExceptionMessage;
 import com.netcracker.metsko.entity.Order;
 import com.netcracker.metsko.entity.OrderItem;
 import com.netcracker.metsko.entity.enums.Status;
-import com.netcracker.metsko.exceptions.NotCreatedException;
-import com.netcracker.metsko.exceptions.NotDeletedException;
-import com.netcracker.metsko.exceptions.NotFoundException;
-import com.netcracker.metsko.exceptions.NotUpdatedException;
+import com.netcracker.metsko.exception.NotCreatedException;
+import com.netcracker.metsko.exception.NotDeletedException;
+import com.netcracker.metsko.exception.NotFoundException;
+import com.netcracker.metsko.exception.NotUpdatedException;
 import com.netcracker.metsko.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,10 +104,12 @@ public class OrderServiceImpl implements OrderService {
         try {
             Order order = (Order) orderDao.read(orderId);
             if (order.getStatus().equals(String.valueOf(Status.PENDING))) {
-                order.removeOrderItem((OrderItem) orderItemDao.read(orderItemId));
+                orderItemDao.delete(orderItemId);
                 if (order.getItemAmount() == 0) {
                     order.setStatus(String.valueOf(Status.EMPTY));
                 }
+                order.setItemAmount(order.getOrderItemList().size());
+                order.setTotalPrice(order.getOrderItemList().stream().mapToDouble(OrderItem::getPrice).sum());
                 orderDao.update(order);
                 return order;
             } else {

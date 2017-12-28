@@ -2,10 +2,10 @@ package com.netcracker.metsko.service;
 
 import com.netcracker.metsko.entity.Order;
 import com.netcracker.metsko.entity.OrderItem;
-import com.netcracker.metsko.exceptions.NotCreatedException;
-import com.netcracker.metsko.exceptions.NotDeletedException;
-import com.netcracker.metsko.exceptions.NotFoundException;
-import com.netcracker.metsko.exceptions.NotUpdatedException;
+import com.netcracker.metsko.exception.NotCreatedException;
+import com.netcracker.metsko.exception.NotDeletedException;
+import com.netcracker.metsko.exception.NotFoundException;
+import com.netcracker.metsko.exception.NotUpdatedException;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
