@@ -55,7 +55,7 @@ public class InventoryClient {
     public OrderDTO removeOrderItem(Long id, Long orderItemId) throws SQLException, NotUpdatedException {
         try {
             HttpEntity<Long> entity = new HttpEntity<>(orderItemId);
-            ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/orders/{id}/removeorderitems", HttpMethod.PUT, entity, OrderDTO.class, id);
+            ResponseEntity<OrderDTO> response = restTemplate.exchange(url + "/orders/{id}/orderitems", HttpMethod.DELETE, entity, OrderDTO.class, id);
             OrderDTO orderDTO = response.getBody();
             return orderDTO;
         } catch (Exception e) {

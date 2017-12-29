@@ -83,7 +83,7 @@ public class ManagerController {
         }
     }
 
-    @PutMapping(value = "/orders/{id}/orderItems")
+    @DeleteMapping(value = "/orders/{id}/orderItems")
     public ResponseEntity<OrderDTO> removeOrderItem(@PathVariable("id") Long id, @RequestBody Long orderItemId) throws NotUpdatedException {
         try {
             OrderDTO orderDTO = inventoryClient.removeOrderItem(id, orderItemId);

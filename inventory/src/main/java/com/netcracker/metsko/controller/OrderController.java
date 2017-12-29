@@ -163,8 +163,8 @@ public class OrderController {
         }
     }
 
-    @PutMapping(value = "/orders/{id}/removeorderitems")
-    @ApiOperation(httpMethod = "PUT",
+    @DeleteMapping(value = "/orders/{id}/orderitems")
+    @ApiOperation(httpMethod = "DELETE",
             value = "Remove an orderItem from order",
             response = Long.class,
             nickname = "removeOrderItem")
